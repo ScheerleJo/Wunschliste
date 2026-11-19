@@ -1,5 +1,6 @@
 import type {
   CreateInviteInput,
+  WishImageDto,
   MyReservationDto,
   WishlistViewDto,
   OwnWishDto,
@@ -78,6 +79,15 @@ export const wishesApi = {
   restore: (wishId: string) => api(`/wishes/${wishId}/restore`, json("POST")),
   remove: (wishId: string) => api(`/wishes/${wishId}`, json("DELETE")),
   reorder: (profileId: string, ids: string[]) => api(`/profiles/${profileId}/wishes/order`, json("PUT", { ids })),
+  deleteImage: (wishId: string, imageId: string) => api(`/wishes/${wishId}/images/${imageId}`, json("DELETE")),
+  uploadImage: async (wishId: string, file: File) => {
+    const form = new FormData();
+    form.append("file", file);
+    const res = await fetch(`/api/wishes/${wishId}/images`, { method: "POST", body: form, credentials: "include" });
+    const body = (await res.json().catch(() => null)) as (WishImageDto & { error?: string }) | null;
+    if (!res.ok) throw new ApiError(res.status, body?.error ?? "Upload fehlgeschlagen");
+    return body as WishImageDto;
+  },
 };
 
 // ---- Fremde Listen & Reservierungen ------------------------------------------

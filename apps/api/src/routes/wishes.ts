@@ -6,6 +6,7 @@ import { group, groupMember, reservation, wish, wishLink, wishVisibility } from 
 import { requireUser, type AppEnv } from "../lib/context.ts";
 import { badRequest, notFound, parseJson } from "../lib/http.ts";
 import { requireManageProfile } from "../services/access.ts";
+import { imagesFor, removeWishFiles } from "../services/images.ts";
 
 export const wishRoutes = new Hono<AppEnv>();
 
@@ -16,9 +17,10 @@ type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 async function toOwnDtos(rows: WishRow[]): Promise<OwnWishDto[]> {
   if (rows.length === 0) return [];
   const ids = rows.map((w) => w.id);
-  const [links, visibility] = await Promise.all([
+  const [links, visibility, images] = await Promise.all([
     db.select().from(wishLink).where(inArray(wishLink.wishId, ids)).orderBy(asc(wishLink.sortOrder)),
     db.select().from(wishVisibility).where(inArray(wishVisibility.wishId, ids)),
+    imagesFor(ids),
   ]);
   return rows.map((w) => ({
     id: w.id,
@@ -26,6 +28,7 @@ async function toOwnDtos(rows: WishRow[]): Promise<OwnWishDto[]> {
     description: w.description,
     priceCents: w.priceCents,
     links: links.filter((l) => l.wishId === w.id).map((l) => ({ id: l.id, url: l.url, label: l.label })),
+    images: images.get(w.id) ?? [],
     visibleInAllGroups: w.visibleInAllGroups,
     groupIds: visibility.filter((v) => v.wishId === w.id).map((v) => v.groupId),
     status: w.status === "archived" ? "archived" : "active",
@@ -41,7 +44,7 @@ async function profileGroupIds(profileId: string) {
 }
 
 /** Lädt einen Wunsch, den der Benutzer verwalten darf (sonst 404). Gelöschte Wünsche zählen nicht. */
-async function loadManagedWish(userId: string, wishId: string) {
+export async function loadManagedWish(userId: string, wishId: string) {
   const [w] = await db
     .select()
     .from(wish)
@@ -190,6 +193,7 @@ wishRoutes.delete("/wishes/:wishId", async (c) => {
     await db.update(wish).set({ status: "deleted", deletedAt: new Date() }).where(eq(wish.id, w.id));
   } else {
     await db.delete(wish).where(eq(wish.id, w.id));
+    await removeWishFiles(w.id);
   }
   return c.json({ ok: true });
 });

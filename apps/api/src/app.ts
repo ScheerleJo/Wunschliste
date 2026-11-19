@@ -11,6 +11,7 @@ import { groupRoutes } from "./routes/groups.ts";
 import { inviteRoutes } from "./routes/invites.ts";
 import { wishRoutes } from "./routes/wishes.ts";
 import { reservationRoutes } from "./routes/reservations.ts";
+import { imageRoutes } from "./routes/images.ts";
 import { getOwnProfile } from "./services/profiles.ts";
 
 /** Lädt die Session (falls vorhanden) für alle API-Routen. */
@@ -52,6 +53,7 @@ app.route("/groups", groupRoutes);
 app.route("/", inviteRoutes);
 app.route("/", wishRoutes);
 app.route("/", reservationRoutes);
+app.route("/", imageRoutes);
 
 app.onError((err, c) => {
   if (err instanceof HTTPException) return c.json({ error: err.message }, err.status);

@@ -6,7 +6,9 @@ import { wishesApi } from "../lib/api.ts";
 import { Dialog } from "./Dialog.tsx";
 import { LinkChips } from "./LinkChips.tsx";
 import { Alert, Badge, Button, Card, Spinner } from "./ui.tsx";
-import { WishEditor } from "./WishEditor.tsx";
+import { WishEditor, type ImageChanges } from "./WishEditor.tsx";
+import { WishThumb } from "./WishThumb.tsx";
+import { prepareImage } from "../lib/images.ts";
 
 /**
  * Verwaltung einer Wunschliste (eigene oder später die eines Kindes).
@@ -26,14 +28,33 @@ export function WishlistManager({ profileId, ownerName }: { profileId: string; o
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ["wishes", profileId] });
   const onError = (e: Error) => setError(e.message);
 
+  const [uploadInfo, setUploadInfo] = useState<string | null>(null);
   const save = useMutation({
-    mutationFn: (input: WishInput) =>
-      editing === "new" || !editing ? wishesApi.create(profileId, input) : wishesApi.update(editing.id, input),
+    mutationFn: async ({ input, images }: { input: WishInput; images: ImageChanges }) => {
+      const saved = editing === "new" || !editing ? await wishesApi.create(profileId, input) : await wishesApi.update(editing.id, input);
+      // Nach dem Speichern: entfernte Bilder löschen, neue nacheinander hochladen
+      for (const id of images.removedImageIds) await wishesApi.deleteImage(saved.id, id);
+      const failed: string[] = [];
+      for (const [i, file] of images.newFiles.entries()) {
+        setUploadInfo(`Bild ${i + 1} von ${images.newFiles.length} wird hochgeladen …`);
+        try {
+          await wishesApi.uploadImage(saved.id, await prepareImage(file));
+        } catch (e) {
+          failed.push(`${file.name}: ${(e as Error).message}`);
+        }
+      }
+      setUploadInfo(null);
+      if (failed.length > 0) setError(`Gespeichert, aber nicht alle Bilder konnten hochgeladen werden. ${failed.join("; ")}`);
+      return saved;
+    },
     onSuccess: async () => {
       await invalidate();
       setEditing(null);
     },
-    onError,
+    onError: (e) => {
+      setUploadInfo(null);
+      onError(e);
+    },
   });
   const archive = useMutation({ mutationFn: wishesApi.archive, onSuccess: invalidate, onError });
   const restore = useMutation({ mutationFn: wishesApi.restore, onSuccess: invalidate, onError });
@@ -108,6 +129,7 @@ export function WishlistManager({ profileId, ownerName }: { profileId: string; o
             <li key={w.id}>
               <Card className="p-4! sm:p-5!">
                 <div className="flex gap-3">
+                  <WishThumb images={w.images} title={w.title} />
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                       <h3 className="font-semibold break-words">{w.title}</h3>
@@ -162,7 +184,8 @@ export function WishlistManager({ profileId, ownerName }: { profileId: string; o
             profileId={profileId}
             initial={editing === "new" ? undefined : editing}
             busy={save.isPending}
-            onSubmit={(input) => save.mutate(input)}
+            busyText={uploadInfo}
+            onSubmit={(input, images) => save.mutate({ input, images })}
             onCancel={() => setEditing(null)}
           />
         )}

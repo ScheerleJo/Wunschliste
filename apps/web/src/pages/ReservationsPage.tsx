@@ -2,6 +2,7 @@ import { Link } from "react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatPrice, type MyReservationDto } from "@wunschliste/shared";
 import { LinkChips } from "../components/LinkChips.tsx";
+import { WishThumb } from "../components/WishThumb.tsx";
 import { Card, Spinner } from "../components/ui.tsx";
 import { reservationsApi } from "../lib/api.ts";
 
@@ -78,11 +79,16 @@ function ReservationCard({ r }: { r: MyReservationDto }) {
 
   return (
     <Card className="p-4!">
-      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <h3 className={`font-semibold ${r.state === "deleted" ? "text-stone-500 line-through" : ""}`}>{r.title}</h3>
-        {r.priceCents !== null && <span className="text-sm text-stone-600">ca. {formatPrice(r.priceCents)}</span>}
+      <div className="flex gap-3">
+        <WishThumb images={r.images} title={r.title} size="sm" />
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <h3 className={`font-semibold ${r.state === "deleted" ? "text-stone-500 line-through" : ""}`}>{r.title}</h3>
+            {r.priceCents !== null && <span className="text-sm text-stone-600">ca. {formatPrice(r.priceCents)}</span>}
+          </div>
+          <LinkChips links={r.links} />
+        </div>
       </div>
-      <LinkChips links={r.links} />
       {notice && (
         <div className={`mt-3 flex flex-wrap items-center gap-2 rounded-lg px-3 py-2 text-sm ${notice.tone}`}>
           <span className="flex-1">{notice.text}</span>

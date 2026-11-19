@@ -7,6 +7,7 @@ import { profile, reservation, wish, wishLink } from "../db/schema.ts";
 import { requireUser, type AppEnv } from "../lib/context.ts";
 import { notFound } from "../lib/http.ts";
 import { getOwnProfile } from "../services/profiles.ts";
+import { imagesFor, removeWishFiles } from "../services/images.ts";
 import { canViewWish, filterVisible, sharedGroups } from "../services/visibility.ts";
 
 export const reservationRoutes = new Hono<AppEnv>();
@@ -44,9 +45,10 @@ reservationRoutes.get("/profiles/:profileId/list", async (c) => {
   const wishes = await filterVisible(all, shared.map((g) => g.id));
   const ids = wishes.map((w) => w.id);
 
-  const [links, reservations] = await Promise.all([
+  const [links, reservations, images] = await Promise.all([
     linksFor(ids),
     ids.length ? db.select().from(reservation).where(inArray(reservation.wishId, ids)) : Promise.resolve([]),
+    imagesFor(ids),
   ]);
 
   const body: WishlistViewDto = {
@@ -61,6 +63,7 @@ reservationRoutes.get("/profiles/:profileId/list", async (c) => {
         description: w.description,
         priceCents: w.priceCents,
         links: links.filter((l) => l.wishId === w.id).map((l) => ({ id: l.id, url: l.url, label: l.label })),
+        images: images.get(w.id) ?? [],
         reservation: !r ? "available" : mine ? "reserved_by_me" : "reserved",
         changedSinceReservation: mine ? isChanged(w, r) : false,
       };
@@ -101,7 +104,11 @@ reservationRoutes.delete("/wishes/:wishId/reserve", async (c) => {
     .where(and(eq(reservation.wishId, wishId), eq(reservation.reservedByUserId, u.id)))
     .returning();
   if (deleted.length === 0) throw notFound("Reservierung nicht gefunden");
-  await db.delete(wish).where(and(eq(wish.id, wishId), eq(wish.status, "deleted")));
+  const gone = await db
+    .delete(wish)
+    .where(and(eq(wish.id, wishId), eq(wish.status, "deleted")))
+    .returning({ id: wish.id });
+  if (gone.length > 0) await removeWishFiles(wishId);
   return c.json({ ok: true });
 });
 
@@ -130,6 +137,7 @@ reservationRoutes.get("/reservations", async (c) => {
     .orderBy(asc(profile.displayName), asc(reservation.createdAt));
 
   const links = await linksFor(rows.map((x) => x.w.id));
+  const images = await imagesFor(rows.map((x) => x.w.id));
   const body: MyReservationDto[] = [];
   for (const { r, w, p } of rows) {
     let state: MyReservationState;
@@ -143,6 +151,7 @@ reservationRoutes.get("/reservations", async (c) => {
       title: w.title,
       priceCents: w.priceCents,
       links: links.filter((l) => l.wishId === w.id).map((l) => ({ id: l.id, url: l.url, label: l.label })),
+      images: images.get(w.id) ?? [],
       profile: p,
       reservedAt: r.createdAt.toISOString(),
       state,

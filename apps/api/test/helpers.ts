@@ -53,3 +53,21 @@ export async function call<T = any>(who: TestUser | null, method: string, path: 
 export async function userCount() {
   return (await db.select().from(user)).length;
 }
+
+/** Datei-Upload als bestimmter Benutzer */
+export async function upload(who: TestUser, path: string, data: Buffer, filename = "bild.jpg", type = "image/jpeg") {
+  const form = new FormData();
+  form.append("file", new File([new Uint8Array(data)], filename, { type }));
+  const res = await app.request(`/api${path}`, {
+    method: "POST",
+    headers: { Origin: "http://localhost:5173", Cookie: who.cookie },
+    body: form,
+  });
+  return { status: res.status, body: (await res.json().catch(() => null)) as any };
+}
+
+/** Rohdaten abrufen (z. B. Bilder) */
+export async function fetchRaw(who: TestUser | null, path: string) {
+  const res = await app.request(`/api${path}`, { headers: who ? { Cookie: who.cookie } : {} });
+  return { status: res.status, headers: res.headers, data: Buffer.from(await res.arrayBuffer()) };
+}

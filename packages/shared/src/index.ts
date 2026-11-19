@@ -155,6 +155,7 @@ export interface OwnWishDto {
   description: string | null;
   priceCents: number | null;
   links: WishLinkDto[];
+  images: WishImageDto[];
   visibleInAllGroups: boolean;
   groupIds: string[];
   status: "active" | "archived";
@@ -200,6 +201,7 @@ export interface ViewWishDto {
   description: string | null;
   priceCents: number | null;
   links: WishLinkDto[];
+  images: WishImageDto[];
   reservation: ReservationView;
   /** nur bei reserved_by_me: Wunsch wurde seit der Reservierung geändert */
   changedSinceReservation: boolean;
@@ -224,7 +226,24 @@ export interface MyReservationDto {
   title: string;
   priceCents: number | null;
   links: WishLinkDto[];
+  images: WishImageDto[];
   profile: { id: string; displayName: string };
   reservedAt: string;
   state: MyReservationState;
 }
+
+// ---------------------------------------------------------------------------
+// Bilder
+// ---------------------------------------------------------------------------
+
+export interface WishImageDto {
+  id: string;
+  width: number;
+  height: number;
+}
+
+export const MAX_IMAGES_PER_WISH = 8;
+export const MAX_IMAGE_UPLOAD_BYTES = 15 * 1024 * 1024;
+
+export const imageUrl = (id: string, size: "full" | "thumb" = "full") =>
+  `/api/images/${id}${size === "thumb" ? "/thumb" : ""}`;

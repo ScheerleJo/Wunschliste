@@ -3,6 +3,7 @@ import { Link, Navigate, useParams } from "react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatPrice, type ViewWishDto } from "@wunschliste/shared";
 import { LinkChips } from "../components/LinkChips.tsx";
+import { WishThumb } from "../components/WishThumb.tsx";
 import { Alert, Badge, Button, Card, Spinner } from "../components/ui.tsx";
 import { reservationsApi } from "../lib/api.ts";
 import { useMe } from "../lib/use-me.ts";
@@ -104,15 +105,20 @@ function ViewWishCard({ wish, profileId }: { wish: ViewWishDto; profileId: strin
 
   return (
     <Card className={`p-4! sm:p-5! ${takenByOther ? "bg-stone-50 opacity-70" : ""} ${wish.reservation === "reserved_by_me" ? "border-brand-500/40!" : ""}`}>
-      <div className="flex flex-wrap items-start justify-between gap-2">
-        <div className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-3 gap-y-1">
-          <h3 className={`font-semibold break-words ${takenByOther ? "text-stone-500" : ""}`}>{wish.title}</h3>
-          {wish.priceCents !== null && <span className="text-sm text-stone-600">ca. {formatPrice(wish.priceCents)}</span>}
+      <div className="flex gap-3">
+        <WishThumb images={wish.images} title={wish.title} />
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-start justify-between gap-2">
+            <div className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-3 gap-y-1">
+              <h3 className={`font-semibold break-words ${takenByOther ? "text-stone-500" : ""}`}>{wish.title}</h3>
+              {wish.priceCents !== null && <span className="text-sm text-stone-600">ca. {formatPrice(wish.priceCents)}</span>}
+            </div>
+            {statusBadge[wish.reservation]}
+          </div>
+          {wish.description && <p className="mt-1 text-sm whitespace-pre-line text-stone-600">{wish.description}</p>}
+          <LinkChips links={wish.links} />
         </div>
-        {statusBadge[wish.reservation]}
       </div>
-      {wish.description && <p className="mt-1 text-sm whitespace-pre-line text-stone-600">{wish.description}</p>}
-      <LinkChips links={wish.links} />
 
       {wish.changedSinceReservation && (
         <div className="mt-3 flex flex-wrap items-center gap-2 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800">

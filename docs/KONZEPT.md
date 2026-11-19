@@ -18,6 +18,18 @@
 - **Wunsch:** Titel, Beschreibung, ungefährer Preis, mehrere Links, mehrere Bilder bzw. Screenshots.
   Er kann archiviert (z. B. nach dem Fest) und wiederhergestellt werden.
 
+## Bilder
+
+- Bis zu 8 Bilder pro Wunsch: Dateiauswahl (am Handy auch Kamera), Einfügen mit Strg+V, Drag & Drop.
+- Der Browser verkleinert große Fotos schon vor dem Upload (max. 2400 px).
+- Der Server prüft am Inhalt, ob es wirklich ein Bild ist (JPG, PNG, WebP, GIF, AVIF; kein SVG).
+  Er dreht das Bild richtig, verkleinert es auf max. 1600 px plus Vorschaubild mit 480 px und speichert beides als WebP.
+  **Dabei werden alle Metadaten entfernt** (GPS-Position, Kameradaten).
+- Ausgeliefert werden die Bilder nur über die API und nur an Berechtigte: Verwalter der Liste, wer den Wunsch
+  sehen darf oder ihn reserviert hat. Für alle anderen gibt es 404.
+- Ein neues oder entferntes Bild zählt für Reservierende als Änderung.
+- Ablage: `UPLOAD_DIR/<wunsch-id>/`, in Produktion im Docker-Volume `uploads`.
+
 ## Sichtbarkeit von Reservierungen
 
 | Wer schaut auf Wunsch W von Profil P? | Sieht |
@@ -58,7 +70,7 @@ Umsortieren und Archivieren zählen nicht als „geändert“.
 - [x] **Schritt 3 – Wünsche:** eigene Liste (Links, Preis, Reihenfolge, Archiv), Sichtbarkeit pro Gruppe
 - [x] **Schritt 4 – Reservierungen:** Listen anderer ansehen, reservieren, „Meine Reservierungen“
       mit Hinweisen (geändert, archiviert, gelöscht, kein Zugriff mehr), Tests für die Sichtbarkeitsregeln
-- [ ] **Schritt 5 – Bilder:** Upload, Kamera, Einfügen mit Strg+V, Verkleinern, Metadaten entfernen, geschützte Auslieferung
+- [x] **Schritt 5 – Bilder:** Upload, Kamera, Einfügen mit Strg+V, Drag & Drop, Verkleinern, Metadaten entfernen, geschützte Auslieferung
 - [ ] **Schritt 6 – Kinderprofile:** anlegen, zweiten Elternteil hinzufügen, Übergabe
 - [ ] **Schritt 7 – Events und Wichteln:** Budget, Haushalte, Ausschlüsse, Auslosung, Notfall-Einsicht
 
@@ -67,5 +79,5 @@ Umsortieren und Archivieren zählen nicht als „geändert“.
 - [ ] **SMTP-Server einrichten.** Bis dahin fängt Mailpit alle Mails ab (Bestätigung, Magic Link, Reset, Einladungen).
 - [ ] Link-Vorschau (Titel und Bild von Shop-Seiten automatisch holen)
 - [ ] Benachrichtigungen per Mail (z. B. „Du wurdest ausgelost“)
-- [ ] Backup-Konzept (PostgreSQL-Dump und Upload-Volume)
+- [ ] Backup-Konzept: PostgreSQL-Dump und Docker-Volume `uploads` (Bilder) sichern
 - [ ] Später: native App mit Expo / React Native über dieselbe API

@@ -96,7 +96,7 @@ describe("Reservierungen bleiben für den Besitzer unsichtbar", () => {
     const res = await list(anna, annaProfile);
     expect(JSON.stringify(res.body).toLowerCase()).not.toContain("reserv");
     expect(Object.keys(res.body[0]).sort()).toEqual(
-      ["archivedAt", "createdAt", "description", "groupIds", "id", "links", "priceCents", "status", "title", "updatedAt", "visibleInAllGroups"].sort(),
+      ["archivedAt", "createdAt", "description", "groupIds", "id", "images", "links", "priceCents", "status", "title", "updatedAt", "visibleInAllGroups"].sort(),
     );
   });
 
