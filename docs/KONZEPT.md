@@ -104,7 +104,7 @@ Umsortieren und Archivieren zählen nicht als „geändert“.
 
 ## Offene ToDos
 
-- [ ] **SMTP-Server einrichten.** Bis dahin fängt Mailpit alle Mails ab (Bestätigung, Magic Link, Reset, Einladungen).
+- [x] **SMTP-Versand** eingebaut, mit Prüfung beim Start und `pnpm mail:test`. Offen: Zugangsdaten auf dem Server eintragen.
 - [ ] Link-Vorschau (Titel und Bild von Shop-Seiten automatisch holen)
 - [ ] Benachrichtigungen per Mail (z. B. „Du wurdest ausgelost“, „Ein Wunsch, den du reserviert hast, wurde geändert“)
 - [ ] Backup-Konzept: PostgreSQL-Dump und Docker-Volume `uploads` (Bilder) sichern

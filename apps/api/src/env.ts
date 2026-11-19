@@ -1,5 +1,3 @@
-import { APP_NAME } from "@wunschliste/shared";
-
 function required(name: string, fallback?: string): string {
   const value = process.env[name] ?? fallback;
   if (!value) throw new Error(`Umgebungsvariable ${name} fehlt (siehe .env.example)`);
@@ -23,6 +21,7 @@ export const env = {
     user: process.env.SMTP_USER || undefined,
     pass: process.env.SMTP_PASS || undefined,
   },
-  mailFrom: process.env.MAIL_FROM ?? `${APP_NAME} <wunschbaum@localhost>`,
+  /** Absender. Leer = Login-Adresse (SMTP_USER) mit dem App-Namen, siehe mail.ts */
+  mailFrom: process.env.MAIL_FROM?.trim() || undefined,
   uploadDir: process.env.UPLOAD_DIR ?? "./data/uploads",
 };

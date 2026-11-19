@@ -7,6 +7,7 @@ import { Hono } from "hono";
 import { app as api } from "./app.ts";
 import { runMigrations } from "./db/migrate.ts";
 import { env } from "./env.ts";
+import { checkMailSetup } from "./mail.ts";
 import { APP_NAME } from "@wunschliste/shared";
 
 try {
@@ -36,6 +37,8 @@ if (existsSync(webDist)) {
   // SPA-Fallback: alle unbekannten Pfade (außer /api) bekommen die index.html
   server.get("*", (c) => (c.req.path.startsWith("/api/") ? c.notFound() : c.html(indexHtml)));
 }
+
+void checkMailSetup();
 
 serve({ fetch: server.fetch, port: env.port }, (info) => {
   console.log(`${APP_NAME}-API läuft auf http://localhost:${info.port}`);
