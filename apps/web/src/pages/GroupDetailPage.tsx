@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { groupInputSchema, type GroupDetailDto, type GroupMemberDto, type InviteDto } from "@wunschliste/shared";
+import { APP_NAME, groupInputSchema, type GroupDetailDto, type GroupMemberDto, type InviteDto } from "@wunschliste/shared";
 import { Alert, Badge, Button, Card, Field, Spinner, TextArea } from "../components/ui.tsx";
 import { ApiError, childrenApi, groupsApi, householdsApi } from "../lib/api.ts";
 import { useMe } from "../lib/use-me.ts";
@@ -318,7 +318,7 @@ function InviteRow({ invite, highlight, onRevoke }: { invite: InviteDto; highlig
               <Button
                 variant="secondary"
                 className="px-2.5! py-1.5! text-xs"
-                onClick={() => navigator.share({ title: "Einladung zur Wunschliste", url: invite.url }).catch(() => {})}
+                onClick={() => navigator.share({ title: `Einladung zu ${APP_NAME}`, url: invite.url }).catch(() => {})}
               >
                 Teilen
               </Button>

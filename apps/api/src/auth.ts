@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
 import { betterAuth } from "better-auth";
+import { APP_NAME } from "@wunschliste/shared";
 import { APIError, createAuthMiddleware } from "better-auth/api";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { magicLink } from "better-auth/plugins/magic-link";
@@ -16,7 +17,7 @@ export const INVITE_HEADER = "x-invite-token";
 export const HANDOVER_HEADER = "x-handover-token";
 
 export const auth = betterAuth({
-  appName: "Wunschliste",
+  appName: APP_NAME,
   baseURL: env.appUrl,
   basePath: "/api/auth",
   secret: env.authSecret,
@@ -58,7 +59,7 @@ export const auth = betterAuth({
         linkMail(
           user.email,
           "Bitte bestätige deine E-Mail-Adresse",
-          `Hallo ${user.name}, willkommen bei der Wunschliste! Bitte bestätige noch kurz deine E-Mail-Adresse.`,
+          `Hallo ${user.name}, willkommen bei „${APP_NAME}“! Bitte bestätige noch kurz deine E-Mail-Adresse.`,
           "E-Mail bestätigen",
           url,
         ),
@@ -75,7 +76,7 @@ export const auth = betterAuth({
         const [existing] = await db.select({ id: user.id }).from(user).where(eq(user.email, email.toLowerCase()));
         if (!existing) return;
         await sendMail(
-          linkMail(email, "Dein Anmeldelink", "Hier ist dein Link zur Anmeldung bei der Wunschliste. Er ist 15 Minuten gültig.", "Jetzt anmelden", url),
+          linkMail(email, "Dein Anmeldelink", `Hier ist dein Link zur Anmeldung bei „${APP_NAME}“. Er ist 15 Minuten gültig.`, "Jetzt anmelden", url),
         );
       },
     }),

@@ -1,5 +1,5 @@
 # Produktion (z. B. LXC/VM auf Proxmox). Nginx Proxy Manager leitet
-# wunschliste.basislager.cloud auf Port 3000 dieses Hosts weiter.
+# wunschbaum.basislager.cloud auf Port 3000 dieses Hosts weiter.
 services:
   app:
     build: .

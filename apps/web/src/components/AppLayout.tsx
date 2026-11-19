@@ -1,4 +1,5 @@
 import { NavLink, Outlet, useNavigate } from "react-router";
+import { APP_NAME } from "@wunschliste/shared";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { reservationsApi } from "../lib/api.ts";
 import { authClient } from "../lib/auth-client.ts";
@@ -40,7 +41,7 @@ export function AppLayout() {
         <div className="mx-auto flex max-w-4xl items-center gap-4 px-4 py-3">
           <NavLink to="/" className="flex items-center gap-2 font-semibold">
             <img src="/favicon.svg" alt="" className="h-7 w-7" />
-            Wunschliste
+            {APP_NAME}
           </NavLink>
           <nav className="hidden flex-1 gap-1 sm:flex">
             {navItems.map((item) => (

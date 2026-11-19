@@ -7,6 +7,7 @@ import { Hono } from "hono";
 import { app as api } from "./app.ts";
 import { runMigrations } from "./db/migrate.ts";
 import { env } from "./env.ts";
+import { APP_NAME } from "@wunschliste/shared";
 
 try {
   await runMigrations();
@@ -37,5 +38,5 @@ if (existsSync(webDist)) {
 }
 
 serve({ fetch: server.fetch, port: env.port }, (info) => {
-  console.log(`Wunschliste-API läuft auf http://localhost:${info.port}`);
+  console.log(`${APP_NAME}-API läuft auf http://localhost:${info.port}`);
 });

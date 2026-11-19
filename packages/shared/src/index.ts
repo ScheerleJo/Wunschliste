@@ -1,6 +1,10 @@
 // Von API und Clients (Web, später Mobile) gemeinsam genutzte Typen und Validierung.
 import { z } from "zod";
 
+/** Name der App. Zentral hier ändern, wird in Web-App, Mails und Seitentitel verwendet. */
+export const APP_NAME = "Wunschbaum";
+export const APP_TAGLINE = "Wünschen, schenken, pssst.";
+
 export const signUpSchema = z.object({
   name: z.string().trim().min(1, "Bitte gib deinen Namen an").max(80),
   email: z.email("Bitte gib eine gültige E-Mail-Adresse an"),

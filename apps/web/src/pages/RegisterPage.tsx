@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AuthLayout } from "../components/AuthLayout.tsx";
 import { RegisterForm } from "../components/RegisterForm.tsx";
 import { invitesApi } from "../lib/api.ts";
+import { APP_NAME } from "@wunschliste/shared";
 
 /**
  * Registrierung ohne Einladung ist nur für das allererste Konto möglich (Einrichtung).
@@ -16,7 +17,7 @@ export function RegisterPage() {
       {isPending ? null : data?.firstUser ? (
         <>
           <p className="mb-4 text-sm text-stone-600">
-            Es gibt noch kein Konto. Du richtest die Wunschliste ein. Danach kannst du Gruppen anlegen und andere einladen.
+            Es gibt noch kein Konto. Du richtest „{APP_NAME}“ ein. Danach kannst du Gruppen anlegen und andere einladen.
           </p>
           <RegisterForm />
         </>

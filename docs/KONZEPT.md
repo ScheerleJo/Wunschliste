@@ -1,4 +1,4 @@
-# Konzept
+# Konzept: Wunschbaum
 
 ## Grundregeln
 

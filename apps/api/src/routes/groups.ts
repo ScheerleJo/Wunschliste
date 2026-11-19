@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { and, asc, count, desc, eq, gt, isNull, or, sql } from "drizzle-orm";
 import {
+  APP_NAME,
   createInviteSchema,
   groupInputSchema,
   updateMemberSchema,
@@ -256,7 +257,7 @@ groupRoutes.post("/:groupId/invites", async (c) => {
       linkMail(
         email,
         `${u.name} lädt dich zur Gruppe „${g!.name}“ ein`,
-        `${u.name} hat dich in die Gruppe „${g!.name}“ der Wunschliste eingeladen. Dort könnt ihr eure Wunschlisten teilen und Geschenke reservieren.`,
+        `${u.name} hat dich bei „${APP_NAME}“ in die Gruppe „${g!.name}“ eingeladen. Dort könnt ihr eure Wunschlisten teilen und Geschenke reservieren.`,
         "Einladung annehmen",
         url,
       ),

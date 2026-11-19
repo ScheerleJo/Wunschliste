@@ -1,10 +1,15 @@
-# Wunschliste
+# Wunschbaum 🎄
+
+*Wünschen, schenken, pssst.*
 
 Wunschlisten-App für Familien: Jede Person hat eine Wunschliste, die über Gruppen geteilt wird.
 Wünsche können reserviert werden, ohne dass der Wünschende es sieht. Dazu gibt es Events wie
 Wichteln mit Budget und Ausschlüssen.
 
 Konzept, Entscheidungen und Fahrplan: [docs/KONZEPT.md](docs/KONZEPT.md)
+
+Der App-Name steht zentral in `packages/shared/src/index.ts` (`APP_NAME`). Die Paketnamen `@wunschliste/*`
+und die Datenbank heißen intern weiterhin `wunschliste`.
 
 ## Aufbau
 
@@ -50,9 +55,9 @@ Die Ursache steht weiter oben in den Zeilen `apps/api dev:`, meistens ist die Da
 In einer LXC oder VM mit Docker:
 
 ```bash
-cp .env.example .env   # APP_URL=https://wunschliste.basislager.cloud, BETTER_AUTH_SECRET setzen, POSTGRES_PASSWORD setzen
+cp .env.example .env   # APP_URL=https://wunschbaum.basislager.cloud, BETTER_AUTH_SECRET setzen, POSTGRES_PASSWORD setzen
 docker compose up -d --build
 ```
 
-Im Nginx Proxy Manager einen Proxy Host `wunschliste.basislager.cloud` → `<IP der VM>:3000` mit SSL anlegen.
+Im Nginx Proxy Manager einen Proxy Host `wunschbaum.basislager.cloud` → `<IP der VM>:3000` mit SSL anlegen.
 Die API liefert in Produktion auch die Web-App aus, es ist also nur ein Container nach außen nötig.
