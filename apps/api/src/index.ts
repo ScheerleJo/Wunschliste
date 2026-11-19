@@ -8,7 +8,21 @@ import { app as api } from "./app.ts";
 import { runMigrations } from "./db/migrate.ts";
 import { env } from "./env.ts";
 
-await runMigrations();
+try {
+  await runMigrations();
+} catch (err) {
+  const code = (err as { code?: string; cause?: { code?: string } }).code ?? (err as { cause?: { code?: string } }).cause?.code;
+  if (code === "ECONNREFUSED" || code === "ENOTFOUND" || code === "28P01" || code === "3D000") {
+    console.error(
+      `\n❌ Datenbank nicht erreichbar (${code}): ${env.databaseUrl.replace(/:[^:@/]+@/, ":***@")}\n` +
+        "   Läuft PostgreSQL? Lokal: `docker compose -f docker-compose.dev.yml up -d` (Docker Desktop muss gestartet sein)\n" +
+        "   und prüfen, ob DATABASE_URL in der .env stimmt.\n",
+    );
+  } else {
+    console.error("\n❌ Datenbank-Migration fehlgeschlagen:", err);
+  }
+  process.exit(1);
+}
 
 const server = new Hono();
 server.route("/", api);

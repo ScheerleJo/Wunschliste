@@ -16,10 +16,10 @@ packages/shared Gemeinsame Typen und Zod-Validierung (Web, API, später Mobile-A
 
 ## Lokal entwickeln
 
-Voraussetzungen: Node.js ≥ 22.12, pnpm (`corepack enable`), Docker.
+Voraussetzungen: Node.js ≥ 22.12, pnpm (`npm install -g pnpm@10`), Docker (unter Windows: Docker Desktop).
 
 ```bash
-cp .env.example .env
+cp .env.example .env                              # Windows: copy .env.example .env
 docker compose -f docker-compose.dev.yml up -d   # PostgreSQL + Mailpit
 pnpm install
 pnpm dev                                          # API :3000, Web :5173
@@ -29,6 +29,10 @@ pnpm dev                                          # API :3000, Web :5173
 - Abgefangene Mails (Bestätigung, Magic Link, Passwort-Reset): http://localhost:8025
 
 Migrationen werden beim Start der API automatisch angewendet.
+
+**Fehler `http proxy error … ECONNREFUSED` im Web-Terminal:** Die API (Port 3000) läuft nicht.
+Die Ursache steht weiter oben in den Zeilen `apps/api dev:`, meistens ist die Datenbank nicht erreichbar
+(Docker Desktop nicht gestartet bzw. `docker compose -f docker-compose.dev.yml up -d` vergessen).
 
 | Befehl | Zweck |
 |---|---|
