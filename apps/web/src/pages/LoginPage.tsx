@@ -1,9 +1,9 @@
 import { useState, type FormEvent } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { AuthLayout } from "../components/AuthLayout.tsx";
 import { Alert, Button, Field } from "../components/ui.tsx";
-import { authClient, authErrorMessage } from "../lib/auth-client.ts";
+import { authClient, authErrorMessage, safeRedirect } from "../lib/auth-client.ts";
 
 export function LoginPage() {
   const [mode, setMode] = useState<"password" | "magic">("password");
@@ -14,6 +14,8 @@ export function LoginPage() {
   const [busy, setBusy] = useState(false);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [params] = useSearchParams();
+  const next = safeRedirect(params.get("weiter"));
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -24,9 +26,9 @@ export function LoginPage() {
       setBusy(false);
       if (error) return setError(authErrorMessage(error));
       await queryClient.invalidateQueries();
-      navigate("/");
+      navigate(next, { replace: true });
     } else {
-      const { error } = await authClient.signIn.magicLink({ email, callbackURL: "/" });
+      const { error } = await authClient.signIn.magicLink({ email, callbackURL: next });
       setBusy(false);
       if (error) return setError(authErrorMessage(error));
       setMagicSent(true);

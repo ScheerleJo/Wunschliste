@@ -34,7 +34,7 @@ export function AppLayout() {
           </NavLink>
           <nav className="hidden flex-1 gap-1 sm:flex">
             {navItems.map((item) => (
-              <NavLink key={item.to} to={item.to} end className={linkClass}>
+              <NavLink key={item.to} to={item.to} end={item.to === "/"} className={linkClass}>
                 {item.label}
               </NavLink>
             ))}
@@ -58,7 +58,7 @@ export function AppLayout() {
           <NavLink
             key={item.to}
             to={item.to}
-            end
+            end={item.to === "/"}
             className={({ isActive }) =>
               `flex flex-col items-center gap-0.5 py-2 text-xs ${isActive ? "text-brand-700" : "text-stone-500"}`
             }

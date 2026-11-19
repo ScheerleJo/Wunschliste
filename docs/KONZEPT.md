@@ -8,6 +8,11 @@
   an ein eigenes Konto des Kindes übergeben werden (die Liste bleibt erhalten, die Eltern verlieren den Verwaltungszugriff).
 - **Gruppen:** Jeder kann Gruppen erstellen und wird deren Admin. Admins laden per Link oder Mail ein
   und können weitere Admins ernennen.
+  - **Einladungslinks** sind mehrfach nutzbar bis zum Ablauf (1–30 Tage) und können zurückgezogen werden.
+  - **Mail-Einladungen** gelten nur für genau diese Adresse und einmalig.
+  - **Registrieren** kann man sich nur über eine Einladung. Das allererste Konto (Einrichtung) braucht keine.
+  - **Mindestens ein Admin:** Der letzte Admin kann erst gehen, wenn er jemand anderen ernannt hat.
+    Geht das letzte Mitglied, wird die Gruppe aufgelöst.
 - **Eine Wunschliste pro Profil.** Wünsche sind standardmäßig in *allen* Gruppen des Profils sichtbar,
   optional nur in ausgewählten.
 - **Wunsch:** Titel, Beschreibung, ungefährer Preis, mehrere Links, mehrere Bilder bzw. Screenshots.
@@ -43,8 +48,8 @@ Der Wünschende erfährt davon nichts.
 
 - [x] **Schritt 1 – Grundgerüst:** Monorepo, Docker, komplettes DB-Schema, Registrierung mit E-Mail-Bestätigung,
       Login (Passwort und Magic Link), Passwort-Reset, App-Layout für Handy und Desktop
-- [ ] **Schritt 2 – Gruppen:** Gruppen anlegen, Einladungslinks, Mitglieder und Admins;
-      Registrierung nur noch per Einladung
+- [x] **Schritt 2 – Gruppen:** Gruppen anlegen, Einladungslinks und Mail-Einladungen, Mitglieder und Admins;
+      Registrierung nur noch per Einladung (Ausnahme: das allererste Konto)
 - [ ] **Schritt 3 – Wünsche:** eigene Liste (Links, Preis, Archiv), Sichtbarkeit pro Gruppe
 - [ ] **Schritt 4 – Reservierungen:** Listen anderer ansehen, reservieren, „Meine Reservierungen“,
       Tests für die Sichtbarkeitsregeln

@@ -30,6 +30,9 @@ pnpm dev                                          # API :3000, Web :5173
 
 Migrationen werden beim Start der API automatisch angewendet.
 
+**Erstes Konto:** Solange es noch kein Konto gibt, kann man sich unter `/registrieren` ohne Einladung registrieren.
+Danach geht das nur noch über Einladungslinks aus einer Gruppe.
+
 **Fehler `http proxy error … ECONNREFUSED` im Web-Terminal:** Die API (Port 3000) läuft nicht.
 Die Ursache steht weiter oben in den Zeilen `apps/api dev:`, meistens ist die Datenbank nicht erreichbar
 (Docker Desktop nicht gestartet bzw. `docker compose -f docker-compose.dev.yml up -d` vergessen).
@@ -38,7 +41,7 @@ Die Ursache steht weiter oben in den Zeilen `apps/api dev:`, meistens ist die Da
 |---|---|
 | `pnpm dev` | API und Web mit Hot Reload |
 | `pnpm typecheck` | TypeScript-Prüfung aller Pakete |
-| `pnpm test` | Tests |
+| `pnpm test` | Tests (die API-Tests legen dafür die Datenbank `wunschliste_test` an, PostgreSQL muss laufen) |
 | `pnpm db:generate` | Nach Änderungen an `apps/api/src/db/schema.ts` eine Migration erzeugen |
 | `pnpm build` | Web-App für Produktion bauen |
 

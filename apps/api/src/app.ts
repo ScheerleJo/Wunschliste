@@ -3,16 +3,13 @@ import { createMiddleware } from "hono/factory";
 import { HTTPException } from "hono/http-exception";
 import { and, eq, isNull } from "drizzle-orm";
 import type { MeDto } from "@wunschliste/shared";
-import { auth, type AuthSession, type AuthUser } from "./auth.ts";
+import { auth } from "./auth.ts";
 import { db } from "./db/index.ts";
 import { profile, profileGuardian } from "./db/schema.ts";
-
-export type AppEnv = {
-  Variables: {
-    user: AuthUser | null;
-    session: AuthSession | null;
-  };
-};
+import { requireUser, type AppEnv } from "./lib/context.ts";
+import { groupRoutes } from "./routes/groups.ts";
+import { inviteRoutes } from "./routes/invites.ts";
+import { getOwnProfile } from "./services/profiles.ts";
 
 /** Lädt die Session (falls vorhanden) für alle API-Routen. */
 const sessionMiddleware = createMiddleware<AppEnv>(async (c, next) => {
@@ -21,13 +18,6 @@ const sessionMiddleware = createMiddleware<AppEnv>(async (c, next) => {
   c.set("session", result?.session ?? null);
   await next();
 });
-
-/** Erzwingt eine Anmeldung und gibt den Benutzer zurück. */
-export function requireUser(c: { get: (key: "user") => AuthUser | null }): AuthUser {
-  const user = c.get("user");
-  if (!user) throw new HTTPException(401, { message: "Nicht angemeldet" });
-  return user;
-}
 
 export const app = new Hono<AppEnv>().basePath("/api");
 
@@ -40,11 +30,7 @@ app.use("*", sessionMiddleware);
 app.get("/me", async (c) => {
   const user = requireUser(c);
 
-  let [own] = await db.select().from(profile).where(eq(profile.userId, user.id));
-  if (!own) {
-    // Sicherheitsnetz, falls der Hook beim Registrieren nicht gegriffen hat
-    [own] = await db.insert(profile).values({ displayName: user.name, userId: user.id }).returning();
-  }
+  const own = await getOwnProfile(user);
 
   const managed = await db
     .select({ id: profile.id, displayName: profile.displayName })
@@ -54,11 +40,14 @@ app.get("/me", async (c) => {
 
   const body: MeDto = {
     user: { id: user.id, name: user.name, email: user.email },
-    profile: { id: own!.id, displayName: own!.displayName, managed: false },
+    profile: { id: own.id, displayName: own.displayName, managed: false },
     managedProfiles: managed.map((p) => ({ ...p, managed: true })),
   };
   return c.json(body);
 });
+
+app.route("/groups", groupRoutes);
+app.route("/", inviteRoutes);
 
 app.onError((err, c) => {
   if (err instanceof HTTPException) return c.json({ error: err.message }, err.status);

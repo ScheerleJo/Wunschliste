@@ -1,11 +1,16 @@
 import { eq } from "drizzle-orm";
 import { betterAuth } from "better-auth";
+import { APIError, createAuthMiddleware } from "better-auth/api";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { magicLink } from "better-auth/plugins/magic-link";
 import { db } from "./db/index.ts";
 import { account, profile, session, user, verification } from "./db/schema.ts";
 import { env } from "./env.ts";
 import { linkMail, sendMail } from "./mail.ts";
+import { loadInvite } from "./services/invites.ts";
+
+/** Header, mit dem der Client den Einladungs-Token bei der Registrierung mitschickt */
+export const INVITE_HEADER = "x-invite-token";
 
 export const auth = betterAuth({
   appName: "Wunschliste",
@@ -25,7 +30,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 8,
-    // TODO (Gruppen-Schritt): Registrierung nur mit gültigem Einladungslink erlauben.
+    // Registrierung nur mit gültigem Einladungslink (siehe hooks.before), außer beim allerersten Konto.
     // E-Mail muss bestätigt sein. Sonst würde Better Auth beim ersten Magic-Link-Login
     // das Passwort entfernen (Schutz gegen Konto-Übernahme mit fremder Adresse).
     requireEmailVerification: true,
@@ -72,6 +77,29 @@ export const auth = betterAuth({
       },
     }),
   ],
+  hooks: {
+    before: createAuthMiddleware(async (ctx) => {
+      if (ctx.path !== "/sign-up/email") return;
+      const [anyUser] = await db.select({ id: user.id }).from(user).limit(1);
+      if (!anyUser) return; // Ersteinrichtung: das erste Konto braucht keine Einladung
+
+      const token = ctx.headers?.get(INVITE_HEADER);
+      const inv = token ? await loadInvite(token) : null;
+      if (!inv?.valid) {
+        throw new APIError("FORBIDDEN", {
+          code: "INVITE_REQUIRED",
+          message: "Registrierung nur mit gültiger Einladung möglich",
+        });
+      }
+      const email = String((ctx.body as { email?: string } | undefined)?.email ?? "").toLowerCase();
+      if (inv.invite.email && inv.invite.email !== email) {
+        throw new APIError("FORBIDDEN", {
+          code: "INVITE_EMAIL_MISMATCH",
+          message: "Diese Einladung gilt für eine andere E-Mail-Adresse",
+        });
+      }
+    }),
+  },
   databaseHooks: {
     user: {
       create: {

@@ -18,9 +18,18 @@ export function authErrorMessage(error: { code?: string; message?: string } | nu
       return "Das Passwort ist zu kurz.";
     case "EMAIL_NOT_VERIFIED":
       return "Bitte bestätige zuerst deine E-Mail-Adresse. Wir haben dir gerade einen neuen Bestätigungslink geschickt.";
+    case "INVITE_REQUIRED":
+      return "Die Registrierung ist nur mit einer gültigen Einladung möglich.";
+    case "INVITE_EMAIL_MISMATCH":
+      return "Diese Einladung gilt für eine andere E-Mail-Adresse.";
     case "INVALID_TOKEN":
       return "Der Link ist ungültig oder abgelaufen.";
     default:
       return error?.message ?? "Etwas ist schiefgelaufen. Bitte versuche es erneut.";
   }
+}
+
+/** Nur interne Pfade als Weiterleitungsziel zulassen (kein Open Redirect). */
+export function safeRedirect(target: string | null | undefined, fallback = "/"): string {
+  return target && target.startsWith("/") && !target.startsWith("//") ? target : fallback;
 }
