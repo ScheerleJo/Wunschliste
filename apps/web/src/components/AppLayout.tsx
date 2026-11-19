@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useNavigate } from "react-router";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { reservationsApi } from "../lib/api.ts";
 import { authClient } from "../lib/auth-client.ts";
 import { useMe } from "../lib/use-me.ts";
 
@@ -12,6 +13,15 @@ const navItems = [
 
 export function AppLayout() {
   const { data: me } = useMe();
+  // Anzahl Reservierungen mit Hinweis (geändert/gelöscht/archiviert/kein Zugriff)
+  const reservations = useQuery({ queryKey: ["reservations"], queryFn: reservationsApi.mine, refetchInterval: 60_000 });
+  const noticeCount = reservations.data?.filter((r) => r.state !== "ok").length ?? 0;
+  const badge = (to: string) =>
+    to === "/reservierungen" && noticeCount > 0 ? (
+      <span className="ml-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-bold text-white">
+        {noticeCount}
+      </span>
+    ) : null;
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -36,6 +46,7 @@ export function AppLayout() {
             {navItems.map((item) => (
               <NavLink key={item.to} to={item.to} end={item.to === "/"} className={linkClass}>
                 {item.label}
+                {badge(item.to)}
               </NavLink>
             ))}
           </nav>
@@ -63,7 +74,10 @@ export function AppLayout() {
               `flex flex-col items-center gap-0.5 py-2 text-xs ${isActive ? "text-brand-700" : "text-stone-500"}`
             }
           >
-            <span className="text-lg leading-none">{item.icon}</span>
+            <span className="relative text-lg leading-none">
+              {item.icon}
+              <span className="absolute -top-1 -right-3">{badge(item.to)}</span>
+            </span>
             {item.label}
           </NavLink>
         ))}

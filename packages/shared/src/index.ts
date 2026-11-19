@@ -184,3 +184,47 @@ export function formatPrice(cents: number | null | undefined): string {
     minimumFractionDigits: cents % 100 === 0 ? 0 : 2,
   });
 }
+
+// ---------------------------------------------------------------------------
+// Fremde Wunschlisten & Reservierungen
+// ---------------------------------------------------------------------------
+
+/**
+ * Status aus Sicht eines Schenkenden. Wer reserviert hat, wird anderen bewusst nicht verraten.
+ */
+export type ReservationView = "available" | "reserved" | "reserved_by_me";
+
+export interface ViewWishDto {
+  id: string;
+  title: string;
+  description: string | null;
+  priceCents: number | null;
+  links: WishLinkDto[];
+  reservation: ReservationView;
+  /** nur bei reserved_by_me: Wunsch wurde seit der Reservierung geändert */
+  changedSinceReservation: boolean;
+}
+
+export interface WishlistViewDto {
+  profile: { id: string; displayName: string; managed: boolean };
+  /** Gruppen, über die ich diese Liste sehe */
+  sharedGroups: ProfileGroupDto[];
+  wishes: ViewWishDto[];
+}
+
+/**
+ * Zustand einer eigenen Reservierung:
+ * ok, changed (Wunsch geändert), archived (vom Wünschenden archiviert),
+ * deleted (vom Wünschenden gelöscht), no_access (Liste nicht mehr sichtbar)
+ */
+export type MyReservationState = "ok" | "changed" | "archived" | "deleted" | "no_access";
+
+export interface MyReservationDto {
+  wishId: string;
+  title: string;
+  priceCents: number | null;
+  links: WishLinkDto[];
+  profile: { id: string; displayName: string };
+  reservedAt: string;
+  state: MyReservationState;
+}

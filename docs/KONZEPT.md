@@ -28,6 +28,9 @@
 | Andere Gruppenmitglieder | „Verfügbar“ oder „Reserviert“ (anonym, ohne Namen) |
 | Ohne gemeinsame Gruppe | nichts |
 
+Die Regeln stehen zentral in `apps/api/src/services/visibility.ts` und sind in
+`apps/api/test/reservations.test.ts` abgesichert. Die eigene Liste ist über die Schenkenden-Sicht nicht abrufbar.
+
 Wird ein reservierter Wunsch gelöscht oder geändert, sieht der Reservierende einen Hinweis.
 Der Wünschende erfährt davon nichts. Das Löschen eines reservierten Wunsches liefert dieselbe Antwort wie bei
 einem freien Wunsch. Intern wird er nur als gelöscht markiert, damit der Reservierende den Hinweis bekommt.
@@ -53,8 +56,8 @@ Umsortieren und Archivieren zählen nicht als „geändert“.
 - [x] **Schritt 2 – Gruppen:** Gruppen anlegen, Einladungslinks und Mail-Einladungen, Mitglieder und Admins;
       Registrierung nur noch per Einladung (Ausnahme: das allererste Konto)
 - [x] **Schritt 3 – Wünsche:** eigene Liste (Links, Preis, Reihenfolge, Archiv), Sichtbarkeit pro Gruppe
-- [ ] **Schritt 4 – Reservierungen:** Listen anderer ansehen, reservieren, „Meine Reservierungen“,
-      Tests für die Sichtbarkeitsregeln
+- [x] **Schritt 4 – Reservierungen:** Listen anderer ansehen, reservieren, „Meine Reservierungen“
+      mit Hinweisen (geändert, archiviert, gelöscht, kein Zugriff mehr), Tests für die Sichtbarkeitsregeln
 - [ ] **Schritt 5 – Bilder:** Upload, Kamera, Einfügen mit Strg+V, Verkleinern, Metadaten entfernen, geschützte Auslieferung
 - [ ] **Schritt 6 – Kinderprofile:** anlegen, zweiten Elternteil hinzufügen, Übergabe
 - [ ] **Schritt 7 – Events und Wichteln:** Budget, Haushalte, Ausschlüsse, Auslosung, Notfall-Einsicht

@@ -286,6 +286,8 @@ export const reservation = pgTable("reservation", {
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
   createdAt: createdAt(),
+  /** Reservierender hat den Hinweis "Wunsch wurde geändert" bis zu diesem Zeitpunkt gesehen */
+  acknowledgedAt: timestamp("acknowledged_at", { withTimezone: true }),
 });
 
 // ---------------------------------------------------------------------------

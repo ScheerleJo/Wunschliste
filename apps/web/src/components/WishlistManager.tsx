@@ -3,8 +3,8 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatPrice, type OwnWishDto, type WishInput } from "@wunschliste/shared";
 import { wishesApi } from "../lib/api.ts";
-import { linkHost } from "../lib/format.ts";
 import { Dialog } from "./Dialog.tsx";
+import { LinkChips } from "./LinkChips.tsx";
 import { Alert, Badge, Button, Card, Spinner } from "./ui.tsx";
 import { WishEditor } from "./WishEditor.tsx";
 
@@ -114,21 +114,7 @@ export function WishlistManager({ profileId, ownerName }: { profileId: string; o
                       {w.priceCents !== null && <span className="text-sm text-stone-600">ca. {formatPrice(w.priceCents)}</span>}
                     </div>
                     {w.description && <p className="mt-1 text-sm whitespace-pre-line text-stone-600">{w.description}</p>}
-                    {w.links.length > 0 && (
-                      <div className="mt-2 flex flex-wrap gap-2">
-                        {w.links.map((l) => (
-                          <a
-                            key={l.id}
-                            href={l.url}
-                            target="_blank"
-                            rel="noopener noreferrer nofollow"
-                            className="inline-flex max-w-full items-center gap-1 rounded-full border border-stone-200 px-2.5 py-1 text-xs text-stone-700 hover:border-brand-500 hover:text-brand-700"
-                          >
-                            🔗 <span className="truncate">{l.label || linkHost(l.url)}</span>
-                          </a>
-                        ))}
-                      </div>
-                    )}
+                    <LinkChips links={w.links} />
                     {!w.visibleInAllGroups && (
                       <div className="mt-2">
                         <Badge tone="amber">

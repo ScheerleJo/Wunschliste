@@ -10,6 +10,7 @@ import { requireUser, type AppEnv } from "./lib/context.ts";
 import { groupRoutes } from "./routes/groups.ts";
 import { inviteRoutes } from "./routes/invites.ts";
 import { wishRoutes } from "./routes/wishes.ts";
+import { reservationRoutes } from "./routes/reservations.ts";
 import { getOwnProfile } from "./services/profiles.ts";
 
 /** Lädt die Session (falls vorhanden) für alle API-Routen. */
@@ -50,6 +51,7 @@ app.get("/me", async (c) => {
 app.route("/groups", groupRoutes);
 app.route("/", inviteRoutes);
 app.route("/", wishRoutes);
+app.route("/", reservationRoutes);
 
 app.onError((err, c) => {
   if (err instanceof HTTPException) return c.json({ error: err.message }, err.status);

@@ -8,6 +8,8 @@ import { ComingSoonPage } from "./pages/ComingSoonPage.tsx";
 import { GroupDetailPage } from "./pages/GroupDetailPage.tsx";
 import { GroupsPage } from "./pages/GroupsPage.tsx";
 import { InvitePage } from "./pages/InvitePage.tsx";
+import { ReservationsPage } from "./pages/ReservationsPage.tsx";
+import { WishlistViewPage } from "./pages/WishlistViewPage.tsx";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage.tsx";
 import { HomePage } from "./pages/HomePage.tsx";
 import { LoginPage } from "./pages/LoginPage.tsx";
@@ -55,7 +57,8 @@ const router = createBrowserRouter([
       { path: "/", element: <HomePage /> },
       { path: "/gruppen", element: <GroupsPage /> },
       { path: "/gruppen/:groupId", element: <GroupDetailPage /> },
-      { path: "/reservierungen", element: <ComingSoonPage title="Meine Reservierungen" /> },
+      { path: "/reservierungen", element: <ReservationsPage /> },
+      { path: "/liste/:profileId", element: <WishlistViewPage /> },
       { path: "/events", element: <ComingSoonPage title="Events & Wichteln" /> },
     ],
   },

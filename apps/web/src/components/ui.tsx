@@ -54,11 +54,12 @@ export function TextArea({ label, ...props }: React.TextareaHTMLAttributes<HTMLT
   );
 }
 
-export function Badge({ children, tone = "stone" }: { children: ReactNode; tone?: "stone" | "brand" | "amber" }) {
+export function Badge({ children, tone = "stone" }: { children: ReactNode; tone?: "stone" | "brand" | "amber" | "green" }) {
   const styles = {
     stone: "bg-stone-100 text-stone-600",
     brand: "bg-brand-50 text-brand-700",
     amber: "bg-amber-50 text-amber-700",
+    green: "bg-emerald-50 text-emerald-700",
   }[tone];
   return <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${styles}`}>{children}</span>;
 }

@@ -144,11 +144,19 @@ function MemberRow({ groupId, member, canManage }: { groupId: string; member: Gr
           {member.displayName.charAt(0).toUpperCase()}
         </div>
         <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-          <span className="font-medium">{member.displayName}</span>
+          <Link to={member.isMe ? "/" : `/liste/${member.profileId}`} className="font-medium hover:text-brand-700 hover:underline">
+            {member.displayName}
+          </Link>
           {member.isMe && <Badge>Du</Badge>}
           {member.role === "admin" && <Badge tone="brand">Admin</Badge>}
           {member.managed && <Badge tone="amber">Kind</Badge>}
         </div>
+        <Link
+          to={member.isMe ? "/" : `/liste/${member.profileId}`}
+          className="rounded-lg px-2 py-1.5 text-xs font-medium text-brand-700 hover:bg-brand-50"
+        >
+          🎁 {member.isMe ? "Meine Liste" : "Wunschliste"}
+        </Link>
         {canManage && (
           <div className="flex gap-1">
             {!member.managed && (

@@ -1,5 +1,7 @@
 import type {
   CreateInviteInput,
+  MyReservationDto,
+  WishlistViewDto,
   OwnWishDto,
   ProfileGroupDto,
   WishInput,
@@ -76,4 +78,13 @@ export const wishesApi = {
   restore: (wishId: string) => api(`/wishes/${wishId}/restore`, json("POST")),
   remove: (wishId: string) => api(`/wishes/${wishId}`, json("DELETE")),
   reorder: (profileId: string, ids: string[]) => api(`/profiles/${profileId}/wishes/order`, json("PUT", { ids })),
+};
+
+// ---- Fremde Listen & Reservierungen ------------------------------------------
+export const reservationsApi = {
+  view: (profileId: string) => api<WishlistViewDto>(`/profiles/${profileId}/list`),
+  reserve: (wishId: string) => api(`/wishes/${wishId}/reserve`, json("POST")),
+  release: (wishId: string) => api(`/wishes/${wishId}/reserve`, json("DELETE")),
+  acknowledge: (wishId: string) => api(`/reservations/${wishId}/acknowledge`, json("POST")),
+  mine: () => api<MyReservationDto[]>("/reservations"),
 };
