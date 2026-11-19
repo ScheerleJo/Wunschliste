@@ -4,12 +4,13 @@ import { createBrowserRouter, Navigate, RouterProvider, useLocation, useSearchPa
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./index.css";
 import { AppLayout } from "./components/AppLayout.tsx";
-import { ComingSoonPage } from "./pages/ComingSoonPage.tsx";
 import { GroupDetailPage } from "./pages/GroupDetailPage.tsx";
 import { GroupsPage } from "./pages/GroupsPage.tsx";
 import { InvitePage } from "./pages/InvitePage.tsx";
 import { ChildSettingsPage } from "./pages/ChildSettingsPage.tsx";
 import { HandoverPage } from "./pages/HandoverPage.tsx";
+import { EventsPage } from "./pages/EventsPage.tsx";
+import { EventDetailPage } from "./pages/EventDetailPage.tsx";
 import { ReservationsPage } from "./pages/ReservationsPage.tsx";
 import { WishlistViewPage } from "./pages/WishlistViewPage.tsx";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage.tsx";
@@ -63,7 +64,8 @@ const router = createBrowserRouter([
       { path: "/reservierungen", element: <ReservationsPage /> },
       { path: "/liste/:profileId", element: <WishlistViewPage /> },
       { path: "/kinder/:profileId", element: <ChildSettingsPage /> },
-      { path: "/events", element: <ComingSoonPage title="Events & Wichteln" /> },
+      { path: "/events", element: <EventsPage /> },
+      { path: "/events/:eventId", element: <EventDetailPage /> },
     ],
   },
   { path: "*", element: <Navigate to="/" replace /> },

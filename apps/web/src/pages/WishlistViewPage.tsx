@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { Link, Navigate, useParams } from "react-router";
+import { Link, Navigate, useParams, useSearchParams } from "react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { formatPrice, type ViewWishDto } from "@wunschliste/shared";
+import { formatBudget, formatPrice, type ViewWishDto } from "@wunschliste/shared";
 import { LinkChips } from "../components/LinkChips.tsx";
 import { WishThumb } from "../components/WishThumb.tsx";
 import { Alert, Badge, Button, Card, Spinner } from "../components/ui.tsx";
-import { reservationsApi } from "../lib/api.ts";
+import { eventsApi, reservationsApi } from "../lib/api.ts";
 import { useMe } from "../lib/use-me.ts";
 
 /** Wunschliste einer anderen Person aus Sicht der Schenkenden */
@@ -13,6 +13,11 @@ export function WishlistViewPage() {
   const { profileId = "" } = useParams();
   const { data: me } = useMe();
   const [onlyAvailable, setOnlyAvailable] = useState(false);
+  // Aufruf aus einem Event (?event=…): Budget anzeigen und teurere Wünsche markieren
+  const [params] = useSearchParams();
+  const eventId = params.get("event");
+  const event = useQuery({ queryKey: ["event", eventId], queryFn: () => eventsApi.get(eventId!), enabled: !!eventId, retry: false });
+  const budgetMax = event.data?.budgetMaxCents ?? null;
   const list = useQuery({
     queryKey: ["wishlist-view", profileId],
     queryFn: () => reservationsApi.view(profileId),
@@ -48,6 +53,18 @@ export function WishlistViewPage() {
         </p>
       </div>
 
+      {event.data && formatBudget(event.data.budgetMinCents, event.data.budgetMaxCents) && (
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-brand-50 px-4 py-3 text-sm text-brand-800">
+          <span>
+            {event.data.type === "secret_santa" ? "🎅" : "🎄"} {event.data.name}: Budget{" "}
+            <b>{formatBudget(event.data.budgetMinCents, event.data.budgetMaxCents)}</b>
+          </span>
+          <Link to={`/events/${event.data.id}`} className="font-medium underline">
+            Zum Event
+          </Link>
+        </div>
+      )}
+
       {profile.managed && (
         <Alert kind="success">
           Diese Liste wird von den Eltern verwaltet. Eltern sehen hier, was reserviert ist, damit ihr euch abstimmen könnt.
@@ -70,7 +87,7 @@ export function WishlistViewPage() {
         <ul className="space-y-3">
           {shown.map((w) => (
             <li key={w.id}>
-              <ViewWishCard wish={w} profileId={profileId} />
+              <ViewWishCard wish={w} profileId={profileId} overBudget={budgetMax !== null && w.priceCents !== null && w.priceCents > budgetMax} />
             </li>
           ))}
         </ul>
@@ -85,7 +102,7 @@ const statusBadge = {
   reserved_by_me: <Badge tone="brand">✓ Von dir reserviert</Badge>,
 };
 
-function ViewWishCard({ wish, profileId }: { wish: ViewWishDto; profileId: string }) {
+function ViewWishCard({ wish, profileId, overBudget }: { wish: ViewWishDto; profileId: string; overBudget?: boolean }) {
   const queryClient = useQueryClient();
   const [error, setError] = useState<string | null>(null);
   const refresh = () =>
@@ -112,6 +129,7 @@ function ViewWishCard({ wish, profileId }: { wish: ViewWishDto; profileId: strin
             <div className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-3 gap-y-1">
               <h3 className={`font-semibold break-words ${takenByOther ? "text-stone-500" : ""}`}>{wish.title}</h3>
               {wish.priceCents !== null && <span className="text-sm text-stone-600">ca. {formatPrice(wish.priceCents)}</span>}
+              {overBudget && <Badge tone="amber">über Budget</Badge>}
             </div>
             {statusBadge[wish.reservation]}
           </div>

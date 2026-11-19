@@ -1,5 +1,11 @@
 import type {
   CreateInviteInput,
+  DrawResultDto,
+  EventAssignmentDto,
+  EventDetailDto,
+  EventInput,
+  EventSummaryDto,
+  HouseholdDto,
   ChildDetailDto,
   HandoverPreviewDto,
   PersonDto,
@@ -118,4 +124,26 @@ export const childrenApi = {
   cancelHandover: (id: string) => api(`/children/${id}/handover`, json("DELETE")),
   handoverPreview: (token: string) => api<HandoverPreviewDto>(`/handover/${token}`),
   acceptHandover: (token: string) => api<{ profileId: string }>(`/handover/${token}/accept`, json("POST")),
+};
+
+// ---- Haushalte & Events --------------------------------------------------------
+export const householdsApi = {
+  list: (groupId: string) => api<HouseholdDto[]>(`/groups/${groupId}/households`),
+  create: (groupId: string, name: string, profileIds: string[]) =>
+    api(`/groups/${groupId}/households`, json("POST", { name, profileIds })),
+  update: (id: string, name: string, profileIds: string[]) => api(`/households/${id}`, json("PUT", { name, profileIds })),
+  remove: (id: string) => api(`/households/${id}`, json("DELETE")),
+};
+
+export const eventsApi = {
+  list: () => api<EventSummaryDto[]>("/events"),
+  get: (id: string) => api<EventDetailDto>(`/events/${id}`),
+  create: (groupId: string, input: EventInput) => api<{ id: string }>(`/groups/${groupId}/events`, json("POST", input)),
+  update: (id: string, input: EventInput) => api(`/events/${id}`, json("PATCH", input)),
+  remove: (id: string) => api(`/events/${id}`, json("DELETE")),
+  setParticipants: (id: string, profileIds: string[]) => api(`/events/${id}/participants`, json("PUT", { profileIds })),
+  setExclusions: (id: string, pairs: { a: string; b: string }[]) => api(`/events/${id}/exclusions`, json("PUT", { pairs })),
+  draw: (id: string) => api<DrawResultDto>(`/events/${id}/draw`, json("POST")),
+  reset: (id: string) => api(`/events/${id}/reset`, json("POST")),
+  reveal: (id: string, reason: string) => api<EventAssignmentDto[]>(`/events/${id}/reveal`, json("POST", { reason })),
 };

@@ -282,3 +282,93 @@ export interface HandoverPreviewDto {
   valid: boolean;
   wishCount: number;
 }
+
+// ---------------------------------------------------------------------------
+// Haushalte & Events (Wichteln)
+// ---------------------------------------------------------------------------
+
+export const householdInputSchema = z.object({
+  name: z.string().trim().min(1, "Bitte gib einen Namen an").max(60),
+  profileIds: z.array(z.string()).min(2, "Ein Haushalt braucht mindestens zwei Personen").max(20),
+});
+
+export interface HouseholdDto {
+  id: string;
+  name: string;
+  members: { profileId: string; displayName: string }[];
+}
+
+const optionalCents = z.number().int().min(0).max(10_000_000).optional().nullable();
+
+export const eventInputSchema = z
+  .object({
+    type: z.enum(["secret_santa", "standard"]),
+    name: z.string().trim().min(1, "Bitte gib einen Namen an").max(80),
+    description: z.string().trim().max(1000).optional().nullable(),
+    /** YYYY-MM-DD */
+    date: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, "Ungültiges Datum")
+      .optional()
+      .nullable(),
+    budgetMinCents: optionalCents,
+    budgetMaxCents: optionalCents,
+  })
+  .refine((e) => e.budgetMinCents == null || e.budgetMaxCents == null || e.budgetMinCents <= e.budgetMaxCents, {
+    message: "Das Mindestbudget darf nicht über dem Höchstbudget liegen",
+  });
+export type EventInput = z.input<typeof eventInputSchema>;
+
+export const exclusionPairsSchema = z.object({
+  pairs: z.array(z.object({ a: z.string(), b: z.string() })).max(500),
+});
+
+export type EventType = "secret_santa" | "standard";
+export type EventStatus = "draft" | "drawn" | "closed";
+
+export interface EventSummaryDto {
+  id: string;
+  groupId: string;
+  groupName: string;
+  type: EventType;
+  name: string;
+  date: string | null;
+  budgetMinCents: number | null;
+  budgetMaxCents: number | null;
+  status: EventStatus;
+  participantCount: number;
+  /** ich (oder eines meiner Kinder) nehme teil */
+  participating: boolean;
+}
+
+export interface EventAssignmentDto {
+  giver: { profileId: string; displayName: string };
+  receiver: { profileId: string; displayName: string };
+}
+
+export interface EventDetailDto extends EventSummaryDto {
+  description: string | null;
+  createdByName: string | null;
+  canManage: boolean;
+  participants: { profileId: string; displayName: string; managed: boolean }[];
+  /** Wen beschenke ich bzw. meine Kinder? (nur bei Wichteln nach der Auslosung) */
+  myAssignments: EventAssignmentDto[];
+  /** Nur für Organisatoren: von Hand gesetzte, beidseitige Ausschlüsse */
+  manualExclusions: { a: string; b: string }[];
+  /** Protokoll der Notfall-Einsichten (für alle sichtbar) */
+  reveals: { at: string; byName: string | null; reason: string | null }[];
+  drawnAt: string | null;
+}
+
+export interface DrawResultDto {
+  ok: true;
+  /** Ausschlüsse aus dem Vorjahr mussten ignoriert werden, weil es sonst keine Lösung gab */
+  previousYearIgnored: boolean;
+}
+
+export function formatBudget(min: number | null | undefined, max: number | null | undefined): string {
+  if (min != null && max != null) return min === max ? formatPrice(max) : `${formatPrice(min)} – ${formatPrice(max)}`;
+  if (max != null) return `bis ${formatPrice(max)}`;
+  if (min != null) return `ab ${formatPrice(min)}`;
+  return "";
+}

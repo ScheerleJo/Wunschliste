@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from "react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { groupInputSchema, type GroupDetailDto, type GroupMemberDto, type InviteDto } from "@wunschliste/shared";
 import { Alert, Badge, Button, Card, Field, Spinner, TextArea } from "../components/ui.tsx";
-import { ApiError, childrenApi, groupsApi } from "../lib/api.ts";
+import { ApiError, childrenApi, groupsApi, householdsApi } from "../lib/api.ts";
 import { useMe } from "../lib/use-me.ts";
 
 export function GroupDetailPage() {
@@ -33,6 +33,12 @@ export function GroupDetailPage() {
       <GroupHeader group={g} />
       <MembersCard group={g} />
       <AddChildCard group={g} />
+      <HouseholdsCard group={g} />
+      <Link to={`/events?neu&gruppe=${g.id}`} className="block">
+        <div className="rounded-xl border border-dashed border-stone-300 px-4 py-3 text-sm text-stone-600 hover:border-brand-500 hover:text-brand-700">
+          🎅 Wichteln oder Fest für diese Gruppe planen →
+        </div>
+      </Link>
       {isAdmin && <InvitesCard groupId={g.id} />}
       <DangerZone group={g} />
     </div>
@@ -396,5 +402,99 @@ function AddChildCard({ group }: { group: GroupDetailDto }) {
         </Button>
       ))}
     </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+
+/** Haushalte: wer zusammengehört, zieht sich beim Wichteln nicht gegenseitig */
+function HouseholdsCard({ group }: { group: GroupDetailDto }) {
+  const queryClient = useQueryClient();
+  const households = useQuery({ queryKey: ["households", group.id], queryFn: () => householdsApi.list(group.id) });
+  const [editing, setEditing] = useState<{ id?: string; name: string; ids: string[] } | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const isAdmin = group.myRole === "admin";
+  const refresh = () => queryClient.invalidateQueries({ queryKey: ["households", group.id] });
+  const save = useMutation({
+    mutationFn: (h: { id?: string; name: string; ids: string[] }) =>
+      h.id ? householdsApi.update(h.id, h.name, h.ids) : householdsApi.create(group.id, h.name, h.ids),
+    onSuccess: async () => {
+      setEditing(null);
+      setError(null);
+      await refresh();
+    },
+    onError: (e) => setError(e.message),
+  });
+  const remove = useMutation({ mutationFn: householdsApi.remove, onSuccess: refresh });
+
+  if (!isAdmin && !households.data?.length) return null;
+  const inOther = (profileId: string) => households.data?.some((h) => h.id !== editing?.id && h.members.some((m) => m.profileId === profileId));
+
+  return (
+    <Card>
+      <div className="flex items-center justify-between gap-2">
+        <h2 className="font-semibold">🏠 Haushalte</h2>
+        {isAdmin && !editing && (
+          <Button variant="secondary" className="px-3! py-1.5! text-xs" onClick={() => setEditing({ name: "", ids: [] })}>
+            + Haushalt
+          </Button>
+        )}
+      </div>
+      <p className="mt-1 text-sm text-stone-600">Wer in einem Haushalt lebt (z. B. Paare), zieht sich beim Wichteln nicht gegenseitig.</p>
+      <ul className="mt-3 space-y-2">
+        {households.data?.map((h) => (
+          <li key={h.id} className="flex flex-wrap items-center gap-2 rounded-lg border border-stone-200 px-3 py-2 text-sm">
+            <span className="font-medium">{h.name}:</span>
+            <span className="flex-1 text-stone-600">{h.members.map((m) => m.displayName).join(", ")}</span>
+            {isAdmin && (
+              <span className="flex gap-2 text-xs">
+                <button className="text-stone-600 hover:underline" onClick={() => setEditing({ id: h.id, name: h.name, ids: h.members.map((m) => m.profileId) })}>
+                  Bearbeiten
+                </button>
+                <button className="text-brand-700 hover:underline" onClick={() => confirm(`Haushalt „${h.name}“ löschen?`) && remove.mutate(h.id)}>
+                  Löschen
+                </button>
+              </span>
+            )}
+          </li>
+        ))}
+      </ul>
+      {editing && (
+        <form
+          className="mt-3 space-y-3 rounded-lg bg-stone-50 p-3"
+          onSubmit={(e) => {
+            e.preventDefault();
+            save.mutate(editing);
+          }}
+        >
+          {error && <Alert>{error}</Alert>}
+          <Field label="Name" placeholder="z. B. Josia & Anna" value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} />
+          <div className="grid gap-1.5 sm:grid-cols-2">
+            {group.members.map((m) => (
+              <label key={m.profileId} className={`flex items-center gap-2 text-sm ${inOther(m.profileId) ? "text-stone-400" : ""}`}>
+                <input
+                  type="checkbox"
+                  className="accent-brand-700"
+                  disabled={inOther(m.profileId)}
+                  checked={editing.ids.includes(m.profileId)}
+                  onChange={(e) =>
+                    setEditing({ ...editing, ids: e.target.checked ? [...editing.ids, m.profileId] : editing.ids.filter((id) => id !== m.profileId) })
+                  }
+                />
+                {m.displayName}
+              </label>
+            ))}
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button type="button" variant="ghost" onClick={() => setEditing(null)}>
+              Abbrechen
+            </Button>
+            <Button type="submit" disabled={save.isPending || editing.ids.length < 2 || !editing.name.trim()}>
+              Speichern
+            </Button>
+          </div>
+        </form>
+      )}
+    </Card>
   );
 }

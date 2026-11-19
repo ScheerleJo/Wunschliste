@@ -77,6 +77,17 @@ Umsortieren und Archivieren zählen nicht als „geändert“.
   Jede Person sieht nur, wen sie selbst beschenkt. Für Kinderprofile sehen es die Eltern.
 - **Notfall-Einsicht:** Der Organisator kann die Zuordnung nach ausdrücklicher Bestätigung aufdecken
   oder neu auslosen. Das wird protokolliert und allen Teilnehmenden angezeigt.
+- **Organisatoren** sind der Ersteller des Events und alle Admins der Gruppe. Event anlegen darf jedes Gruppenmitglied.
+- **Ablauf:** Neue Events übernehmen alle Gruppenmitglieder als Teilnehmende, auch Kinder.
+  Teilnehmende und Ausschlüsse lassen sich nur vor der Auslosung ändern (sonst erst „Zurücksetzen“).
+  Wichteln braucht mindestens 3 Teilnehmende.
+- **Vorjahres-Ausschlüsse** stammen aus dem letzten ausgelosten Wichteln derselben Gruppe. Sie werden nur
+  intern bei der Auslosung verwendet und nie angezeigt, weil sie sonst die alte Zuordnung verraten würden. Gibt es mit
+  ihnen keine Lösung, wird ohne sie gelost und der Organisator bekommt einen Hinweis.
+- **Kinder:** Eltern sehen auf der Event-Seite auch, wen ihre Kinder beschenken.
+- **Zuordnung ansehen:** Die eigene Zuordnung muss man aktiv aufdecken (Schutz vor neugierigen Blicken auf den Bildschirm).
+  Der Link zur Wunschliste zeigt das Budget an und markiert teurere Wünsche.
+- **Algorithmus:** `apps/api/src/services/draw.ts` (Backtracking, zuerst die Person mit den wenigsten Möglichkeiten).
 
 ## Fahrplan
 
@@ -89,12 +100,12 @@ Umsortieren und Archivieren zählen nicht als „geändert“.
       mit Hinweisen (geändert, archiviert, gelöscht, kein Zugriff mehr), Tests für die Sichtbarkeitsregeln
 - [x] **Schritt 5 – Bilder:** Upload, Kamera, Einfügen mit Strg+V, Drag & Drop, Verkleinern, Metadaten entfernen, geschützte Auslieferung
 - [x] **Schritt 6 – Kinderprofile:** anlegen, zweiten Elternteil hinzufügen, in Gruppen aufnehmen, Übergabe an eigenes Konto
-- [ ] **Schritt 7 – Events und Wichteln:** Budget, Haushalte, Ausschlüsse, Auslosung, Notfall-Einsicht
+- [x] **Schritt 7 – Events und Wichteln:** Budget, Haushalte, Ausschlüsse, Vorjahres-Ausschluss, Auslosung, Notfall-Einsicht
 
 ## Offene ToDos
 
 - [ ] **SMTP-Server einrichten.** Bis dahin fängt Mailpit alle Mails ab (Bestätigung, Magic Link, Reset, Einladungen).
 - [ ] Link-Vorschau (Titel und Bild von Shop-Seiten automatisch holen)
-- [ ] Benachrichtigungen per Mail (z. B. „Du wurdest ausgelost“)
+- [ ] Benachrichtigungen per Mail (z. B. „Du wurdest ausgelost“, „Ein Wunsch, den du reserviert hast, wurde geändert“)
 - [ ] Backup-Konzept: PostgreSQL-Dump und Docker-Volume `uploads` (Bilder) sichern
 - [ ] Später: native App mit Expo / React Native über dieselbe API

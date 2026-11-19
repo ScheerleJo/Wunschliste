@@ -13,6 +13,7 @@ import { wishRoutes } from "./routes/wishes.ts";
 import { reservationRoutes } from "./routes/reservations.ts";
 import { imageRoutes } from "./routes/images.ts";
 import { childRoutes } from "./routes/children.ts";
+import { eventRoutes } from "./routes/events.ts";
 import { getOwnProfile } from "./services/profiles.ts";
 
 /** Lädt die Session (falls vorhanden) für alle API-Routen. */
@@ -56,6 +57,7 @@ app.route("/", wishRoutes);
 app.route("/", reservationRoutes);
 app.route("/", imageRoutes);
 app.route("/", childRoutes);
+app.route("/", eventRoutes);
 
 app.onError((err, c) => {
   if (err instanceof HTTPException) return c.json({ error: err.message }, err.status);
