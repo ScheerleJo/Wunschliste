@@ -107,5 +107,5 @@ Umsortieren und Archivieren zählen nicht als „geändert“.
 - [x] **SMTP-Versand** eingebaut, mit Prüfung beim Start und `pnpm mail:test`. Offen: Zugangsdaten auf dem Server eintragen.
 - [ ] Link-Vorschau (Titel und Bild von Shop-Seiten automatisch holen)
 - [ ] Benachrichtigungen per Mail (z. B. „Du wurdest ausgelost“, „Ein Wunsch, den du reserviert hast, wurde geändert“)
-- [ ] Backup-Konzept: PostgreSQL-Dump und Docker-Volume `uploads` (Bilder) sichern
+- [x] Backup: `scripts/backup.sh` / `scripts/restore.sh` (Datenbank + Bilder), siehe docs/DEPLOYMENT.md
 - [ ] Später: native App mit Expo / React Native über dieselbe API

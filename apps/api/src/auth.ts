@@ -23,6 +23,7 @@ export const auth = betterAuth({
   secret: env.authSecret,
   trustedOrigins: [env.appUrl],
   telemetry: { enabled: false },
+  advanced: env.ipHeaders.length > 0 ? { ipAddress: { ipAddressHeaders: env.ipHeaders } } : undefined,
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: { user, session, account, verification },

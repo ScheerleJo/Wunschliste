@@ -1,18 +1,19 @@
-# Produktion (z. B. LXC/VM auf Proxmox). Nginx Proxy Manager leitet
-# wunschbaum.basislager.cloud auf Port 3000 dieses Hosts weiter.
+# Produktion (z. B. LXC/VM auf Proxmox).
+# Der Nginx Proxy Manager leitet wunschbaum.basislager.cloud auf APP_PORT (Standard 3000) dieses Hosts weiter.
+#
+#   docker compose up -d --build          Starten bzw. nach git pull aktualisieren
+#   docker compose logs -f app            Logs ansehen
+#   docker compose --profile mailpit up -d   zusätzlich Mailpit starten (fängt Mails ab, nur zum Testen)
 services:
   app:
     build: .
     restart: unless-stopped
     env_file: .env
     environment:
-      DATABASE_URL: postgres://wunschliste:${POSTGRES_PASSWORD:-wunschliste}@db:5432/wunschliste
+      DATABASE_URL: postgres://wunschliste:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD in .env setzen}@db:5432/wunschliste
       UPLOAD_DIR: /data/uploads
-      # TODO: echten SMTP-Server eintragen, solange fängt Mailpit alle Mails ab
-      SMTP_HOST: ${SMTP_HOST:-mailpit}
-      SMTP_PORT: ${SMTP_PORT:-1025}
     ports:
-      - "3000:3000"
+      - "${APP_PORT:-3000}:3000"
     volumes:
       - uploads:/data/uploads
     depends_on:
@@ -24,7 +25,7 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: wunschliste
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-wunschliste}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD in .env setzen}
       POSTGRES_DB: wunschliste
     volumes:
       - db:/var/lib/postgresql/data
@@ -33,11 +34,12 @@ services:
       interval: 5s
       retries: 10
 
-  # Übergangsweise: fängt alle Mails ab (Einladungen, Magic Links, Passwort-Reset).
-  # Oberfläche nur im lokalen Netz freigeben!
+  # Optional zum Testen: fängt alle Mails ab (dann SMTP_HOST=mailpit, SMTP_PORT=1025 in .env).
+  # Oberfläche unter http://<server>:8025 – nur im lokalen Netz verwenden!
   mailpit:
     image: axllent/mailpit:v1.27
     restart: unless-stopped
+    profiles: ["mailpit"]
     ports:
       - "8025:8025"
 

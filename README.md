@@ -53,12 +53,13 @@ Die Ursache steht weiter oben in den Zeilen `apps/api dev:`, meistens ist die Da
 
 ## Produktion (Proxmox)
 
-In einer LXC oder VM mit Docker:
+Schritt-für-Schritt-Anleitung (LXC, Docker, Cloudflare, Nginx Proxy Manager, Backups):
+**[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**
+
+Kurzfassung:
 
 ```bash
-cp .env.example .env   # APP_URL=https://wunschbaum.basislager.cloud, BETTER_AUTH_SECRET setzen, POSTGRES_PASSWORD setzen
+cp .env.example .env      # APP_URL, BETTER_AUTH_SECRET, POSTGRES_PASSWORD, SMTP_* setzen
 docker compose up -d --build
+sh scripts/backup.sh      # Sicherung von Datenbank und Bildern
 ```
-
-Im Nginx Proxy Manager einen Proxy Host `wunschbaum.basislager.cloud` → `<IP der VM>:3000` mit SSL anlegen.
-Die API liefert in Produktion auch die Web-App aus, es ist also nur ein Container nach außen nötig.

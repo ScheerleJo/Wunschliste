@@ -24,4 +24,12 @@ export const env = {
   /** Absender. Leer = Login-Adresse (SMTP_USER) mit dem App-Namen, siehe mail.ts */
   mailFrom: process.env.MAIL_FROM?.trim() || undefined,
   uploadDir: process.env.UPLOAD_DIR ?? "./data/uploads",
+  /**
+   * Header mit der echten Besucher-IP (für die Login-Begrenzung), z. B. "cf-connecting-ip" hinter Cloudflare.
+   * Nur Header eintragen, die dein Proxy setzt, sonst können Besucher ihn fälschen.
+   */
+  ipHeaders: (process.env.IP_HEADERS ?? "")
+    .split(",")
+    .map((h) => h.trim().toLowerCase())
+    .filter(Boolean),
 };
