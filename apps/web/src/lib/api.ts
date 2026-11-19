@@ -1,5 +1,9 @@
 import type {
   CreateInviteInput,
+  ChildDetailDto,
+  HandoverPreviewDto,
+  PersonDto,
+  ProfileDto,
   WishImageDto,
   MyReservationDto,
   WishlistViewDto,
@@ -97,4 +101,21 @@ export const reservationsApi = {
   release: (wishId: string) => api(`/wishes/${wishId}/reserve`, json("DELETE")),
   acknowledge: (wishId: string) => api(`/reservations/${wishId}/acknowledge`, json("POST")),
   mine: () => api<MyReservationDto[]>("/reservations"),
+};
+
+// ---- Kinderprofile ------------------------------------------------------------
+export const childrenApi = {
+  create: (displayName: string) => api<ProfileDto>("/children", json("POST", { displayName })),
+  get: (id: string) => api<ChildDetailDto>(`/children/${id}`),
+  rename: (id: string, displayName: string) => api(`/children/${id}`, json("PATCH", { displayName })),
+  remove: (id: string) => api(`/children/${id}`, json("DELETE")),
+  candidates: (id: string) => api<PersonDto[]>(`/children/${id}/guardian-candidates`),
+  addGuardian: (id: string, userId: string) => api(`/children/${id}/guardians`, json("POST", { userId })),
+  removeGuardian: (id: string, userId: string) => api(`/children/${id}/guardians/${userId}`, json("DELETE")),
+  addGroup: (id: string, groupId: string) => api(`/children/${id}/groups`, json("POST", { groupId })),
+  removeGroup: (id: string, groupId: string) => api(`/children/${id}/groups/${groupId}`, json("DELETE")),
+  startHandover: (id: string, email: string) => api(`/children/${id}/handover`, json("POST", { email })),
+  cancelHandover: (id: string) => api(`/children/${id}/handover`, json("DELETE")),
+  handoverPreview: (token: string) => api<HandoverPreviewDto>(`/handover/${token}`),
+  acceptHandover: (token: string) => api<{ profileId: string }>(`/handover/${token}/accept`, json("POST")),
 };

@@ -16,6 +16,7 @@ import { linkMail, sendMail } from "../mail.ts";
 import { requireAdmin, requireMember } from "../services/groups.ts";
 import { inviteUrl, newToken } from "../services/invites.ts";
 import { getOwnProfile } from "../services/profiles.ts";
+import { managedProfileIds } from "./children.ts";
 
 export const groupRoutes = new Hono<AppEnv>();
 
@@ -81,6 +82,10 @@ groupRoutes.get("/:groupId", async (c) => {
     .where(eq(groupMember.groupId, groupId))
     .orderBy(desc(sql`${groupMember.role} = 'admin'`), asc(profile.displayName));
 
+  const mine = await managedProfileIds(
+    requireUser(c).id,
+    members.filter((m) => m.userId === null).map((m) => m.profileId),
+  );
   const body: GroupDetailDto = {
     id: g.id,
     name: g.name,
@@ -92,6 +97,7 @@ groupRoutes.get("/:groupId", async (c) => {
       displayName: m.displayName,
       role: m.role,
       managed: m.userId === null,
+      managedByMe: mine.has(m.profileId),
       isMe: m.profileId === me.id,
       joinedAt: m.joinedAt.toISOString(),
     })),
@@ -164,13 +170,15 @@ groupRoutes.delete("/:groupId/members/:profileId", async (c) => {
   else await requireAdmin(groupId, me.id);
   const target = await requireMember(groupId, profileId);
 
-  const [{ n: total } = { n: 0 }] = await db
+  // Nur Mitglieder mit eigenem Konto zählen (Kinderprofile können keine Gruppe führen)
+  const [{ n: adults } = { n: 0 }] = await db
     .select({ n: count() })
     .from(groupMember)
-    .where(eq(groupMember.groupId, groupId));
+    .innerJoin(profile, eq(profile.id, groupMember.profileId))
+    .where(and(eq(groupMember.groupId, groupId), sql`${profile.userId} IS NOT NULL`));
 
-  if (total <= 1) {
-    // Letztes Mitglied geht: Gruppe auflösen
+  if (adults <= 1 && target.role === "admin") {
+    // Letztes Mitglied mit Konto geht: Gruppe auflösen
     await db.delete(group).where(eq(group.id, groupId));
     return c.json({ ok: true, groupDeleted: true });
   }

@@ -18,6 +18,23 @@
 - **Wunsch:** Titel, Beschreibung, ungefährer Preis, mehrere Links, mehrere Bilder bzw. Screenshots.
   Er kann archiviert (z. B. nach dem Fest) und wiederhergestellt werden.
 
+## Kinderprofile
+
+- **Anlegen:** Jeder kann über „+ Kinderprofil“ auf der Startseite ein Profil anlegen und wird damit Verwalter.
+  Ein Umschalter oben wechselt zwischen der eigenen Liste und den Kinderlisten.
+- **Weitere Verwalter** (z. B. der andere Elternteil) lassen sich nur aus Personen der eigenen Gruppen wählen.
+  Es bleibt immer mindestens ein Verwalter.
+- **Gruppen:** Ein Kind kann nur in Gruppen aufgenommen werden, in denen man selbst Mitglied ist.
+  Kinder können keine Gruppen-Admins sein. Bleiben in einer Gruppe nur noch Kinder übrig, wird sie aufgelöst.
+- **Reservierungen:** Verwalter sehen den Status über „Was ist reserviert?“ (Ansicht für Schenkende).
+- **Übergabe:**
+  - Ein Verwalter schickt einen Link an die Mail-Adresse des Kindes (14 Tage gültig, zurückziehbar).
+  - Das Kind registriert sich damit (nur mit genau dieser Adresse) oder meldet sich an und übernimmt die Liste.
+  - Wünsche, Bilder und Gruppen bleiben erhalten. Hatte das Konto schon eigene Wünsche oder Gruppen,
+    werden sie zusammengeführt.
+  - Die Verwalter verlieren den Zugriff und sind danach normale Schenkende. Das Kind sieht ab dann keine Reservierungen,
+    bestehende Reservierungen bleiben aber gültig.
+
 ## Bilder
 
 - Bis zu 8 Bilder pro Wunsch: Dateiauswahl (am Handy auch Kamera), Einfügen mit Strg+V, Drag & Drop.
@@ -71,7 +88,7 @@ Umsortieren und Archivieren zählen nicht als „geändert“.
 - [x] **Schritt 4 – Reservierungen:** Listen anderer ansehen, reservieren, „Meine Reservierungen“
       mit Hinweisen (geändert, archiviert, gelöscht, kein Zugriff mehr), Tests für die Sichtbarkeitsregeln
 - [x] **Schritt 5 – Bilder:** Upload, Kamera, Einfügen mit Strg+V, Drag & Drop, Verkleinern, Metadaten entfernen, geschützte Auslieferung
-- [ ] **Schritt 6 – Kinderprofile:** anlegen, zweiten Elternteil hinzufügen, Übergabe
+- [x] **Schritt 6 – Kinderprofile:** anlegen, zweiten Elternteil hinzufügen, in Gruppen aufnehmen, Übergabe an eigenes Konto
 - [ ] **Schritt 7 – Events und Wichteln:** Budget, Haushalte, Ausschlüsse, Auslosung, Notfall-Einsicht
 
 ## Offene ToDos

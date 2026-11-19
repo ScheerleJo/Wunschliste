@@ -67,6 +67,8 @@ export interface GroupMemberDto {
   displayName: string;
   role: GroupRole;
   managed: boolean;
+  /** Kinderprofil, das ich verwalte */
+  managedByMe: boolean;
   isMe: boolean;
   joinedAt: string;
 }
@@ -247,3 +249,36 @@ export const MAX_IMAGE_UPLOAD_BYTES = 15 * 1024 * 1024;
 
 export const imageUrl = (id: string, size: "full" | "thumb" = "full") =>
   `/api/images/${id}${size === "thumb" ? "/thumb" : ""}`;
+
+// ---------------------------------------------------------------------------
+// Kinderprofile
+// ---------------------------------------------------------------------------
+
+export const childInputSchema = z.object({
+  displayName: z.string().trim().min(1, "Bitte gib einen Namen an").max(60, "Maximal 60 Zeichen"),
+});
+
+export const handoverInputSchema = z.object({
+  email: z.email("Bitte gib eine gültige E-Mail-Adresse an"),
+});
+
+export interface ChildDetailDto {
+  id: string;
+  displayName: string;
+  guardians: { userId: string; name: string; isMe: boolean }[];
+  groups: { id: string; name: string }[];
+  pendingHandover: { email: string; expiresAt: string } | null;
+}
+
+export interface PersonDto {
+  userId: string;
+  name: string;
+}
+
+export interface HandoverPreviewDto {
+  childName: string;
+  guardianNames: string[];
+  email: string;
+  valid: boolean;
+  wishCount: number;
+}

@@ -22,6 +22,8 @@ export function authErrorMessage(error: { code?: string; message?: string } | nu
       return "Die Registrierung ist nur mit einer gültigen Einladung möglich.";
     case "INVITE_EMAIL_MISMATCH":
       return "Diese Einladung gilt für eine andere E-Mail-Adresse.";
+    case "HANDOVER_EMAIL_MISMATCH":
+      return "Diese Übergabe gilt für eine andere E-Mail-Adresse.";
     case "INVALID_TOKEN":
       return "Der Link ist ungültig oder abgelaufen.";
     default:

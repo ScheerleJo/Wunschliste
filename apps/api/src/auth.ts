@@ -8,9 +8,12 @@ import { account, profile, session, user, verification } from "./db/schema.ts";
 import { env } from "./env.ts";
 import { linkMail, sendMail } from "./mail.ts";
 import { loadInvite } from "./services/invites.ts";
+import { loadHandover } from "./services/handover.ts";
 
 /** Header, mit dem der Client den Einladungs-Token bei der Registrierung mitschickt */
 export const INVITE_HEADER = "x-invite-token";
+/** Header für die Registrierung über einen Übergabelink (Kinderprofil) */
+export const HANDOVER_HEADER = "x-handover-token";
 
 export const auth = betterAuth({
   appName: "Wunschliste",
@@ -83,6 +86,19 @@ export const auth = betterAuth({
       const [anyUser] = await db.select({ id: user.id }).from(user).limit(1);
       if (!anyUser) return; // Ersteinrichtung: das erste Konto braucht keine Einladung
 
+      const email = String((ctx.body as { email?: string } | undefined)?.email ?? "").toLowerCase();
+
+      // Übergabe eines Kinderprofils: gilt wie eine Einladung, aber nur für die hinterlegte Adresse
+      const handoverToken = ctx.headers?.get(HANDOVER_HEADER);
+      if (handoverToken) {
+        const h = await loadHandover(handoverToken);
+        if (h?.valid && h.h.email === email) return;
+        throw new APIError("FORBIDDEN", {
+          code: h?.valid ? "HANDOVER_EMAIL_MISMATCH" : "INVITE_REQUIRED",
+          message: h?.valid ? "Diese Übergabe gilt für eine andere E-Mail-Adresse" : "Der Übergabelink ist nicht mehr gültig",
+        });
+      }
+
       const token = ctx.headers?.get(INVITE_HEADER);
       const inv = token ? await loadInvite(token) : null;
       if (!inv?.valid) {
@@ -91,7 +107,6 @@ export const auth = betterAuth({
           message: "Registrierung nur mit gültiger Einladung möglich",
         });
       }
-      const email = String((ctx.body as { email?: string } | undefined)?.email ?? "").toLowerCase();
       if (inv.invite.email && inv.invite.email !== email) {
         throw new APIError("FORBIDDEN", {
           code: "INVITE_EMAIL_MISMATCH",

@@ -6,6 +6,8 @@ import { authClient, authErrorMessage } from "../lib/auth-client.ts";
 interface Props {
   /** Einladungs-Token, wird als Header mitgeschickt */
   inviteToken?: string;
+  /** Übergabe-Token eines Kinderprofils, wird als Header mitgeschickt */
+  handoverToken?: string;
   /** Wohin der Bestätigungslink nach dem Klick führt */
   callbackURL?: string;
   /** vorbefüllte (und gesperrte) E-Mail bei Mail-Einladungen */
@@ -13,7 +15,7 @@ interface Props {
   submitLabel?: string;
 }
 
-export function RegisterForm({ inviteToken, callbackURL = "/", fixedEmail, submitLabel = "Konto erstellen" }: Props) {
+export function RegisterForm({ inviteToken, handoverToken, callbackURL = "/", fixedEmail, submitLabel = "Konto erstellen" }: Props) {
   const [form, setForm] = useState({ name: "", email: fixedEmail ?? "", password: "" });
   const [errors, setErrors] = useState<Partial<Record<keyof typeof form, string>>>({});
   const [error, setError] = useState<string | null>(null);
@@ -34,7 +36,12 @@ export function RegisterForm({ inviteToken, callbackURL = "/", fixedEmail, submi
     const { error } = await authClient.signUp.email({
       ...parsed.data,
       callbackURL,
-      fetchOptions: inviteToken ? { headers: { "x-invite-token": inviteToken } } : undefined,
+      fetchOptions: {
+        headers: {
+          ...(inviteToken ? { "x-invite-token": inviteToken } : {}),
+          ...(handoverToken ? { "x-handover-token": handoverToken } : {}),
+        },
+      },
     });
     setBusy(false);
     if (error) return setError(authErrorMessage(error));

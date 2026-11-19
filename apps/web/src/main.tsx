@@ -8,6 +8,8 @@ import { ComingSoonPage } from "./pages/ComingSoonPage.tsx";
 import { GroupDetailPage } from "./pages/GroupDetailPage.tsx";
 import { GroupsPage } from "./pages/GroupsPage.tsx";
 import { InvitePage } from "./pages/InvitePage.tsx";
+import { ChildSettingsPage } from "./pages/ChildSettingsPage.tsx";
+import { HandoverPage } from "./pages/HandoverPage.tsx";
 import { ReservationsPage } from "./pages/ReservationsPage.tsx";
 import { WishlistViewPage } from "./pages/WishlistViewPage.tsx";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage.tsx";
@@ -45,6 +47,7 @@ const router = createBrowserRouter([
   { path: "/anmelden", element: <GuestOnly><LoginPage /></GuestOnly> },
   { path: "/registrieren", element: <GuestOnly><RegisterPage /></GuestOnly> },
   { path: "/einladung/:token", element: <InvitePage /> },
+  { path: "/uebergabe/:token", element: <HandoverPage /> },
   { path: "/passwort-vergessen", element: <ForgotPasswordPage /> },
   { path: "/passwort-zuruecksetzen", element: <ResetPasswordPage /> },
   {
@@ -59,6 +62,7 @@ const router = createBrowserRouter([
       { path: "/gruppen/:groupId", element: <GroupDetailPage /> },
       { path: "/reservierungen", element: <ReservationsPage /> },
       { path: "/liste/:profileId", element: <WishlistViewPage /> },
+      { path: "/kinder/:profileId", element: <ChildSettingsPage /> },
       { path: "/events", element: <ComingSoonPage title="Events & Wichteln" /> },
     ],
   },

@@ -3,7 +3,8 @@ import { Link, useNavigate, useParams } from "react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { groupInputSchema, type GroupDetailDto, type GroupMemberDto, type InviteDto } from "@wunschliste/shared";
 import { Alert, Badge, Button, Card, Field, Spinner, TextArea } from "../components/ui.tsx";
-import { ApiError, groupsApi } from "../lib/api.ts";
+import { ApiError, childrenApi, groupsApi } from "../lib/api.ts";
+import { useMe } from "../lib/use-me.ts";
 
 export function GroupDetailPage() {
   const { groupId = "" } = useParams();
@@ -31,6 +32,7 @@ export function GroupDetailPage() {
       </Link>
       <GroupHeader group={g} />
       <MembersCard group={g} />
+      <AddChildCard group={g} />
       {isAdmin && <InvitesCard groupId={g.id} />}
       <DangerZone group={g} />
     </div>
@@ -151,6 +153,11 @@ function MemberRow({ groupId, member, canManage }: { groupId: string; member: Gr
           {member.role === "admin" && <Badge tone="brand">Admin</Badge>}
           {member.managed && <Badge tone="amber">Kind</Badge>}
         </div>
+        {member.managedByMe && (
+          <Link to={`/?profil=${member.profileId}`} className="rounded-lg px-2 py-1.5 text-xs font-medium text-stone-600 hover:bg-stone-100">
+            ✏️ Verwalten
+          </Link>
+        )}
         <Link
           to={member.isMe ? "/" : `/liste/${member.profileId}`}
           className="rounded-lg px-2 py-1.5 text-xs font-medium text-brand-700 hover:bg-brand-50"
@@ -367,6 +374,27 @@ function DangerZone({ group }: { group: GroupDetailDto }) {
           </Button>
         )}
       </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+
+/** Eigene Kinderprofile, die noch nicht in der Gruppe sind, mit einem Klick aufnehmen */
+function AddChildCard({ group }: { group: GroupDetailDto }) {
+  const { data: me } = useMe();
+  const invalidate = useInvalidateGroup(group.id);
+  const add = useMutation({ mutationFn: (profileId: string) => childrenApi.addGroup(profileId, group.id), onSuccess: invalidate });
+  const missing = (me?.managedProfiles ?? []).filter((p) => !group.members.some((m) => m.profileId === p.id));
+  if (missing.length === 0) return null;
+  return (
+    <div className="flex flex-wrap items-center gap-2 rounded-xl border border-dashed border-stone-300 px-4 py-3 text-sm">
+      <span className="text-stone-600">Deine Kinder aufnehmen:</span>
+      {missing.map((p) => (
+        <Button key={p.id} variant="secondary" className="px-3! py-1.5! text-xs" disabled={add.isPending} onClick={() => add.mutate(p.id)}>
+          + 👶 {p.displayName}
+        </Button>
+      ))}
     </div>
   );
 }

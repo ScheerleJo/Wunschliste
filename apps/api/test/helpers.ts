@@ -13,9 +13,9 @@ export async function resetDb() {
 }
 
 /** Legt einen bestätigten Benutzer direkt an (ohne Einladung) und meldet ihn an. */
-export async function createUser(name: string) {
+export async function createUser(name: string, fixedEmail?: string) {
   const ctx = await auth.$context;
-  const email = `${name.toLowerCase()}-${++counter}@example.com`;
+  const email = fixedEmail ?? `${name.toLowerCase()}-${++counter}@example.com`;
   const created = await ctx.internalAdapter.createUser({ name, email, emailVerified: true }, { method: "admin" });
   await ctx.internalAdapter.linkAccount({
     userId: created.id,
