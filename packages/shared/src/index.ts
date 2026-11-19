@@ -100,3 +100,87 @@ export interface RegistrationStatusDto {
   /** true, solange noch kein Konto existiert (erstes Konto = Einrichtung) */
   firstUser: boolean;
 }
+
+// ---------------------------------------------------------------------------
+// Wünsche
+// ---------------------------------------------------------------------------
+
+const httpUrl = z
+  .string()
+  .trim()
+  .min(1, "Bitte gib einen Link an")
+  .max(2000, "Der Link ist zu lang")
+  .transform((v) => (/^[a-z][a-z0-9+.-]*:/i.test(v) ? v : `https://${v}`))
+  .refine((v) => {
+    try {
+      const u = new URL(v);
+      return (u.protocol === "http:" || u.protocol === "https:") && u.hostname.includes(".");
+    } catch {
+      return false;
+    }
+  }, "Bitte gib einen gültigen Link an (https://…)");
+
+export const wishLinkInputSchema = z.object({
+  url: httpUrl,
+  label: z.string().trim().max(60, "Maximal 60 Zeichen").optional().nullable(),
+});
+
+export const wishInputSchema = z.object({
+  title: z.string().trim().min(1, "Bitte gib einen Titel an").max(120, "Maximal 120 Zeichen"),
+  description: z.string().trim().max(2000, "Maximal 2000 Zeichen").optional().nullable(),
+  /** ungefährer Preis in Cent */
+  priceCents: z.number().int().min(0).max(100_000_000).optional().nullable(),
+  links: z.array(wishLinkInputSchema).max(10, "Maximal 10 Links").default([]),
+  /** true = in allen Gruppen des Profils sichtbar, sonst nur in groupIds */
+  visibleInAllGroups: z.boolean().default(true),
+  groupIds: z.array(z.string()).max(50).default([]),
+});
+export type WishInput = z.input<typeof wishInputSchema>;
+
+export const reorderSchema = z.object({ ids: z.array(z.string()).max(1000) });
+
+export interface WishLinkDto {
+  id: string;
+  url: string;
+  label: string | null;
+}
+
+/**
+ * Sicht des Besitzers bzw. Verwalters auf einen Wunsch.
+ * Enthält bewusst KEINE Reservierungsinformationen.
+ */
+export interface OwnWishDto {
+  id: string;
+  title: string;
+  description: string | null;
+  priceCents: number | null;
+  links: WishLinkDto[];
+  visibleInAllGroups: boolean;
+  groupIds: string[];
+  status: "active" | "archived";
+  createdAt: string;
+  updatedAt: string;
+  archivedAt: string | null;
+}
+
+export interface ProfileGroupDto {
+  id: string;
+  name: string;
+}
+
+/** "29,99" / "29.99" / "30" / "30 €" → Cent; leer → null; ungültig → undefined */
+export function parsePriceToCents(input: string): number | null | undefined {
+  const s = input.replace(/€|\s/g, "").replace(/\.(?=\d{3}(\D|$))/g, "").replace(",", ".");
+  if (s === "") return null;
+  if (!/^\d+(\.\d{1,2})?$/.test(s)) return undefined;
+  return Math.round(Number(s) * 100);
+}
+
+export function formatPrice(cents: number | null | undefined): string {
+  if (cents === null || cents === undefined) return "";
+  return (cents / 100).toLocaleString("de-DE", {
+    style: "currency",
+    currency: "EUR",
+    minimumFractionDigits: cents % 100 === 0 ? 0 : 2,
+  });
+}

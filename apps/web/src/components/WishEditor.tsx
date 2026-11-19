@@ -1,0 +1,148 @@
+import { useState, type FormEvent } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { formatPrice, parsePriceToCents, wishInputSchema, type OwnWishDto, type WishInput } from "@wunschliste/shared";
+import { wishesApi } from "../lib/api.ts";
+import { Alert, Button, Field, TextArea } from "./ui.tsx";
+
+interface Props {
+  profileId: string;
+  initial?: OwnWishDto;
+  busy?: boolean;
+  onSubmit: (input: WishInput) => void;
+  onCancel: () => void;
+}
+
+interface LinkRow {
+  key: number;
+  url: string;
+  label: string;
+}
+
+let nextKey = 1;
+
+export function WishEditor({ profileId, initial, busy, onSubmit, onCancel }: Props) {
+  const groups = useQuery({ queryKey: ["profile-groups", profileId], queryFn: () => wishesApi.groups(profileId) });
+  const [title, setTitle] = useState(initial?.title ?? "");
+  const [description, setDescription] = useState(initial?.description ?? "");
+  const [price, setPrice] = useState(initial?.priceCents != null ? formatPrice(initial.priceCents).replace(/\s?€/, "") : "");
+  const [links, setLinks] = useState<LinkRow[]>(
+    initial?.links.length
+      ? initial.links.map((l) => ({ key: nextKey++, url: l.url, label: l.label ?? "" }))
+      : [{ key: nextKey++, url: "", label: "" }],
+  );
+  const [allGroups, setAllGroups] = useState(initial?.visibleInAllGroups ?? true);
+  const [groupIds, setGroupIds] = useState<string[]>(initial?.groupIds ?? []);
+  const [error, setError] = useState<string | null>(null);
+
+  function submit(e: FormEvent) {
+    e.preventDefault();
+    const priceCents = parsePriceToCents(price);
+    if (priceCents === undefined) return setError("Bitte gib den Preis als Zahl an, z. B. 29,99");
+    const parsed = wishInputSchema.safeParse({
+      title,
+      description,
+      priceCents,
+      links: links.filter((l) => l.url.trim()).map((l) => ({ url: l.url, label: l.label })),
+      visibleInAllGroups: allGroups,
+      groupIds: allGroups ? [] : groupIds,
+    });
+    if (!parsed.success) return setError(parsed.error.issues[0]!.message);
+    setError(null);
+    onSubmit(parsed.data);
+  }
+
+  const updateLink = (key: number, patch: Partial<LinkRow>) =>
+    setLinks((ls) => ls.map((l) => (l.key === key ? { ...l, ...patch } : l)));
+
+  return (
+    <form onSubmit={submit} className="space-y-4" noValidate>
+      {error && <Alert>{error}</Alert>}
+      <Field label="Was wünschst du dir?" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="z. B. Kopfhörer" autoFocus />
+      <TextArea
+        label="Beschreibung (optional)"
+        rows={3}
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        placeholder="Größe, Farbe, Modell …"
+      />
+      <Field label="Ungefährer Preis in € (optional)" inputMode="decimal" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="z. B. 29,99" />
+
+      <fieldset>
+        <legend className="mb-1 text-sm font-medium text-stone-700">Links (optional)</legend>
+        <div className="space-y-2">
+          {links.map((l) => (
+            <div key={l.key} className="flex gap-2">
+              <input
+                type="url"
+                inputMode="url"
+                value={l.url}
+                onChange={(e) => updateLink(l.key, { url: e.target.value })}
+                placeholder="https://…"
+                className="min-w-0 flex-1 rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-base outline-none focus:border-brand-600 focus:ring-2 focus:ring-brand-100"
+              />
+              <button
+                type="button"
+                aria-label="Link entfernen"
+                onClick={() => setLinks((ls) => (ls.length > 1 ? ls.filter((x) => x.key !== l.key) : [{ key: nextKey++, url: "", label: "" }]))}
+                className="rounded-lg px-3 text-stone-400 hover:bg-stone-100 hover:text-stone-700"
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+        </div>
+        {links.length < 10 && (
+          <button
+            type="button"
+            onClick={() => setLinks((ls) => [...ls, { key: nextKey++, url: "", label: "" }])}
+            className="mt-2 text-sm font-medium text-brand-700 hover:underline"
+          >
+            + weiteren Link
+          </button>
+        )}
+      </fieldset>
+
+      <fieldset>
+        <legend className="mb-1 text-sm font-medium text-stone-700">Wer sieht diesen Wunsch?</legend>
+        <div className="space-y-2 text-sm">
+          <label className="flex items-center gap-2">
+            <input type="radio" checked={allGroups} onChange={() => setAllGroups(true)} className="accent-brand-700" />
+            Alle meine Gruppen
+          </label>
+          <label className="flex items-center gap-2">
+            <input type="radio" checked={!allGroups} onChange={() => setAllGroups(false)} className="accent-brand-700" />
+            Nur bestimmte Gruppen
+          </label>
+          {!allGroups && (
+            <div className="ml-6 space-y-1.5 rounded-lg bg-stone-50 p-3">
+              {groups.data?.length === 0 && <p className="text-stone-500">Du bist noch in keiner Gruppe.</p>}
+              {groups.data?.map((g) => (
+                <label key={g.id} className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    className="accent-brand-700"
+                    checked={groupIds.includes(g.id)}
+                    onChange={(e) => setGroupIds((ids) => (e.target.checked ? [...ids, g.id] : ids.filter((id) => id !== g.id)))}
+                  />
+                  {g.name}
+                </label>
+              ))}
+              {groupIds.length === 0 && groups.data && groups.data.length > 0 && (
+                <p className="text-amber-700">Keine Gruppe gewählt: Der Wunsch ist dann nur für dich sichtbar.</p>
+              )}
+            </div>
+          )}
+        </div>
+      </fieldset>
+
+      <div className="flex justify-end gap-2 pt-2">
+        <Button type="button" variant="ghost" onClick={onCancel}>
+          Abbrechen
+        </Button>
+        <Button type="submit" disabled={busy}>
+          {initial ? "Speichern" : "Wunsch hinzufügen"}
+        </Button>
+      </div>
+    </form>
+  );
+}

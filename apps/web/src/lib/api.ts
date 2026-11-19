@@ -1,5 +1,8 @@
 import type {
   CreateInviteInput,
+  OwnWishDto,
+  ProfileGroupDto,
+  WishInput,
   MeDto,
   GroupDetailDto,
   GroupInput,
@@ -60,4 +63,17 @@ export const invitesApi = {
   preview: (token: string) => api<InvitePreviewDto>(`/invites/${token}`),
   accept: (token: string) => api<{ groupId: string; alreadyMember: boolean }>(`/invites/${token}/accept`, json("POST")),
   registrationStatus: () => api<RegistrationStatusDto>("/registration-status"),
+};
+
+// ---- Wünsche ---------------------------------------------------------------
+export const wishesApi = {
+  list: (profileId: string, status: "active" | "archived" = "active") =>
+    api<OwnWishDto[]>(`/profiles/${profileId}/wishes?status=${status}`),
+  groups: (profileId: string) => api<ProfileGroupDto[]>(`/profiles/${profileId}/groups`),
+  create: (profileId: string, input: WishInput) => api<OwnWishDto>(`/profiles/${profileId}/wishes`, json("POST", input)),
+  update: (wishId: string, input: WishInput) => api<OwnWishDto>(`/wishes/${wishId}`, json("PATCH", input)),
+  archive: (wishId: string) => api(`/wishes/${wishId}/archive`, json("POST")),
+  restore: (wishId: string) => api(`/wishes/${wishId}/restore`, json("POST")),
+  remove: (wishId: string) => api(`/wishes/${wishId}`, json("DELETE")),
+  reorder: (profileId: string, ids: string[]) => api(`/profiles/${profileId}/wishes/order`, json("PUT", { ids })),
 };

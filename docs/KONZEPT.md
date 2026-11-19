@@ -29,7 +29,9 @@
 | Ohne gemeinsame Gruppe | nichts |
 
 Wird ein reservierter Wunsch gelöscht oder geändert, sieht der Reservierende einen Hinweis.
-Der Wünschende erfährt davon nichts.
+Der Wünschende erfährt davon nichts. Das Löschen eines reservierten Wunsches liefert dieselbe Antwort wie bei
+einem freien Wunsch. Intern wird er nur als gelöscht markiert, damit der Reservierende den Hinweis bekommt.
+Umsortieren und Archivieren zählen nicht als „geändert“.
 
 ## Events
 
@@ -50,7 +52,7 @@ Der Wünschende erfährt davon nichts.
       Login (Passwort und Magic Link), Passwort-Reset, App-Layout für Handy und Desktop
 - [x] **Schritt 2 – Gruppen:** Gruppen anlegen, Einladungslinks und Mail-Einladungen, Mitglieder und Admins;
       Registrierung nur noch per Einladung (Ausnahme: das allererste Konto)
-- [ ] **Schritt 3 – Wünsche:** eigene Liste (Links, Preis, Archiv), Sichtbarkeit pro Gruppe
+- [x] **Schritt 3 – Wünsche:** eigene Liste (Links, Preis, Reihenfolge, Archiv), Sichtbarkeit pro Gruppe
 - [ ] **Schritt 4 – Reservierungen:** Listen anderer ansehen, reservieren, „Meine Reservierungen“,
       Tests für die Sichtbarkeitsregeln
 - [ ] **Schritt 5 – Bilder:** Upload, Kamera, Einfügen mit Strg+V, Verkleinern, Metadaten entfernen, geschützte Auslieferung
