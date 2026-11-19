@@ -1,0 +1,21 @@
+# Nur Hilfsdienste für die lokale Entwicklung: pnpm dev läuft direkt auf dem Rechner.
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: wunschliste
+      POSTGRES_PASSWORD: wunschliste
+      POSTGRES_DB: wunschliste
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-dev:/var/lib/postgresql/data
+
+  mailpit:
+    image: axllent/mailpit:v1.27
+    ports:
+      - "1025:1025" # SMTP
+      - "8025:8025" # Web-Oberfläche
+
+volumes:
+  db-dev:
