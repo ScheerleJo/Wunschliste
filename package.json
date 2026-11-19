@@ -7,7 +7,9 @@
     "node": ">=22.12"
   },
   "scripts": {
-    "dev": "pnpm --parallel --filter \"./apps/*\" dev",
+    "dev": "pnpm --parallel --filter @wunschliste/api --filter @wunschliste/web dev",
+    "dev:api": "pnpm --filter @wunschliste/api dev",
+    "dev:web": "pnpm --filter @wunschliste/web dev",
     "build": "pnpm --filter @wunschliste/web build",
     "start": "pnpm --filter @wunschliste/api start",
     "typecheck": "pnpm -r typecheck",
