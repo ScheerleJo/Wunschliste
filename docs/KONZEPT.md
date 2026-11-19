@@ -70,6 +70,9 @@ Umsortieren und Archivieren zählen nicht als „geändert“.
 ## Events
 
 - **Typen:** *Wichteln* (Auslosung) oder *Standard* (alle beschenken alle). Beide haben Datum und Budget.
+  Beim Anlegen kommt die Frage „Wird gewichtelt?“ nach den Grunddaten (Vorauswahl: nein). Organisatoren können
+  sie jederzeit ändern. Wird ein ausgelostes Wichteln ausgeschaltet, wird die Auslosung verworfen. Es zählt dann
+  auch nicht als „Vorjahr“.
 - **Budget** ist ein Hinweis. Wünsche über dem Budget werden markiert, nicht ausgeblendet.
 - **Ausschlüsse** werden gerichtet gespeichert („A darf B nicht ziehen“):
   - **Haushalte** (z. B. Ehepaare) erzeugen beidseitige Ausschlüsse und werden pro Gruppe einmal gepflegt.

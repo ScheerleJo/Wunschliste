@@ -22,14 +22,14 @@ export function EventForm({
 }) {
   const groups = useQuery({ queryKey: ["groups"], queryFn: groupsApi.list, enabled: !initial });
   const [groupId, setGroupId] = useState(initial?.groupId ?? defaultGroupId ?? "");
-  const [type, setType] = useState<EventInput["type"]>(initial?.type ?? "secret_santa");
+  const [type, setType] = useState<EventInput["type"]>(initial?.type ?? "standard");
   const [name, setName] = useState(initial?.name ?? "");
   const [date, setDate] = useState(initial?.date ?? "");
   const [min, setMin] = useState(toInput(initial?.budgetMinCents));
   const [max, setMax] = useState(toInput(initial?.budgetMaxCents));
   const [description, setDescription] = useState(initial?.description ?? "");
   const [error, setError] = useState<string | null>(null);
-  const locked = initial && initial.status !== "draft";
+  const discardsDraw = initial?.type === "secret_santa" && initial.status !== "draft" && type === "standard";
 
   function submit(e: FormEvent) {
     e.preventDefault();
@@ -63,28 +63,6 @@ export function EventForm({
           </select>
         </label>
       )}
-      <fieldset disabled={locked}>
-        <legend className="mb-1 text-sm font-medium text-stone-700">Art</legend>
-        <div className="grid gap-2 sm:grid-cols-2">
-          {(
-            [
-              ["secret_santa", "🎅 Wichteln", "Jede Person beschenkt eine ausgeloste andere"],
-              ["standard", "🎄 Alle beschenken alle", "z. B. Weihnachten oder ein Geburtstag"],
-            ] as const
-          ).map(([value, label, hint]) => (
-            <label
-              key={value}
-              className={`flex cursor-pointer gap-2 rounded-lg border p-3 text-sm ${type === value ? "border-brand-600 bg-brand-50" : "border-stone-300"}`}
-            >
-              <input type="radio" className="mt-0.5 accent-brand-700" checked={type === value} onChange={() => setType(value)} />
-              <span>
-                <span className="block font-medium">{label}</span>
-                <span className="text-stone-500">{hint}</span>
-              </span>
-            </label>
-          ))}
-        </div>
-      </fieldset>
       <Field label="Name" placeholder="z. B. Wichteln Weihnachten 2026" value={name} onChange={(e) => setName(e.target.value)} />
       <Field label="Datum (optional)" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
       <div className="grid grid-cols-2 gap-3">
@@ -92,6 +70,16 @@ export function EventForm({
         <Field label="Budget bis € (optional)" inputMode="decimal" value={max} onChange={(e) => setMax(e.target.value)} placeholder="z. B. 30" />
       </div>
       <TextArea label="Beschreibung (optional)" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Ort, Uhrzeit, Regeln …" />
+      <fieldset>
+        <legend className="mb-1 text-sm font-medium text-stone-700">Wird gewichtelt?</legend>
+        <WichtelChoice value={type} onChange={setType} />
+        <p className="mt-1.5 text-xs text-stone-500">
+          {type === "secret_santa"
+            ? "Jede Person beschenkt eine ausgeloste andere. Die Auslosung startest du danach auf der Event-Seite."
+            : "Alle beschenken alle, z. B. an Weihnachten oder zum Geburtstag. Das kannst du später noch ändern."}
+        </p>
+        {discardsDraw && <p className="mt-1.5 text-sm text-amber-700">⚠️ Die bisherige Auslosung wird dabei verworfen.</p>}
+      </fieldset>
       <div className="flex justify-end gap-2">
         <Button type="button" variant="ghost" onClick={onCancel}>
           Abbrechen
@@ -101,5 +89,37 @@ export function EventForm({
         </Button>
       </div>
     </form>
+  );
+}
+
+/** Ja/Nein-Auswahl: wird gewichtelt? (auch auf der Event-Seite verwendet) */
+export function WichtelChoice({
+  value,
+  onChange,
+  disabled,
+}: {
+  value: EventInput["type"];
+  onChange: (type: EventInput["type"]) => void;
+  disabled?: boolean;
+}) {
+  const options = [
+    ["standard", "🎄 Nein, alle beschenken alle"],
+    ["secret_santa", "🎅 Ja, wir wichteln"],
+  ] as const;
+  return (
+    <div className="grid grid-cols-2 gap-1 rounded-lg bg-stone-100 p-1 text-sm">
+      {options.map(([v, label]) => (
+        <button
+          key={v}
+          type="button"
+          disabled={disabled}
+          aria-pressed={value === v}
+          onClick={() => onChange(v)}
+          className={`rounded-md px-2 py-2 font-medium transition ${value === v ? "bg-white text-brand-700 shadow-sm" : "text-stone-600 hover:text-stone-900"}`}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
   );
 }

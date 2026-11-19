@@ -147,3 +147,39 @@ describe("Wichteln", () => {
     expect((await detail(oma, id)).body).toMatchObject({ type: "standard", budgetMaxCents: 3000, myAssignments: [] });
   });
 });
+
+describe("Wichteln nachträglich ein- und ausschalten", () => {
+  it("aus einem normalen Event wird ein Wichteln und wieder zurück", async () => {
+    const id = await newEvent({ type: "standard", name: "Weihnachten" });
+    expect((await call(oma, "PUT", `/events/${id}/type`, { type: "secret_santa" })).status).toBe(403);
+    expect((await call(josia, "PUT", `/events/${id}/type`, { type: "secret_santa" })).status).toBe(200);
+    expect((await detail(oma, id)).body).toMatchObject({ type: "secret_santa", status: "draft" });
+
+    expect((await call(josia, "POST", `/events/${id}/draw`)).status).toBe(200);
+    expect((await detail(oma, id)).body.myAssignments).toHaveLength(1);
+
+    // Ausschalten verwirft die Auslosung
+    expect((await call(josia, "PUT", `/events/${id}/type`, { type: "standard" })).status).toBe(200);
+    expect((await detail(oma, id)).body).toMatchObject({ type: "standard", status: "draft", myAssignments: [], drawnAt: null });
+
+    // Wieder einschalten: frisch auslosbar
+    await call(josia, "PUT", `/events/${id}/type`, { type: "secret_santa" });
+    expect((await call(josia, "POST", `/events/${id}/draw`)).status).toBe(200);
+  });
+
+  it("auch über das Bearbeiten-Formular (PATCH) nach der Auslosung möglich", async () => {
+    const id = await newEvent();
+    await call(josia, "POST", `/events/${id}/draw`);
+    const res = await call(josia, "PATCH", `/events/${id}`, { type: "standard", name: "Doch kein Wichteln" });
+    expect(res.status).toBe(200);
+    expect((await detail(frau, id)).body).toMatchObject({ type: "standard", name: "Doch kein Wichteln", myAssignments: [] });
+  });
+
+  it("ein verworfenes Wichteln zählt nicht als Vorjahr", async () => {
+    const id1 = await newEvent({ name: "2025" });
+    await call(josia, "POST", `/events/${id1}/draw`);
+    await call(josia, "PUT", `/events/${id1}/type`, { type: "standard" });
+    const id2 = await newEvent({ name: "2026" });
+    expect((await call(josia, "POST", `/events/${id2}/draw`)).body.previousYearIgnored).toBe(false);
+  });
+});

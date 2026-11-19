@@ -143,6 +143,7 @@ export const eventsApi = {
   remove: (id: string) => api(`/events/${id}`, json("DELETE")),
   setParticipants: (id: string, profileIds: string[]) => api(`/events/${id}/participants`, json("PUT", { profileIds })),
   setExclusions: (id: string, pairs: { a: string; b: string }[]) => api(`/events/${id}/exclusions`, json("PUT", { pairs })),
+  setType: (id: string, type: EventInput["type"]) => api(`/events/${id}/type`, json("PUT", { type })),
   draw: (id: string) => api<DrawResultDto>(`/events/${id}/draw`, json("POST")),
   reset: (id: string) => api(`/events/${id}/reset`, json("POST")),
   reveal: (id: string, reason: string) => api<EventAssignmentDto[]>(`/events/${id}/reveal`, json("POST", { reason })),

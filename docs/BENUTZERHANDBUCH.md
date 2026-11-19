@@ -94,7 +94,8 @@ Für Kinder ohne eigenes Konto legt ein Elternteil auf der Startseite ein **Kind
 
 ## 🎄 Events und Wichteln
 
-Unter **Events** plant ihr Feste mit Datum und Budget.
+Unter **Events** plant ihr Feste mit Datum und Budget. Beim Anlegen gibst du zuerst Gruppe, Name, Datum und Budget an
+und wählst danach, **ob gewichtelt wird**. Das lässt sich auf der Event-Seite unter *Organisation* jederzeit umstellen.
 
 - **Alle beschenken alle**, z. B. Weihnachten oder ein Geburtstag: Das Event zeigt alle Teilnehmenden mit ihren
   Wunschlisten und das Budget.
@@ -109,6 +110,7 @@ Unter **Events** plant ihr Feste mit Datum und Budget.
 
 Wer das Event angelegt hat oder Gruppen-Admin ist, sieht den Bereich **⚙️ Organisation**:
 
+- **Wird gewichtelt? Ja/Nein** umschalten. Beim Ausschalten wird eine bestehende Auslosung verworfen.
 - Teilnehmende an- und abwählen, zusätzliche Paare ausschließen.
 - **🎲 Jetzt auslosen**, bei Bedarf **neu auslosen** oder **zurücksetzen**.
 - **👀 Notfall-Einsicht:** Wenn z. B. jemand seine Zuordnung vergessen hat, kann der Organisator die komplette
