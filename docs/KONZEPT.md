@@ -1,5 +1,7 @@
 # Konzept: Wunschbaum
 
+Stand: erster lauffähiger Prototyp, auf Proxmox unter `wunschbaum.basislager.cloud` getestet.
+
 ## Grundregeln
 
 - **Konten:** E-Mail + Passwort, alternativ Magic Link. Die E-Mail-Adresse muss bestätigt werden.

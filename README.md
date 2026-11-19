@@ -6,7 +6,23 @@ Wunschlisten-App für Familien: Jede Person hat eine Wunschliste, die über Grup
 Wünsche können reserviert werden, ohne dass der Wünschende es sieht. Dazu gibt es Events wie
 Wichteln mit Budget und Ausschlüssen.
 
-Konzept, Entscheidungen und Fahrplan: [docs/KONZEPT.md](docs/KONZEPT.md)
+## Dokumentation
+
+| Dokument | Für wen |
+|---|---|
+| [docs/BENUTZERHANDBUCH.md](docs/BENUTZERHANDBUCH.md) | Kurzanleitung für die Familie: Wünsche, Reservieren, Kinder, Wichteln |
+| [docs/KONZEPT.md](docs/KONZEPT.md) | Fachliche Regeln und Entscheidungen (Sichtbarkeit, Kinderprofile, Wichteln …) |
+| [docs/ENTWICKLUNG.md](docs/ENTWICKLUNG.md) | Architektur, Code-Struktur, API-Übersicht, Tests |
+| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Betrieb auf Proxmox mit Docker, Cloudflare und Nginx Proxy Manager, Backups |
+
+## Funktionen
+
+- Konten mit E-Mail und Passwort oder Anmeldelink per Mail; Registrierung nur über Einladungen
+- Gruppen (z. B. eigene Familie, Schwiegerfamilie) mit Admins, Einladungslinks und Mail-Einladungen
+- Wunschlisten mit Beschreibung, Preis, Links und Bildern/Screenshots; Archiv; Sichtbarkeit pro Gruppe
+- Reservieren, ohne dass der Wünschende es sieht; Übersicht „Meine Reservierungen“ mit Änderungshinweisen
+- Kinderprofile, von beiden Eltern verwaltet und später an ein eigenes Konto übergebbar
+- Events mit Budget; Wichteln mit Auslosung, Haushalten, Ausschlüssen, Vorjahres-Regel und Notfall-Einsicht
 
 Der App-Name steht zentral in `packages/shared/src/index.ts` (`APP_NAME`). Die Paketnamen `@wunschliste/*`
 und die Datenbank heißen intern weiterhin `wunschliste`.

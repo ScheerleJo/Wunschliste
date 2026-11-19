@@ -46,8 +46,7 @@ docker run --rm hello-world     # Test: sollte "Hello from Docker!" zeigen
 ```bash
 mkdir -p /opt && cd /opt
 git clone https://github.com/scheerlejo/wunschliste.git wunschbaum
-cd wunschbaum
-git checkout claude/wishlist-app-groups-2zttyn   # bis der Code in main gemergt ist
+cd wunschbaum                      # Branch main
 ```
 
 Ist das Repository privat, fragt Git nach Benutzername und Passwort. Als Passwort brauchst du ein
@@ -68,7 +67,7 @@ APP_URL=https://wunschbaum.basislager.cloud
 BETTER_AUTH_SECRET=...        # erzeugen mit: openssl rand -base64 32
 POSTGRES_PASSWORD=...         # erzeugen mit: openssl rand -hex 24
 APP_PORT=3000
-IP_HEADERS=cf-connecting-ip   # weil Cloudflare davor sitzt
+IP_HEADERS=cf-connecting-ip   # Cloudflare (orange Wolke) davor; ohne Cloudflare: x-real-ip
 
 SMTP_HOST=smtp.ionos.de
 SMTP_PORT=587
@@ -78,6 +77,10 @@ MAIL_FROM="Wunschbaum <postfach@deine-domain.de>"
 ```
 
 `DATABASE_URL` und `UPLOAD_DIR` setzt die `docker-compose.yml` selbst, die Zeilen aus der Vorlage werden ignoriert.
+
+**Zu `IP_HEADERS`:** Die App braucht die echte IP der Besucher, um Login-Versuche zu begrenzen.
+Bei *Besucher → Cloudflare → Nginx Proxy Manager → App* steht sie nur in `cf-connecting-ip`.
+`x-real-ip` enthält hier die IP von Cloudflare. Ohne Cloudflare (graue Wolke) ist es genau umgekehrt.
 
 > **Wichtig:** `APP_URL` muss exakt die Adresse sein, unter der die App aufgerufen wird (mit `https://`,
 > ohne `/` am Ende). Sonst schlägt die Anmeldung fehl („Invalid origin“).
@@ -122,7 +125,7 @@ Dafür braucht der Nginx Proxy Manager ein gültiges Zertifikat (Schritt 7).
 **Hosts → Proxy Hosts → Add Proxy Host**
 
 *Details:*
-- Domain Names: `wunschbaum.basislager.cloud`
+- Domain Names: `wunschbaum.basislager.cloud` (nach dem Tippen mit **Enter** bestätigen, sodass ein „Kärtchen“ entsteht)
 - Scheme: `http`
 - Forward Hostname / IP: IP des LXC, z. B. `192.168.1.50`
 - Forward Port: `3000`
@@ -140,6 +143,26 @@ Dafür braucht der Nginx Proxy Manager ein gültiges Zertifikat (Schritt 7).
 ```nginx
 client_max_body_size 20m;
 ```
+
+Prüfen: Der Proxy Host muss in der Liste **grün („Online“)** sein. Ist er rot, ist meist die Zertifikatsanforderung
+gescheitert (Mauszeiger über den Status zeigt den Grund). Dann zuerst ohne SSL speichern, das Zertifikat separat unter
+*SSL Certificates* per DNS-Challenge anlegen und danach zuordnen.
+
+## 7b. Lokaler DNS (optional, z. B. Pi-hole)
+
+Damit Geräte im Heimnetz nicht den Umweg über Cloudflare nehmen, `wunschbaum.basislager.cloud` lokal auf die IP des
+**Nginx Proxy Managers** zeigen lassen (nicht auf den Wunschbaum-LXC).
+
+Achtung: Ein normaler „Local DNS Record“ in Pi-hole setzt nur die IPv4-Adresse. Die **IPv6-Adressen von Cloudflare**
+werden weiter durchgereicht, und Browser bevorzugen IPv6. Deshalb besser in Pi-hole unter
+*Settings → All settings → Miscellaneous → `misc.dnsmasq_lines`* eintragen
+(Pi-hole v5: Datei `/etc/dnsmasq.d/99-wunschbaum.conf`, danach `pihole restartdns`):
+
+```
+address=/wunschbaum.basislager.cloud/<IP-des-NPM>
+```
+
+Prüfen mit `nslookup wunschbaum.basislager.cloud`: Es darf nur noch die lokale IP erscheinen.
 
 ## 8. Erstes Konto anlegen
 
@@ -197,6 +220,10 @@ Datenbank-Änderungen werden beim Start automatisch eingespielt.
 | Problem | Ursache / Lösung |
 |---|---|
 | Bild-Upload bricht ab, Fehler 413 | `client_max_body_size 20m;` im Nginx Proxy Manager unter *Advanced* fehlt |
+| NPM zeigt „Congratulations! … host that isn't set up yet“ | Der Proxy Host ist nicht aktiv: Status rot/grau, Domain nicht als Kärtchen übernommen oder Zertifikat fehlgeschlagen. Eintrag neu anlegen bzw. erst ohne SSL speichern. Test vom PC: `curl -4 -H "Host: wunschbaum.basislager.cloud" http://<IP-des-NPM>` |
+| Lokal `SSL_ERROR_UNRECOGNIZED_NAME_ALERT` | Wie oben: Der NPM hat für den Namen keinen aktiven Host bzw. kein Zertifikat |
+| Lokal landet man trotz Pi-hole-Eintrag bei Cloudflare | Pi-hole reicht die IPv6-Adressen von Cloudflare durch, siehe Abschnitt 7b |
+| Nach dem Login wieder auf der Anmeldeseite | Aufruf über `http://` statt `https://`. Die Anmeldung braucht HTTPS (Force SSL im NPM) |
 | Anmeldung klappt nicht, „Invalid origin“ in den Logs | `APP_URL` in `.env` stimmt nicht exakt mit der Adresse im Browser überein; danach `docker compose up -d` |
 | Cloudflare-Fehler 521/522 | NPM oder der Container nicht erreichbar: Portweiterleitung 443 im Router? `docker compose ps`? |
 | Cloudflare-Fehler 525/526 | SSL-Zertifikat im NPM fehlt oder ist ungültig (Schritt 7), oder der SSL-Modus in Cloudflare passt nicht |
