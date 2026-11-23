@@ -278,17 +278,71 @@ export const wishVisibility = pgTable(
  * Reservierung. Wird dem Besitzer der Wunschliste NIE ausgeliefert
  * (Ausnahme: verwaltete Kinderprofile, dort sehen Erziehungsberechtigte den Status).
  */
-export const reservation = pgTable("reservation", {
-  wishId: text("wish_id")
-    .primaryKey()
-    .references(() => wish.id, { onDelete: "cascade" }),
-  reservedByUserId: text("reserved_by_user_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  createdAt: createdAt(),
-  /** Reservierender hat den Hinweis "Wunsch wurde geändert" bis zu diesem Zeitpunkt gesehen */
-  acknowledgedAt: timestamp("acknowledged_at", { withTimezone: true }),
-});
+export const reservation = pgTable(
+  "reservation",
+  {
+    wishId: text("wish_id")
+      .primaryKey()
+      .references(() => wish.id, { onDelete: "cascade" }),
+    /** Reserviert von einem Konto … */
+    reservedByUserId: text("reserved_by_user_id").references(() => user.id, { onDelete: "cascade" }),
+    /** … oder über einen geteilten Link (genau eins von beiden). Der Link selbst ist die Identität des Gastes. */
+    reservedByShareLinkId: text("reserved_by_share_link_id").references(() => shareLink.id, { onDelete: "cascade" }),
+    createdAt: createdAt(),
+    /** Reservierender hat den Hinweis "Wunsch wurde geändert" bis zu diesem Zeitpunkt gesehen */
+    acknowledgedAt: timestamp("acknowledged_at", { withTimezone: true }),
+  },
+  (t) => [
+    check("reservation_one_owner", sql`(${t.reservedByUserId} IS NULL) <> (${t.reservedByShareLinkId} IS NULL)`),
+    index("reservation_user_idx").on(t.reservedByUserId),
+    index("reservation_share_link_idx").on(t.reservedByShareLinkId),
+  ],
+);
+
+// ---------------------------------------------------------------------------
+// Geteilte Links: Wunschliste für Gäste ohne Konto (z. B. Patenonkel)
+// ---------------------------------------------------------------------------
+
+export const shareLink = pgTable(
+  "share_link",
+  {
+    id: id(),
+    profileId: text("profile_id")
+      .notNull()
+      .references(() => profile.id, { onDelete: "cascade" }),
+    /** z. B. "Patenonkel Peter" (nur für den Besitzer sichtbar) */
+    label: text("label").notNull(),
+    token: text("token").notNull().unique(),
+    createdByUserId: text("created_by_user_id").references(() => user.id, { onDelete: "set null" }),
+    /** null = unbegrenzt gültig */
+    expiresAt: timestamp("expires_at", { withTimezone: true }),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+    createdAt: createdAt(),
+  },
+  (t) => [index("share_link_profile_idx").on(t.profileId)],
+);
+
+// ---------------------------------------------------------------------------
+// Benachrichtigungen (in der App, zusätzlich per Mail)
+// ---------------------------------------------------------------------------
+
+export const notification = pgTable(
+  "notification",
+  {
+    id: id(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    body: text("body").notNull(),
+    /** App-interner Pfad für den Button, z. B. /events/123 */
+    linkPath: text("link_path"),
+    linkLabel: text("link_label"),
+    readAt: timestamp("read_at", { withTimezone: true }),
+    createdAt: createdAt(),
+  },
+  (t) => [index("notification_user_idx").on(t.userId, t.createdAt)],
+);
 
 // ---------------------------------------------------------------------------
 // Events (Wichteln oder "alle beschenken alle")
@@ -383,5 +437,29 @@ export const eventRevealLog = pgTable("event_reveal_log", {
     .references(() => event.id, { onDelete: "cascade" }),
   revealedByUserId: text("revealed_by_user_id").references(() => user.id, { onDelete: "set null" }),
   reason: text("reason"),
+  createdAt: createdAt(),
+});
+
+// ---------------------------------------------------------------------------
+// System-Administration (getrennt von normalen Konten; Anlage nur per Kommandozeile)
+// ---------------------------------------------------------------------------
+
+export const adminAccount = pgTable("admin_account", {
+  id: id(),
+  email: text("email").notNull().unique(),
+  /** scrypt-Hash im Format scrypt$<salt>$<hash> */
+  passwordHash: text("password_hash").notNull(),
+  lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
+  createdAt: createdAt(),
+});
+
+export const adminSession = pgTable("admin_session", {
+  id: id(),
+  adminId: text("admin_id")
+    .notNull()
+    .references(() => adminAccount.id, { onDelete: "cascade" }),
+  /** SHA-256 des Sitzungs-Tokens (das Token selbst liegt nur im Cookie) */
+  tokenHash: text("token_hash").notNull().unique(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
   createdAt: createdAt(),
 });

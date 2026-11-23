@@ -177,6 +177,25 @@ Danach:
 2. Einladungslink erstellen und zuerst an dich selbst schicken.
 3. In einem privaten Browserfenster testen, ob die Registrierung über den Link klappt.
 
+## 8b. Admin-Konto (optional)
+
+Unter `https://wunschbaum.basislager.cloud/admin` gibt es eine Administration für alle Benutzer, Gruppen,
+Kinderprofile, Events, Einladungen und Teilen-Links. Sie ist nirgends in der App verlinkt und hat **eigene Konten**,
+die **nur auf dem Server** angelegt werden können:
+
+```bash
+docker compose exec app pnpm admin create admin@deine-domain.de      # fragt nach dem Passwort (mind. 12 Zeichen)
+docker compose exec app pnpm admin password admin@deine-domain.de    # Passwort ändern, alle Admin-Sitzungen enden
+docker compose exec app pnpm admin list                              # Admins anzeigen
+docker compose exec app pnpm admin delete admin@deine-domain.de
+```
+
+- Nimm eine andere Adresse bzw. ein anderes Passwort als für dein normales Konto.
+- Nach 5 falschen Passwörtern ist die Admin-Anmeldung 15 Minuten gesperrt (pro IP und pro Adresse).
+  Dafür muss `IP_HEADERS` richtig gesetzt sein (siehe oben).
+- Die Admin-Sitzung läuft nach 12 Stunden ab.
+- Reservierungen und Wichtel-Zuordnungen zeigt die Administration bewusst nicht an.
+
 ## 9. Backups
 
 ```bash

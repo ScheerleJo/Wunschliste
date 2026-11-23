@@ -24,6 +24,7 @@ import { linkMail, sendMail } from "../mail.ts";
 import { removeWishFiles } from "../services/images.ts";
 import { getMembership } from "../services/groups.ts";
 import { getOwnProfile } from "../services/profiles.ts";
+import { handleNewGroupMember } from "../services/event-membership.ts";
 import { loadHandover } from "../services/handover.ts";
 
 export const childRoutes = new Hono<AppEnv>();
@@ -172,7 +173,8 @@ childRoutes.post("/children/:profileId/groups", async (c) => {
   const { groupId } = await parseJson(c, z.object({ groupId: z.string() }));
   const me = await getOwnProfile(u);
   if (!(await getMembership(groupId, me.id))) throw forbidden("Du kannst dein Kind nur in deine eigenen Gruppen aufnehmen");
-  await db.insert(groupMember).values({ groupId, profileId: p.id, role: "member" }).onConflictDoNothing();
+  const inserted = await db.insert(groupMember).values({ groupId, profileId: p.id, role: "member" }).onConflictDoNothing().returning();
+  if (inserted.length > 0) await handleNewGroupMember(groupId, p.id, u.id);
   return c.json({ ok: true });
 });
 

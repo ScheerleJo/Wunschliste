@@ -9,7 +9,7 @@ let counter = 0;
 
 /** Löscht alle Daten (zwischen Tests). */
 export async function resetDb() {
-  await db.execute(sql`TRUNCATE "user", "group", profile, verification RESTART IDENTITY CASCADE`);
+  await db.execute(sql`TRUNCATE "user", "group", profile, verification, admin_account RESTART IDENTITY CASCADE`);
 }
 
 /** Legt einen bestätigten Benutzer direkt an (ohne Einladung) und meldet ihn an. */

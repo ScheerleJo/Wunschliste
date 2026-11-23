@@ -37,6 +37,18 @@ Passwort vergessen? Auf der Anmeldeseite „Passwort vergessen?“ antippen.
 
 > Du siehst auf deiner eigenen Liste nie, ob etwas reserviert ist. Das ist Absicht.
 
+### 🔗 Liste mit Gästen teilen (z. B. Patenonkel)
+
+Mit **„🔗 Teilen“** erstellst du einen Link für Menschen ohne Konto. Das geht auch für die Liste deines Kindes.
+- Gäste sehen deine Wünsche und können sie reservieren, ganz ohne Anmeldung.
+- **Ein Link pro Person bzw. Haushalt:** Reservierungen gehören zum Link. Wer ihn öffnet, sieht sie als eigene.
+- Sie sehen nur Wünsche, die für **alle Gruppen** sichtbar sind.
+- Ein Link lässt sich jederzeit **zurückziehen**. Bereits gemachte Reservierungen bleiben bestehen.
+- 🤫 Über den Link sieht man, was reserviert ist. Öffne ihn also besser nicht selbst.
+
+**Als Gast:** Du brauchst kein Konto. Deine Reservierungen gehören zu deinem Link. Du siehst sie also auf jedem Gerät,
+auf dem du ihn öffnest (Handy, PC, privates Fenster). Gib den Link deshalb nicht weiter.
+
 ---
 
 ## 👪 Gruppen
@@ -94,7 +106,8 @@ Für Kinder ohne eigenes Konto legt ein Elternteil auf der Startseite ein **Kind
 
 ## 🎄 Events und Wichteln
 
-Unter **Events** plant ihr Feste mit Datum und Budget.
+Unter **Events** plant ihr Feste mit Datum und Budget. Beim Anlegen gibst du zuerst Gruppe, Name, Datum und Budget an
+und wählst danach, **ob gewichtelt wird**. Das lässt sich auf der Event-Seite unter *Organisation* jederzeit umstellen.
 
 - **Alle beschenken alle**, z. B. Weihnachten oder ein Geburtstag: Das Event zeigt alle Teilnehmenden mit ihren
   Wunschlisten und das Budget.
@@ -109,6 +122,7 @@ Unter **Events** plant ihr Feste mit Datum und Budget.
 
 Wer das Event angelegt hat oder Gruppen-Admin ist, sieht den Bereich **⚙️ Organisation**:
 
+- **Wird gewichtelt? Ja/Nein** umschalten. Beim Ausschalten wird eine bestehende Auslosung verworfen.
 - Teilnehmende an- und abwählen, zusätzliche Paare ausschließen.
 - **🎲 Jetzt auslosen**, bei Bedarf **neu auslosen** oder **zurücksetzen**.
 - **👀 Notfall-Einsicht:** Wenn z. B. jemand seine Zuordnung vergessen hat, kann der Organisator die komplette
@@ -116,6 +130,16 @@ Wer das Event angelegt hat oder Gruppen-Admin ist, sieht den Bereich **⚙️ Or
   nachgeschaut wurde.
 
 ---
+
+## 🔔 Benachrichtigungen
+
+Die Glocke oben rechts zeigt Neuigkeiten, die du erledigen solltest. Organisatoren erfahren dort zum Beispiel, wenn
+jemand neu in die Gruppe kommt und bei einem Wichteln noch nicht dabei ist. Der Button „Zum Event“ führt direkt
+dorthin. Die gleiche Nachricht kommt auch per Mail.
+
+**Neue Gruppenmitglieder und Events:** Bei Events, bei denen *alle beschenken alle* und die ganze Gruppe mitmacht,
+werden neue Mitglieder automatisch hinzugefügt. Beim Wichteln oder wenn nur ausgewählte Personen mitmachen,
+entscheidet der Organisator. Er bekommt dafür eine Benachrichtigung.
 
 ## Häufige Fragen
 

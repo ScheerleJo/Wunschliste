@@ -65,6 +65,7 @@ Die Ursache steht weiter oben in den Zeilen `apps/api dev:`, meistens ist die Da
 | `pnpm test` | Tests (die API-Tests legen dafür die Datenbank `wunschliste_test` an, PostgreSQL muss laufen) |
 | `pnpm db:generate` | Nach Änderungen an `apps/api/src/db/schema.ts` eine Migration erzeugen |
 | `pnpm build` | Web-App für Produktion bauen |
+| `pnpm admin create admin@example.com` | Admin-Konto für `/admin` anlegen (auch `password`, `list`, `delete`) |
 | `pnpm mail:test adresse@example.com` | Testmail mit der Mailkonfiguration aus der `.env` schicken; erklärt Fehler |
 
 ## Produktion (Proxmox)

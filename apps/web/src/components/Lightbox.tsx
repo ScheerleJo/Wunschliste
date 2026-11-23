@@ -2,7 +2,19 @@ import { useEffect, useState } from "react";
 import { imageUrl, type WishImageDto } from "@wunschliste/shared";
 
 /** Vollbild-Ansicht der Bilder eines Wunsches */
-export function Lightbox({ images, start, title, onClose }: { images: WishImageDto[]; start: number; title: string; onClose: () => void }) {
+export function Lightbox({
+  images,
+  start,
+  title,
+  onClose,
+  src = imageUrl,
+}: {
+  images: WishImageDto[];
+  start: number;
+  title: string;
+  onClose: () => void;
+  src?: (id: string, size?: "full" | "thumb") => string;
+}) {
   const [index, setIndex] = useState(start);
   const img = images[index];
   const go = (d: number) => setIndex((i) => (i + d + images.length) % images.length);
@@ -37,7 +49,7 @@ export function Lightbox({ images, start, title, onClose }: { images: WishImageD
       </div>
       <div className="relative flex min-h-0 flex-1 items-center justify-center p-2">
         <img
-          src={imageUrl(img.id)}
+          src={src(img.id)}
           alt={title}
           width={img.width}
           height={img.height}

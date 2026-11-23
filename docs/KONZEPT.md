@@ -37,6 +37,48 @@ Stand: erster lauffähiger Prototyp, auf Proxmox unter `wunschbaum.basislager.cl
   - Die Verwalter verlieren den Zugriff und sind danach normale Schenkende. Das Kind sieht ab dann keine Reservierungen,
     bestehende Reservierungen bleiben aber gültig.
 
+## Teilen per Link (Gäste ohne Konto)
+
+- Besitzer bzw. Eltern bei Kinderlisten erstellen pro Person einen Link mit Bezeichnung (z. B. „Patenonkel Peter“).
+  Er ist optional befristet und lässt sich zurückziehen. Zurückgezogene oder abgelaufene Links liefern 404.
+  Gast-Reservierungen bleiben dabei bestehen.
+- Gäste sehen nur **aktive Wünsche, die für alle Gruppen sichtbar sind**. Bilder laufen über eigene Link-URLs.
+- **Der Link ist die Identität:** Reservierungen von Gästen hängen direkt am Link (`reservation.reserved_by_share_link_id`).
+  Wer den Link öffnet, sieht sie in jedem Browser und auf jedem Gerät als „von dir reserviert“ und kann sie aufheben.
+  Es gibt keine Namensabfrage und nichts, was im Browser gespeichert wird. Deshalb gilt: **ein Link pro Person bzw. Haushalt**.
+- **Reservierungen** hängen entweder an einem Konto oder an einem Link (Check-Constraint). Gäste und Familie sehen
+  gegenseitig nur „reserviert“. Die Bezeichnung des Links sieht nur der Besitzer.
+- **Der Besitzer erfährt nichts:** Die Link-Verwaltung zeigt weder Gäste noch Reservierungen, und angemeldet
+  kann der Besitzer seinen eigenen Link nicht öffnen (403). In einem privaten Fenster ließe es sich nicht verhindern,
+  deshalb weist die Oberfläche darauf hin.
+
+## Neue Gruppenmitglieder und laufende Events
+
+„Laufend“ heißt: ohne Datum oder Datum heute bzw. später. Kommt jemand in die Gruppe (Einladung angenommen oder Kind
+aufgenommen):
+- **Alle beschenken alle und bisher die ganze Gruppe dabei:** Die Person wird automatisch hinzugefügt.
+- **Wichteln oder nur ausgewählte Teilnehmende:** Ersteller und Gruppen-Admins bekommen eine Benachrichtigung in der App
+  (🔔) und per Mail, mit Button „Zum Event“. Ist schon ausgelost, erklärt die Nachricht, dass man zurücksetzen und
+  neu auslosen muss. Wer die Änderung selbst ausgelöst hat, wird nicht benachrichtigt.
+
+## Administration
+
+- Unter `/admin` gibt es eine eigene Anmeldung mit **separaten Admin-Konten** (Tabelle `admin_account`), unabhängig von
+  den normalen Konten. Admin-Konten entstehen nur per Kommandozeile (`pnpm admin create …`), nie über die Webseite.
+- **Sicherheit:**
+  - Passwörter als scrypt-Hash, mindestens 12 Zeichen.
+  - Sitzungs-Token nur gehasht gespeichert, Cookie `wb_admin` (HttpOnly, SameSite=Strict, Secure, nur für `/api/admin`),
+    gültig 12 Stunden.
+  - Sperre nach 5 Fehlversuchen (15 Minuten, pro IP und Adresse).
+  - Origin-Prüfung bei ändernden Anfragen.
+- **Funktionen:** Übersicht mit Mailstatus; Benutzer (bearbeiten, bestätigen, Passwort setzen, abmelden, löschen);
+  Gruppen (umbenennen, Mitglieder und Rollen, löschen); Kinderprofile (Verwalter, löschen); Events löschen;
+  Einladungen und Teilen-Links zurückziehen.
+- **Bewusst ohne Reservierungen und Wichtel-Zuordnungen**, damit die Überraschung auch für den Admin selbst erhalten
+  bleibt. Für Notfälle gibt es die protokollierte Notfall-Einsicht beim Event.
+- **Benutzer löschen** entfernt das eigene Profil samt Wünschen, Bildern, Gruppenmitgliedschaften und eigenen
+  Reservierungen. Kinderprofile, die nur diese Person verwaltet hat, bleiben ohne Verwalter bestehen und werden markiert.
+
 ## Bilder
 
 - Bis zu 8 Bilder pro Wunsch: Dateiauswahl (am Handy auch Kamera), Einfügen mit Strg+V, Drag & Drop.
@@ -70,6 +112,9 @@ Umsortieren und Archivieren zählen nicht als „geändert“.
 ## Events
 
 - **Typen:** *Wichteln* (Auslosung) oder *Standard* (alle beschenken alle). Beide haben Datum und Budget.
+  Beim Anlegen kommt die Frage „Wird gewichtelt?“ nach den Grunddaten (Vorauswahl: nein). Organisatoren können
+  sie jederzeit ändern. Wird ein ausgelostes Wichteln ausgeschaltet, wird die Auslosung verworfen. Es zählt dann
+  auch nicht als „Vorjahr“.
 - **Budget** ist ein Hinweis. Wünsche über dem Budget werden markiert, nicht ausgeblendet.
 - **Ausschlüsse** werden gerichtet gespeichert („A darf B nicht ziehen“):
   - **Haushalte** (z. B. Ehepaare) erzeugen beidseitige Ausschlüsse und werden pro Gruppe einmal gepflegt.

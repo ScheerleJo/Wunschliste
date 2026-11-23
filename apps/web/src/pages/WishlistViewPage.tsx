@@ -153,7 +153,7 @@ function ViewWishCard({ wish, profileId, overBudget }: { wish: ViewWishDto; prof
       )}
 
       {!takenByOther && (
-        <div className="mt-3 flex justify-end border-t border-stone-100 pt-3">
+        <div key={wish.reservation} className="mt-3 flex justify-end border-t border-stone-100 pt-3">
           {wish.reservation === "available" ? (
             <Button onClick={() => reserve.mutate()} disabled={busy} className="py-2!">
               🔖 Reservieren

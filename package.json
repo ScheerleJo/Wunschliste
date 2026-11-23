@@ -16,7 +16,8 @@
     "test": "pnpm -r test",
     "db:generate": "pnpm --filter @wunschliste/api db:generate",
     "db:migrate": "pnpm --filter @wunschliste/api db:migrate",
-    "mail:test": "pnpm --filter @wunschliste/api mail:test"
+    "mail:test": "pnpm --filter @wunschliste/api mail:test",
+    "admin": "pnpm --filter @wunschliste/api admin"
   },
   "devDependencies": {
     "concurrently": "^9.2.5"

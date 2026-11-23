@@ -354,15 +354,26 @@ eventRoutes.get("/events/:eventId", async (c) => {
   return c.json(body);
 });
 
+/**
+ * Art wechseln (Wichteln ja/nein). Geht jederzeit; eine bestehende Auslosung wird dabei verworfen,
+ * damit beim späteren erneuten Wichteln frisch gelost wird.
+ */
+async function changeType(eventRow: EventRow, type: EventRow["type"]) {
+  if (type === eventRow.type) return;
+  await db.transaction(async (tx) => {
+    await tx.delete(eventAssignment).where(eq(eventAssignment.eventId, eventRow.id));
+    await tx.update(event).set({ type, status: "draft", drawnAt: null }).where(eq(event.id, eventRow.id));
+  });
+}
+
 eventRoutes.patch("/events/:eventId", async (c) => {
   const u = requireUser(c);
   const ev = await requireManage(u, c.req.param("eventId"));
   const input = await parseJson(c, eventInputSchema);
-  if (input.type !== ev.e.type && ev.e.status !== "draft") throw badRequest("Die Art kann nach der Auslosung nicht mehr geändert werden");
+  await changeType(ev.e, input.type);
   await db
     .update(event)
     .set({
-      type: input.type,
       name: input.name,
       description: input.description || null,
       date: input.date || null,
@@ -370,6 +381,15 @@ eventRoutes.patch("/events/:eventId", async (c) => {
       budgetMaxCents: input.budgetMaxCents ?? null,
     })
     .where(eq(event.id, ev.e.id));
+  return c.json({ ok: true });
+});
+
+/** Nur die Art umschalten: wird gewichtelt oder beschenken sich alle? */
+eventRoutes.put("/events/:eventId/type", async (c) => {
+  const u = requireUser(c);
+  const ev = await requireManage(u, c.req.param("eventId"));
+  const { type } = await parseJson(c, z.object({ type: z.enum(["secret_santa", "standard"]) }));
+  await changeType(ev.e, type);
   return c.json({ ok: true });
 });
 

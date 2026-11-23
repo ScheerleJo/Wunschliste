@@ -1,5 +1,16 @@
 import type {
   CreateInviteInput,
+  AdminChildDto,
+  AdminEventDto,
+  AdminGroupDto,
+  AdminInviteDto,
+  AdminShareDto,
+  AdminStatsDto,
+  AdminUserDto,
+  NotificationListDto,
+  ShareLinkDto,
+  ShareLinkInput,
+  ShareViewDto,
   DrawResultDto,
   EventAssignmentDto,
   EventDetailDto,
@@ -143,7 +154,59 @@ export const eventsApi = {
   remove: (id: string) => api(`/events/${id}`, json("DELETE")),
   setParticipants: (id: string, profileIds: string[]) => api(`/events/${id}/participants`, json("PUT", { profileIds })),
   setExclusions: (id: string, pairs: { a: string; b: string }[]) => api(`/events/${id}/exclusions`, json("PUT", { pairs })),
+  setType: (id: string, type: EventInput["type"]) => api(`/events/${id}/type`, json("PUT", { type })),
   draw: (id: string) => api<DrawResultDto>(`/events/${id}/draw`, json("POST")),
   reset: (id: string) => api(`/events/${id}/reset`, json("POST")),
   reveal: (id: string, reason: string) => api<EventAssignmentDto[]>(`/events/${id}/reveal`, json("POST", { reason })),
+};
+
+// ---- Teilen-Links (Verwaltung) -------------------------------------------------
+export const sharesApi = {
+  list: (profileId: string) => api<ShareLinkDto[]>(`/profiles/${profileId}/shares`),
+  create: (profileId: string, input: ShareLinkInput) => api<ShareLinkDto>(`/profiles/${profileId}/shares`, json("POST", input)),
+  revoke: (id: string) => api(`/shares/${id}`, json("DELETE")),
+};
+
+// ---- Gast-Zugriff über einen geteilten Link (der Link ist die Identität) ---------
+export const guestApi = {
+  view: (t: string) => api<ShareViewDto>(`/share/${t}`),
+  reserve: (t: string, wishId: string) => api(`/share/${t}/wishes/${wishId}/reserve`, json("POST")),
+  release: (t: string, wishId: string) => api(`/share/${t}/wishes/${wishId}/reserve`, json("DELETE")),
+  acknowledge: (t: string, wishId: string) => api(`/share/${t}/reservations/${wishId}/acknowledge`, json("POST")),
+};
+
+// ---- Benachrichtigungen ----------------------------------------------------------
+export const notificationsApi = {
+  list: () => api<NotificationListDto>("/notifications"),
+  read: (id: string) => api(`/notifications/${id}/read`, json("POST")),
+  readAll: () => api("/notifications/read-all", json("POST")),
+};
+
+// ---- System-Admin (eigene Sitzung, Cookie nur für /api/admin) --------------------
+export const adminApi = {
+  me: () => api<{ id: string; email: string }>("/admin/me"),
+  login: (email: string, password: string) => api<{ id: string; email: string }>("/admin/login", json("POST", { email, password })),
+  logout: () => api("/admin/logout", json("POST")),
+  stats: () => api<AdminStatsDto>("/admin/stats"),
+  users: () => api<AdminUserDto[]>("/admin/users"),
+  updateUser: (id: string, input: { name?: string; email?: string; emailVerified?: boolean }) => api(`/admin/users/${id}`, json("PATCH", input)),
+  setPassword: (id: string, password: string) => api(`/admin/users/${id}/password`, json("POST", { password })),
+  logoutUser: (id: string) => api(`/admin/users/${id}/logout`, json("POST")),
+  deleteUser: (id: string) => api(`/admin/users/${id}`, json("DELETE")),
+  groups: () => api<AdminGroupDto[]>("/admin/groups"),
+  updateGroup: (id: string, name: string, description: string | null) => api(`/admin/groups/${id}`, json("PATCH", { name, description })),
+  deleteGroup: (id: string) => api(`/admin/groups/${id}`, json("DELETE")),
+  setMember: (groupId: string, profileId: string, role: "admin" | "member") =>
+    api(`/admin/groups/${groupId}/members/${profileId}`, json("PUT", { role })),
+  removeMember: (groupId: string, profileId: string) => api(`/admin/groups/${groupId}/members/${profileId}`, json("DELETE")),
+  children: () => api<AdminChildDto[]>("/admin/children"),
+  addGuardian: (id: string, userId: string) => api(`/admin/children/${id}/guardians`, json("POST", { userId })),
+  removeGuardian: (id: string, userId: string) => api(`/admin/children/${id}/guardians/${userId}`, json("DELETE")),
+  deleteChild: (id: string) => api(`/admin/children/${id}`, json("DELETE")),
+  events: () => api<AdminEventDto[]>("/admin/events"),
+  deleteEvent: (id: string) => api(`/admin/events/${id}`, json("DELETE")),
+  invites: () => api<AdminInviteDto[]>("/admin/invites"),
+  revokeInvite: (id: string) => api(`/admin/invites/${id}`, json("DELETE")),
+  shares: () => api<AdminShareDto[]>("/admin/shares"),
+  revokeShare: (id: string) => api(`/admin/shares/${id}`, json("DELETE")),
 };

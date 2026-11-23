@@ -1,7 +1,7 @@
 import { NavLink, Outlet, useNavigate } from "react-router";
 import { APP_NAME } from "@wunschliste/shared";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { reservationsApi } from "../lib/api.ts";
+import { notificationsApi, reservationsApi } from "../lib/api.ts";
 import { authClient } from "../lib/auth-client.ts";
 import { useMe } from "../lib/use-me.ts";
 
@@ -17,6 +17,8 @@ export function AppLayout() {
   // Anzahl Reservierungen mit Hinweis (geändert/gelöscht/archiviert/kein Zugriff)
   const reservations = useQuery({ queryKey: ["reservations"], queryFn: reservationsApi.mine, refetchInterval: 60_000 });
   const noticeCount = reservations.data?.filter((r) => r.state !== "ok").length ?? 0;
+  const notifications = useQuery({ queryKey: ["notifications"], queryFn: notificationsApi.list, refetchInterval: 60_000 });
+  const unread = notifications.data?.unread ?? 0;
   const badge = (to: string) =>
     to === "/reservierungen" && noticeCount > 0 ? (
       <span className="ml-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-bold text-white">
@@ -52,6 +54,18 @@ export function AppLayout() {
             ))}
           </nav>
           <div className="ml-auto flex items-center gap-2 text-sm sm:ml-0">
+            <NavLink
+              to="/benachrichtigungen"
+              aria-label={unread ? `Benachrichtigungen (${unread} ungelesen)` : "Benachrichtigungen"}
+              className="relative rounded-lg px-2.5 py-2 text-lg leading-none hover:bg-stone-100"
+            >
+              🔔
+              {unread > 0 && (
+                <span className="absolute top-0.5 right-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-brand-600 px-1 text-[10px] font-bold text-white">
+                  {unread}
+                </span>
+              )}
+            </NavLink>
             <span className="hidden text-stone-500 md:inline">{me?.user.name}</span>
             <button onClick={signOut} className="rounded-lg px-3 py-2 text-stone-600 hover:bg-stone-100">
               Abmelden

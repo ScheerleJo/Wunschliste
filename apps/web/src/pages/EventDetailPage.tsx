@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from "react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatBudget, type EventAssignmentDto, type EventDetailDto, type EventInput } from "@wunschliste/shared";
 import { Dialog } from "../components/Dialog.tsx";
-import { EventForm } from "../components/EventForm.tsx";
+import { EventForm, WichtelChoice } from "../components/EventForm.tsx";
 import { Alert, Badge, Button, Card, Spinner } from "../components/ui.tsx";
 import { eventsApi, groupsApi, householdsApi } from "../lib/api.ts";
 import { formatDate } from "./EventsPage.tsx";
@@ -227,6 +227,14 @@ function Organizer({ event }: { event: EventDetailDto }) {
     },
     onError,
   });
+  const setType = useMutation({
+    mutationFn: (type: EventInput["type"]) => eventsApi.setType(event.id, type),
+    onSuccess: async (_, type) => {
+      setRevealed(null);
+      await ok(type === "secret_santa" ? "Wichteln aktiviert. Prüfe Teilnehmende und Ausschlüsse und lose dann aus." : "Wichteln ausgeschaltet. Alle beschenken alle.")();
+    },
+    onError,
+  });
   const reset = useMutation({ mutationFn: () => eventsApi.reset(event.id), onSuccess: ok("Auslosung zurückgesetzt."), onError });
   const reveal = useMutation({ mutationFn: (reason: string) => eventsApi.reveal(event.id, reason), onSuccess: async (r) => { setRevealed(r); await refresh(); }, onError });
   const remove = useMutation({
@@ -252,6 +260,20 @@ function Organizer({ event }: { event: EventDetailDto }) {
         {error && <Alert>{error}</Alert>}
         {info && <Alert kind="success">{info}</Alert>}
       </div>
+
+      {/* Art: wird gewichtelt? */}
+      <section className="mt-4">
+        <h3 className="mb-1.5 text-sm font-medium text-stone-700">Wird gewichtelt?</h3>
+        <WichtelChoice
+          value={event.type}
+          disabled={setType.isPending}
+          onChange={(type) => {
+            if (type === event.type) return;
+            if (type === "standard" && event.status !== "draft" && !confirm("Wichteln ausschalten? Die bisherige Auslosung wird verworfen.")) return;
+            setType.mutate(type);
+          }}
+        />
+      </section>
 
       {/* Teilnehmende */}
       <section className="mt-4">

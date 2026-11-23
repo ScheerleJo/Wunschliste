@@ -8,6 +8,7 @@ import { LinkChips } from "./LinkChips.tsx";
 import { Alert, Badge, Button, Card, Spinner } from "./ui.tsx";
 import { WishEditor, type ImageChanges } from "./WishEditor.tsx";
 import { WishThumb } from "./WishThumb.tsx";
+import { ShareDialog } from "./ShareDialog.tsx";
 import { prepareImage } from "../lib/images.ts";
 
 /**
@@ -18,6 +19,7 @@ export function WishlistManager({ profileId, ownerName }: { profileId: string; o
   const [tab, setTab] = useState<"active" | "archived">("active");
   const [editing, setEditing] = useState<OwnWishDto | "new" | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [sharing, setSharing] = useState(false);
   const queryClient = useQueryClient();
 
   const active = useQuery({ queryKey: ["wishes", profileId, "active"], queryFn: () => wishesApi.list(profileId, "active") });
@@ -85,7 +87,12 @@ export function WishlistManager({ profileId, ownerName }: { profileId: string; o
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-semibold">{ownerName ? `Wunschliste von ${ownerName}` : "Meine Wunschliste"}</h1>
-        <Button onClick={() => setEditing("new")}>+ Wunsch hinzufügen</Button>
+        <div className="flex gap-2">
+          <Button variant="secondary" onClick={() => setSharing(true)}>
+            🔗 Teilen
+          </Button>
+          <Button onClick={() => setEditing("new")}>+ Wunsch hinzufügen</Button>
+        </div>
       </div>
 
       <div className="flex gap-1 border-b border-stone-200 text-sm">
@@ -176,6 +183,8 @@ export function WishlistManager({ profileId, ownerName }: { profileId: string; o
           ))}
         </ul>
       )}
+
+      <ShareDialog profileId={profileId} ownerName={ownerName} open={sharing} onClose={() => setSharing(false)} />
 
       <Dialog open={editing !== null} onClose={() => setEditing(null)} title={editing === "new" ? "Neuer Wunsch" : "Wunsch bearbeiten"}>
         {editing !== null && (
