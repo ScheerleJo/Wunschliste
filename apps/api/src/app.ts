@@ -14,6 +14,8 @@ import { reservationRoutes } from "./routes/reservations.ts";
 import { imageRoutes } from "./routes/images.ts";
 import { childRoutes } from "./routes/children.ts";
 import { eventRoutes } from "./routes/events.ts";
+import { shareRoutes } from "./routes/shares.ts";
+import { notificationRoutes } from "./routes/notifications.ts";
 import { getOwnProfile } from "./services/profiles.ts";
 
 /** Lädt die Session (falls vorhanden) für alle API-Routen. */
@@ -58,6 +60,8 @@ app.route("/", reservationRoutes);
 app.route("/", imageRoutes);
 app.route("/", childRoutes);
 app.route("/", eventRoutes);
+app.route("/", shareRoutes);
+app.route("/", notificationRoutes);
 
 app.onError((err, c) => {
   if (err instanceof HTTPException) return c.json({ error: err.message }, err.status);

@@ -278,17 +278,83 @@ export const wishVisibility = pgTable(
  * Reservierung. Wird dem Besitzer der Wunschliste NIE ausgeliefert
  * (Ausnahme: verwaltete Kinderprofile, dort sehen Erziehungsberechtigte den Status).
  */
-export const reservation = pgTable("reservation", {
-  wishId: text("wish_id")
-    .primaryKey()
-    .references(() => wish.id, { onDelete: "cascade" }),
-  reservedByUserId: text("reserved_by_user_id")
+export const reservation = pgTable(
+  "reservation",
+  {
+    wishId: text("wish_id")
+      .primaryKey()
+      .references(() => wish.id, { onDelete: "cascade" }),
+    /** Reserviert von einem Konto … */
+    reservedByUserId: text("reserved_by_user_id").references(() => user.id, { onDelete: "cascade" }),
+    /** … oder von einem Gast über einen geteilten Link (genau eins von beiden) */
+    reservedByGuestId: text("reserved_by_guest_id").references(() => shareGuest.id, { onDelete: "cascade" }),
+    createdAt: createdAt(),
+    /** Reservierender hat den Hinweis "Wunsch wurde geändert" bis zu diesem Zeitpunkt gesehen */
+    acknowledgedAt: timestamp("acknowledged_at", { withTimezone: true }),
+  },
+  (t) => [
+    check("reservation_one_owner", sql`(${t.reservedByUserId} IS NULL) <> (${t.reservedByGuestId} IS NULL)`),
+    index("reservation_user_idx").on(t.reservedByUserId),
+    index("reservation_guest_idx").on(t.reservedByGuestId),
+  ],
+);
+
+// ---------------------------------------------------------------------------
+// Geteilte Links: Wunschliste für Gäste ohne Konto (z. B. Patenonkel)
+// ---------------------------------------------------------------------------
+
+export const shareLink = pgTable(
+  "share_link",
+  {
+    id: id(),
+    profileId: text("profile_id")
+      .notNull()
+      .references(() => profile.id, { onDelete: "cascade" }),
+    /** z. B. "Patenonkel Peter" (nur für den Besitzer sichtbar) */
+    label: text("label").notNull(),
+    token: text("token").notNull().unique(),
+    createdByUserId: text("created_by_user_id").references(() => user.id, { onDelete: "set null" }),
+    /** null = unbegrenzt gültig */
+    expiresAt: timestamp("expires_at", { withTimezone: true }),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+    createdAt: createdAt(),
+  },
+  (t) => [index("share_link_profile_idx").on(t.profileId)],
+);
+
+/** Gast, der sich über einen geteilten Link mit seinem Namen gemeldet hat */
+export const shareGuest = pgTable("share_guest", {
+  id: id(),
+  shareLinkId: text("share_link_id")
     .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
+    .references(() => shareLink.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  /** SHA-256 des geheimen Gast-Schlüssels (der Schlüssel selbst liegt nur im Browser des Gastes) */
+  secretHash: text("secret_hash").notNull().unique(),
   createdAt: createdAt(),
-  /** Reservierender hat den Hinweis "Wunsch wurde geändert" bis zu diesem Zeitpunkt gesehen */
-  acknowledgedAt: timestamp("acknowledged_at", { withTimezone: true }),
 });
+
+// ---------------------------------------------------------------------------
+// Benachrichtigungen (in der App, zusätzlich per Mail)
+// ---------------------------------------------------------------------------
+
+export const notification = pgTable(
+  "notification",
+  {
+    id: id(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    body: text("body").notNull(),
+    /** App-interner Pfad für den Button, z. B. /events/123 */
+    linkPath: text("link_path"),
+    linkLabel: text("link_label"),
+    readAt: timestamp("read_at", { withTimezone: true }),
+    createdAt: createdAt(),
+  },
+  (t) => [index("notification_user_idx").on(t.userId, t.createdAt)],
+);
 
 // ---------------------------------------------------------------------------
 // Events (Wichteln oder "alle beschenken alle")

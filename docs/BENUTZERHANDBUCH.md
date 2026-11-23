@@ -37,6 +37,18 @@ Passwort vergessen? Auf der Anmeldeseite „Passwort vergessen?“ antippen.
 
 > Du siehst auf deiner eigenen Liste nie, ob etwas reserviert ist. Das ist Absicht.
 
+### 🔗 Liste mit Gästen teilen (z. B. Patenonkel)
+
+Mit **„🔗 Teilen“** erstellst du einen Link für Menschen ohne Konto. Das geht auch für die Liste deines Kindes.
+- Gäste sehen deine Wünsche und können sie reservieren. Dafür geben sie nur ihren Namen ein.
+- Sie sehen nur Wünsche, die für **alle Gruppen** sichtbar sind.
+- Ein Link lässt sich jederzeit **zurückziehen**. Bereits gemachte Reservierungen bleiben bestehen.
+- 🤫 Über den Link sieht man, was reserviert ist. Öffne ihn also besser nicht selbst.
+
+**Als Gast:** Du brauchst kein Konto. Beim ersten Reservieren gibst du deinen Namen an, dein Browser merkt sich dich.
+Über „📌 Auf einem anderen Gerät weitermachen?“ bekommst du einen persönlichen Link, mit dem du deine
+Reservierungen auch am Handy oder PC wiederfindest.
+
 ---
 
 ## 👪 Gruppen
@@ -118,6 +130,16 @@ Wer das Event angelegt hat oder Gruppen-Admin ist, sieht den Bereich **⚙️ Or
   nachgeschaut wurde.
 
 ---
+
+## 🔔 Benachrichtigungen
+
+Die Glocke oben rechts zeigt Neuigkeiten, die du erledigen solltest. Organisatoren erfahren dort zum Beispiel, wenn
+jemand neu in die Gruppe kommt und bei einem Wichteln noch nicht dabei ist. Der Button „Zum Event“ führt direkt
+dorthin. Die gleiche Nachricht kommt auch per Mail.
+
+**Neue Gruppenmitglieder und Events:** Bei Events, bei denen *alle beschenken alle* und die ganze Gruppe mitmacht,
+werden neue Mitglieder automatisch hinzugefügt. Beim Wichteln oder wenn nur ausgewählte Personen mitmachen,
+entscheidet der Organisator. Er bekommt dafür eine Benachrichtigung.
 
 ## Häufige Fragen
 

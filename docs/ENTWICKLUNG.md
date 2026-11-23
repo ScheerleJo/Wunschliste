@@ -47,6 +47,8 @@ apps/api/
       access.ts         Wer darf welche Liste verwalten (eigene + verwaltete Kinder)
       draw.ts           ★ Wichtel-Algorithmus (reine Funktion)
       images.ts         Bildverarbeitung und -ablage
+      event-membership.ts  Neues Gruppenmitglied: laufende Events ergänzen oder Organisatoren benachrichtigen
+      notifications.ts     Benachrichtigung in der App + Mail
       groups.ts, invites.ts, profiles.ts, handover.ts
     routes/             eine Datei pro Fachbereich
   drizzle/              generierte SQL-Migrationen (nicht von Hand ändern)
@@ -93,6 +95,9 @@ Alle Endpunkte liegen unter `/api` und brauchen (außer Auth, Health und Vorscha
 | Reservierungen | `GET /profiles/:id/list`, `POST/DELETE /wishes/:id/reserve`, `GET /reservations`, `POST /reservations/:wishId/acknowledge` |
 | Kinder | `POST /children`, `GET/PATCH/DELETE /children/:id`, `…/guardians`, `…/guardian-candidates`, `…/groups`, `…/handover`, `GET /handover/:token`, `POST /handover/:token/accept` |
 | Haushalte | `GET/POST /groups/:id/households`, `PUT/DELETE /households/:id` |
+| Teilen (Besitzer) | `GET/POST /profiles/:id/shares`, `DELETE /shares/:id` |
+| Teilen (Gäste, ohne Login) | `GET /share/:token`, `POST /share/:token/guest`, `POST/DELETE /share/:token/wishes/:wishId/reserve`, `POST /share/:token/reservations/:wishId/acknowledge`, `GET /share/:token/images/:id[/thumb]` (Header `x-guest-token`) |
+| Benachrichtigungen | `GET /notifications`, `POST /notifications/:id/read`, `POST /notifications/read-all` |
 | Events | `GET /events`, `POST /groups/:id/events`, `GET/PATCH/DELETE /events/:id`, `PUT /events/:id/type`, `PUT /events/:id/participants`, `PUT /events/:id/exclusions`, `POST /events/:id/draw`, `POST /events/:id/reset`, `POST /events/:id/reveal` |
 
 Request- und Response-Typen stehen in `packages/shared/src/index.ts`, der passende Client in `apps/web/src/lib/api.ts`.
@@ -120,7 +125,7 @@ pnpm test        # legt die Datenbank "wunschliste_test" neu an (PostgreSQL muss
 pnpm typecheck
 ```
 
-- 79 Integrationstests decken vor allem die Sicherheitsregeln ab: Wer sieht was, wer darf was,
+- 95 Integrationstests decken vor allem die Sicherheitsregeln ab: Wer sieht was, wer darf was,
   Geheimhaltung von Reservierungen und Wichtel-Zuordnungen.
 - `test/helpers.ts` bietet `createUser`, `call(user, method, path, body)`, `upload` und `fetchRaw`.
 - Die Tests laufen nacheinander und leeren die Datenbank vor jedem Test (`resetDb`).

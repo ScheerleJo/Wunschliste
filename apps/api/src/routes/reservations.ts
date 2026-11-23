@@ -18,7 +18,7 @@ async function linksFor(wishIds: string[]) {
 }
 
 /** Wurde der Wunsch nach der Reservierung (bzw. nach dem letzten "Gesehen") inhaltlich geändert? */
-function isChanged(w: { updatedAt: Date }, r: { createdAt: Date; acknowledgedAt: Date | null }) {
+export function isChanged(w: { updatedAt: Date }, r: { createdAt: Date; acknowledgedAt: Date | null }) {
   const since = r.acknowledgedAt && r.acknowledgedAt > r.createdAt ? r.acknowledgedAt : r.createdAt;
   return w.updatedAt.getTime() > since.getTime();
 }

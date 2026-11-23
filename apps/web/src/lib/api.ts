@@ -1,5 +1,10 @@
+import { GUEST_HEADER } from "@wunschliste/shared";
 import type {
   CreateInviteInput,
+  NotificationListDto,
+  ShareLinkDto,
+  ShareLinkInput,
+  ShareViewDto,
   DrawResultDto,
   EventAssignmentDto,
   EventDetailDto,
@@ -147,4 +152,55 @@ export const eventsApi = {
   draw: (id: string) => api<DrawResultDto>(`/events/${id}/draw`, json("POST")),
   reset: (id: string) => api(`/events/${id}/reset`, json("POST")),
   reveal: (id: string, reason: string) => api<EventAssignmentDto[]>(`/events/${id}/reveal`, json("POST", { reason })),
+};
+
+// ---- Teilen-Links (Verwaltung) -------------------------------------------------
+export const sharesApi = {
+  list: (profileId: string) => api<ShareLinkDto[]>(`/profiles/${profileId}/shares`),
+  create: (profileId: string, input: ShareLinkInput) => api<ShareLinkDto>(`/profiles/${profileId}/shares`, json("POST", input)),
+  revoke: (id: string) => api(`/shares/${id}`, json("DELETE")),
+};
+
+// ---- Gast-Zugriff über einen geteilten Link -----------------------------------
+const guestKey = (shareToken: string) => `wunschbaum.gast.${shareToken}`;
+
+/** Geheimer Gast-Schlüssel für diesen Link (liegt nur im Browser des Gastes) */
+export const guestToken = {
+  get: (shareToken: string): string | null => {
+    try {
+      return localStorage.getItem(guestKey(shareToken));
+    } catch {
+      return null;
+    }
+  },
+  set: (shareToken: string, secret: string) => {
+    try {
+      localStorage.setItem(guestKey(shareToken), secret);
+    } catch {
+      /* z. B. privater Modus: dann gilt der Schlüssel nur für diese Sitzung */
+    }
+    memoryTokens.set(shareToken, secret);
+  },
+};
+const memoryTokens = new Map<string, string>();
+
+function guestHeaders(shareToken: string): Record<string, string> {
+  const t = guestToken.get(shareToken) ?? memoryTokens.get(shareToken);
+  return t ? { [GUEST_HEADER]: t } : {};
+}
+
+export const guestApi = {
+  view: (t: string) => api<ShareViewDto>(`/share/${t}`, { headers: guestHeaders(t) }),
+  join: (t: string, name: string) => api<{ guestToken: string; name: string }>(`/share/${t}/guest`, json("POST", { name })),
+  reserve: (t: string, wishId: string) => api(`/share/${t}/wishes/${wishId}/reserve`, { ...json("POST"), headers: guestHeaders(t) }),
+  release: (t: string, wishId: string) => api(`/share/${t}/wishes/${wishId}/reserve`, { ...json("DELETE"), headers: guestHeaders(t) }),
+  acknowledge: (t: string, wishId: string) =>
+    api(`/share/${t}/reservations/${wishId}/acknowledge`, { ...json("POST"), headers: guestHeaders(t) }),
+};
+
+// ---- Benachrichtigungen ----------------------------------------------------------
+export const notificationsApi = {
+  list: () => api<NotificationListDto>("/notifications"),
+  read: (id: string) => api(`/notifications/${id}/read`, json("POST")),
+  readAll: () => api("/notifications/read-all", json("POST")),
 };

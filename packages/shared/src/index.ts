@@ -376,3 +376,70 @@ export function formatBudget(min: number | null | undefined, max: number | null 
   if (min != null) return `ab ${formatPrice(min)}`;
   return "";
 }
+
+// ---------------------------------------------------------------------------
+// Geteilte Links (Gäste ohne Konto)
+// ---------------------------------------------------------------------------
+
+export const shareLinkInputSchema = z.object({
+  label: z.string().trim().min(1, "Bitte gib an, für wen der Link ist").max(60, "Maximal 60 Zeichen"),
+  /** null = unbegrenzt gültig */
+  expiresInDays: z.number().int().min(1).max(365).optional().nullable(),
+});
+export type ShareLinkInput = z.input<typeof shareLinkInputSchema>;
+
+export const guestInputSchema = z.object({
+  name: z.string().trim().min(1, "Bitte gib deinen Namen an").max(60, "Maximal 60 Zeichen"),
+});
+
+/** Für den Besitzer: bewusst ohne Angaben zu Gästen oder Reservierungen */
+export interface ShareLinkDto {
+  id: string;
+  label: string;
+  url: string;
+  createdAt: string;
+  expiresAt: string | null;
+}
+
+/** Eigene Reservierung eines Gastes (auch für entfernte/archivierte Wünsche) */
+export interface GuestReservationDto {
+  wishId: string;
+  title: string;
+  priceCents: number | null;
+  links: WishLinkDto[];
+  images: WishImageDto[];
+  state: Exclude<MyReservationState, "no_access">;
+}
+
+export interface ShareViewDto {
+  profile: { displayName: string };
+  wishes: ViewWishDto[];
+  /** null, solange sich der Gast noch nicht mit Namen gemeldet hat */
+  guest: { name: string } | null;
+  myReservations: GuestReservationDto[];
+}
+
+/** Header, mit dem der Browser des Gastes seinen geheimen Schlüssel mitschickt */
+export const GUEST_HEADER = "x-guest-token";
+
+export const shareImageUrl = (shareToken: string, id: string, size: "full" | "thumb" = "full") =>
+  `/api/share/${shareToken}/images/${id}${size === "thumb" ? "/thumb" : ""}`;
+
+// ---------------------------------------------------------------------------
+// Benachrichtigungen
+// ---------------------------------------------------------------------------
+
+export interface NotificationDto {
+  id: string;
+  title: string;
+  body: string;
+  linkPath: string | null;
+  linkLabel: string | null;
+  createdAt: string;
+  read: boolean;
+}
+
+export interface NotificationListDto {
+  unread: number;
+  items: NotificationDto[];
+}

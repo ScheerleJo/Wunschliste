@@ -8,6 +8,7 @@ import { badRequest, forbidden, notFound } from "../lib/http.ts";
 import { getMembership } from "../services/groups.ts";
 import { loadInvite } from "../services/invites.ts";
 import { getOwnProfile } from "../services/profiles.ts";
+import { handleNewGroupMember } from "../services/event-membership.ts";
 
 export const inviteRoutes = new Hono<AppEnv>();
 
@@ -66,6 +67,8 @@ inviteRoutes.post("/invites/:token/accept", async (c) => {
     await tx.insert(groupMember).values({ groupId, profileId: me.id, role: "member" }).onConflictDoNothing();
   });
 
+  // Laufende Events: automatisch hinzufügen oder Organisatoren benachrichtigen
+  await handleNewGroupMember(groupId, me.id, u.id);
   return c.json({ groupId, alreadyMember: false });
 });
 

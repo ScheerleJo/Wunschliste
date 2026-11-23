@@ -11,6 +11,8 @@ import { ChildSettingsPage } from "./pages/ChildSettingsPage.tsx";
 import { HandoverPage } from "./pages/HandoverPage.tsx";
 import { EventsPage } from "./pages/EventsPage.tsx";
 import { EventDetailPage } from "./pages/EventDetailPage.tsx";
+import { SharePage } from "./pages/SharePage.tsx";
+import { NotificationsPage } from "./pages/NotificationsPage.tsx";
 import { ReservationsPage } from "./pages/ReservationsPage.tsx";
 import { WishlistViewPage } from "./pages/WishlistViewPage.tsx";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage.tsx";
@@ -49,6 +51,7 @@ const router = createBrowserRouter([
   { path: "/registrieren", element: <GuestOnly><RegisterPage /></GuestOnly> },
   { path: "/einladung/:token", element: <InvitePage /> },
   { path: "/uebergabe/:token", element: <HandoverPage /> },
+  { path: "/teilen/:token", element: <SharePage /> },
   { path: "/passwort-vergessen", element: <ForgotPasswordPage /> },
   { path: "/passwort-zuruecksetzen", element: <ResetPasswordPage /> },
   {
@@ -64,6 +67,7 @@ const router = createBrowserRouter([
       { path: "/reservierungen", element: <ReservationsPage /> },
       { path: "/liste/:profileId", element: <WishlistViewPage /> },
       { path: "/kinder/:profileId", element: <ChildSettingsPage /> },
+      { path: "/benachrichtigungen", element: <NotificationsPage /> },
       { path: "/events", element: <EventsPage /> },
       { path: "/events/:eventId", element: <EventDetailPage /> },
     ],

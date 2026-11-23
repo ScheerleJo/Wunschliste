@@ -37,6 +37,30 @@ Stand: erster lauffähiger Prototyp, auf Proxmox unter `wunschbaum.basislager.cl
   - Die Verwalter verlieren den Zugriff und sind danach normale Schenkende. Das Kind sieht ab dann keine Reservierungen,
     bestehende Reservierungen bleiben aber gültig.
 
+## Teilen per Link (Gäste ohne Konto)
+
+- Besitzer bzw. Eltern bei Kinderlisten erstellen pro Person einen Link mit Bezeichnung (z. B. „Patenonkel Peter“).
+  Er ist optional befristet und lässt sich zurückziehen. Zurückgezogene oder abgelaufene Links liefern 404.
+  Gast-Reservierungen bleiben dabei bestehen.
+- Gäste sehen nur **aktive Wünsche, die für alle Gruppen sichtbar sind**. Bilder laufen über eigene Link-URLs.
+- **Gast-Identität:** Name eingeben, der Server erzeugt einen geheimen Schlüssel. Nur dessen SHA-256-Hash wird
+  gespeichert. Der Browser schickt den Schlüssel im Header `x-guest-token`, und er gilt nur für diesen einen Link.
+  Ein persönlicher Link (`#gast=…`) überträgt ihn auf andere Geräte.
+- **Reservierungen** hängen entweder an einem Konto oder an einem Gast (Check-Constraint). Gast und Familie sehen
+  gegenseitig nur „reserviert“. Der Name des Gastes wird niemandem angezeigt.
+- **Der Besitzer erfährt nichts:** Die Link-Verwaltung zeigt weder Gäste noch Reservierungen, und angemeldet
+  kann der Besitzer seinen eigenen Link nicht öffnen (403). In einem privaten Fenster ließe es sich nicht verhindern,
+  deshalb weist die Oberfläche darauf hin.
+
+## Neue Gruppenmitglieder und laufende Events
+
+„Laufend“ heißt: ohne Datum oder Datum heute bzw. später. Kommt jemand in die Gruppe (Einladung angenommen oder Kind
+aufgenommen):
+- **Alle beschenken alle und bisher die ganze Gruppe dabei:** Die Person wird automatisch hinzugefügt.
+- **Wichteln oder nur ausgewählte Teilnehmende:** Ersteller und Gruppen-Admins bekommen eine Benachrichtigung in der App
+  (🔔) und per Mail, mit Button „Zum Event“. Ist schon ausgelost, erklärt die Nachricht, dass man zurücksetzen und
+  neu auslosen muss. Wer die Änderung selbst ausgelöst hat, wird nicht benachrichtigt.
+
 ## Bilder
 
 - Bis zu 8 Bilder pro Wunsch: Dateiauswahl (am Handy auch Kamera), Einfügen mit Strg+V, Drag & Drop.
