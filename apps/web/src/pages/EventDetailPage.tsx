@@ -37,7 +37,7 @@ export function EventDetailPage() {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold">
-            {isSanta ? "🎅" : "🎄"} {e.name}
+            {isSanta ? "🎅" : "🎁"} {e.name}
           </h1>
           <p className="mt-1 text-stone-600">
             <Link to={`/gruppen/${e.groupId}`} className="hover:underline">
@@ -47,7 +47,7 @@ export function EventDetailPage() {
             {e.createdByName && <span className="text-stone-400"> · organisiert von {e.createdByName}</span>}
           </p>
           <div className="mt-2 flex flex-wrap gap-2">
-            <Badge tone="brand">{isSanta ? "Wichteln" : "Alle beschenken alle"}</Badge>
+            <Badge tone="brand">{isSanta ? "Wichteln" : "Freies Schenken"}</Badge>
             {budget && <Badge>💶 Budget {budget}</Badge>}
           </div>
         </div>
@@ -231,7 +231,7 @@ function Organizer({ event }: { event: EventDetailDto }) {
     mutationFn: (type: EventInput["type"]) => eventsApi.setType(event.id, type),
     onSuccess: async (_, type) => {
       setRevealed(null);
-      await ok(type === "secret_santa" ? "Wichteln aktiviert. Prüfe Teilnehmende und Ausschlüsse und lose dann aus." : "Wichteln ausgeschaltet. Alle beschenken alle.")();
+      await ok(type === "secret_santa" ? "Wichteln aktiviert. Prüfe Teilnehmende und Ausschlüsse und lose dann aus." : "Wichteln ausgeschaltet. Jede(r) schenkt frei, wem er oder sie möchte.")();
     },
     onError,
   });

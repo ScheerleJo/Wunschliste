@@ -66,8 +66,8 @@ export function EventForm({
       <Field label="Name" placeholder="z. B. Wichteln Weihnachten 2026" value={name} onChange={(e) => setName(e.target.value)} />
       <Field label="Datum (optional)" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
       <div className="grid grid-cols-2 gap-3">
-        <Field label="Budget ab € (optional)" inputMode="decimal" value={min} onChange={(e) => setMin(e.target.value)} placeholder="z. B. 20" />
-        <Field label="Budget bis € (optional)" inputMode="decimal" value={max} onChange={(e) => setMax(e.target.value)} placeholder="z. B. 30" />
+        <Field label="Budget ab €" inputMode="decimal" value={min} onChange={(e) => setMin(e.target.value)} placeholder="optional" />
+        <Field label="Budget bis €" inputMode="decimal" value={max} onChange={(e) => setMax(e.target.value)} placeholder="optional" />
       </div>
       <TextArea label="Beschreibung (optional)" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Ort, Uhrzeit, Regeln …" />
       <fieldset>
@@ -76,7 +76,7 @@ export function EventForm({
         <p className="mt-1.5 text-xs text-stone-500">
           {type === "secret_santa"
             ? "Jede Person beschenkt eine ausgeloste andere. Die Auslosung startest du danach auf der Event-Seite."
-            : "Alle beschenken alle, z. B. an Weihnachten oder zum Geburtstag. Das kannst du später noch ändern."}
+            : "Ohne Auslosung: Jede(r) schenkt, wem er oder sie möchte, z. B. an Weihnachten, zum Geburtstag oder zur Hochzeit. Das kannst du später noch ändern."}
         </p>
         {discardsDraw && <p className="mt-1.5 text-sm text-amber-700">⚠️ Die bisherige Auslosung wird dabei verworfen.</p>}
       </fieldset>
@@ -103,7 +103,7 @@ export function WichtelChoice({
   disabled?: boolean;
 }) {
   const options = [
-    ["standard", "🎄 Nein, alle beschenken alle"],
+    ["standard", "🎁 Nein, frei schenken"],
     ["secret_santa", "🎅 Ja, wir wichteln"],
   ] as const;
   return (

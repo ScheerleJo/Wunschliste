@@ -485,7 +485,7 @@ function Events() {
           <Card key={e.id} className="flex flex-wrap items-center gap-2 p-4!">
             <div className="min-w-0 flex-1">
               <p className="font-semibold">
-                {e.type === "secret_santa" ? "🎅" : "🎄"} {e.name}{" "}
+                {e.type === "secret_santa" ? "🎅" : "🎁"} {e.name}{" "}
                 {e.type === "secret_santa" && <Badge tone={e.status === "draft" ? "amber" : "green"}>{e.status === "draft" ? "nicht ausgelost" : "ausgelost"}</Badge>}
               </p>
               <p className="text-xs text-stone-500">

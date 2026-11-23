@@ -45,7 +45,7 @@ export function EventsPage() {
           <h2 className="mt-2 font-semibold">Noch keine Events</h2>
           <p className="mt-1 text-sm text-stone-600">
             {groups.data?.length
-              ? "Plane ein Wichteln oder ein Fest, bei dem sich alle beschenken, mit Budget und Datum."
+              ? "Plane ein Fest wie Weihnachten oder einen Geburtstag, mit Datum, Budget und auf Wunsch mit Wichteln."
               : "Tritt zuerst einer Gruppe bei oder lege eine an."}
           </p>
         </Card>
@@ -85,7 +85,7 @@ function EventList({ events, muted }: { events: EventSummaryDto[]; muted?: boole
           >
             <div className="flex items-start justify-between gap-2">
               <h3 className="font-semibold">
-                {e.type === "secret_santa" ? "🎅" : "🎄"} {e.name}
+                {e.type === "secret_santa" ? "🎅" : "🎁"} {e.name}
               </h3>
               {e.type === "secret_santa" &&
                 (e.status === "draft" ? <Badge tone="amber">Noch nicht ausgelost</Badge> : <Badge tone="green">Ausgelost</Badge>)}

@@ -26,7 +26,7 @@ beforeEach(async () => {
 });
 
 describe("Neue Gruppenmitglieder und laufende Events", () => {
-  it("'alle beschenken alle' mit ganzer Gruppe: automatisch hinzugefügt, keine Nachricht", async () => {
+  it("Freies Schenken mit ganzer Gruppe: automatisch hinzugefügt, keine Nachricht", async () => {
     const id = await newEvent(frau, { type: "standard", name: "Weihnachten" });
     await invite(opa);
     expect(await participants(id)).toEqual(["Frau", "Josia", "Oma", "Opa"]);

@@ -109,7 +109,8 @@ Für Kinder ohne eigenes Konto legt ein Elternteil auf der Startseite ein **Kind
 Unter **Events** plant ihr Feste mit Datum und Budget. Beim Anlegen gibst du zuerst Gruppe, Name, Datum und Budget an
 und wählst danach, **ob gewichtelt wird**. Das lässt sich auf der Event-Seite unter *Organisation* jederzeit umstellen.
 
-- **Alle beschenken alle**, z. B. Weihnachten oder ein Geburtstag: Das Event zeigt alle Teilnehmenden mit ihren
+- **🎁 Freies Schenken** (ohne Auslosung), z. B. Weihnachten, ein Geburtstag oder eine Hochzeit: Jede(r) schenkt, wem
+  er oder sie möchte. Das Event zeigt alle Teilnehmenden mit ihren
   Wunschlisten und das Budget.
 - **🎅 Wichteln:** Jede Person beschenkt genau eine ausgeloste andere.
   - Nach der Auslosung tippst du auf **„Aufdecken“** und siehst, wen *du* beschenkst. Niemand sonst sieht das,
@@ -137,7 +138,7 @@ Die Glocke oben rechts zeigt Neuigkeiten, die du erledigen solltest. Organisator
 jemand neu in die Gruppe kommt und bei einem Wichteln noch nicht dabei ist. Der Button „Zum Event“ führt direkt
 dorthin. Die gleiche Nachricht kommt auch per Mail.
 
-**Neue Gruppenmitglieder und Events:** Bei Events, bei denen *alle beschenken alle* und die ganze Gruppe mitmacht,
+**Neue Gruppenmitglieder und Events:** Bei Events mit *freiem Schenken*, bei denen die ganze Gruppe mitmacht,
 werden neue Mitglieder automatisch hinzugefügt. Beim Wichteln oder wenn nur ausgewählte Personen mitmachen,
 entscheidet der Organisator. Er bekommt dafür eine Benachrichtigung.
 

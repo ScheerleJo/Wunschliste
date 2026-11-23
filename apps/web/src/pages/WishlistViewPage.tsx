@@ -56,7 +56,7 @@ export function WishlistViewPage() {
       {event.data && formatBudget(event.data.budgetMinCents, event.data.budgetMaxCents) && (
         <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-brand-50 px-4 py-3 text-sm text-brand-800">
           <span>
-            {event.data.type === "secret_santa" ? "🎅" : "🎄"} {event.data.name}: Budget{" "}
+            {event.data.type === "secret_santa" ? "🎅" : "🎁"} {event.data.name}: Budget{" "}
             <b>{formatBudget(event.data.budgetMinCents, event.data.budgetMaxCents)}</b>
           </span>
           <Link to={`/events/${event.data.id}`} className="font-medium underline">
