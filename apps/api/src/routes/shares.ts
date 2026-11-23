@@ -3,18 +3,16 @@
  *
  * - Der Besitzer (bzw. die Eltern bei Kinderlisten) erstellt Links und kann sie zurückziehen.
  * - Gäste sehen nur aktive Wünsche, die für alle Gruppen sichtbar sind.
- * - Zum Reservieren meldet sich der Gast mit seinem Namen. Er bekommt einen geheimen Schlüssel, den nur sein
- *   Browser kennt (Header x-guest-token). In der Datenbank liegt nur dessen SHA-256-Hash.
+ * - Der Link selbst ist die Identität des Gastes: Reservierungen hängen am Link. Jeder, der den Link öffnet,
+ *   sieht sie als "von dir reserviert" (in jedem Browser, auf jedem Gerät). Daher: ein Link pro Person/Haushalt.
  * - Wie in der App: Wer reserviert hat, wird niemandem verraten. Der Besitzer bekommt nie Reservierungsdaten.
  */
-import { createHash, randomBytes } from "node:crypto";
+import { randomBytes } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { Hono, type Context } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { and, asc, desc, eq, gt, inArray, isNull, or } from "drizzle-orm";
 import {
-  GUEST_HEADER,
-  guestInputSchema,
   shareLinkInputSchema,
   type GuestReservationDto,
   type ShareLinkDto,
@@ -22,7 +20,7 @@ import {
   type ViewWishDto,
 } from "@wunschliste/shared";
 import { db } from "../db/index.ts";
-import { profile, reservation, shareGuest, shareLink, wish, wishImage, wishLink } from "../db/schema.ts";
+import { profile, reservation, shareLink, wish, wishImage, wishLink } from "../db/schema.ts";
 import { env } from "../env.ts";
 import { requireUser, type AppEnv } from "../lib/context.ts";
 import { notFound, parseJson } from "../lib/http.ts";
@@ -33,7 +31,6 @@ import { isChanged } from "./reservations.ts";
 export const shareRoutes = new Hono<AppEnv>();
 
 const shareUrl = (token: string) => `${env.appUrl}/teilen/${token}`;
-const hash = (secret: string) => createHash("sha256").update(secret).digest("hex");
 
 // ---------------------------------------------------------------------------
 // Verwaltung durch den Besitzer
@@ -96,7 +93,7 @@ shareRoutes.delete("/shares/:shareId", async (c) => {
 });
 
 // ---------------------------------------------------------------------------
-// Gast-Zugriff (ohne Konto)
+// Gast-Zugriff (ohne Konto) – Identität = Link
 // ---------------------------------------------------------------------------
 
 /** Gültigen Link laden. Der angemeldete Besitzer selbst darf seine Liste hier nicht ansehen. */
@@ -116,22 +113,6 @@ async function loadShare(c: Context<AppEnv>) {
   return row;
 }
 
-async function loadGuest(c: Context<AppEnv>, shareLinkId: string) {
-  const secret = c.req.header(GUEST_HEADER);
-  if (!secret) return null;
-  const [g] = await db
-    .select()
-    .from(shareGuest)
-    .where(and(eq(shareGuest.secretHash, hash(secret)), eq(shareGuest.shareLinkId, shareLinkId)));
-  return g ?? null;
-}
-
-async function requireGuest(c: Context<AppEnv>, shareLinkId: string) {
-  const g = await loadGuest(c, shareLinkId);
-  if (!g) throw new HTTPException(401, { message: "Bitte gib zuerst deinen Namen an" });
-  return g;
-}
-
 /** Wünsche, die Gäste sehen dürfen: aktiv und für alle Gruppen sichtbar */
 const guestVisible = (profileId: string) =>
   and(eq(wish.profileId, profileId), eq(wish.status, "active"), eq(wish.visibleInAllGroups, true));
@@ -142,21 +123,18 @@ async function linksFor(ids: string[]) {
 
 shareRoutes.get("/share/:token", async (c) => {
   const { link, profile: p } = await loadShare(c);
-  const guest = await loadGuest(c, link.id);
 
   const wishes = await db.select().from(wish).where(guestVisible(p.id)).orderBy(asc(wish.sortOrder), desc(wish.createdAt));
   const ids = wishes.map((w) => w.id);
   const reservations = ids.length ? await db.select().from(reservation).where(inArray(reservation.wishId, ids)) : [];
 
-  // Eigene Reservierungen des Gastes, auch für inzwischen archivierte/gelöschte Wünsche
-  const mine = guest
-    ? await db
-        .select({ r: reservation, w: wish })
-        .from(reservation)
-        .innerJoin(wish, eq(wish.id, reservation.wishId))
-        .where(eq(reservation.reservedByGuestId, guest.id))
-        .orderBy(asc(reservation.createdAt))
-    : [];
+  // Reservierungen dieses Links, auch für inzwischen archivierte/gelöschte Wünsche
+  const mine = await db
+    .select({ r: reservation, w: wish })
+    .from(reservation)
+    .innerJoin(wish, eq(wish.id, reservation.wishId))
+    .where(eq(reservation.reservedByShareLinkId, link.id))
+    .orderBy(asc(reservation.createdAt));
 
   const allIds = [...new Set([...ids, ...mine.map((m) => m.w.id)])];
   const [links, images] = await Promise.all([linksFor(allIds), imagesFor(allIds)]);
@@ -164,10 +142,9 @@ shareRoutes.get("/share/:token", async (c) => {
 
   const body: ShareViewDto = {
     profile: { displayName: p.displayName },
-    guest: guest ? { name: guest.name } : null,
     wishes: wishes.map((w): ViewWishDto => {
       const r = reservations.find((x) => x.wishId === w.id);
-      const isMine = !!guest && r?.reservedByGuestId === guest.id;
+      const isMine = r?.reservedByShareLinkId === link.id;
       return {
         id: w.id,
         title: w.title,
@@ -184,7 +161,6 @@ shareRoutes.get("/share/:token", async (c) => {
       title: w.title,
       priceCents: w.priceCents,
       links: linksOf(w.id),
-      // Bilder nur, solange der Wunsch für Gäste sichtbar ist (das <img> schickt keinen Gast-Schlüssel mit)
       images: w.status === "active" && w.visibleInAllGroups ? (images.get(w.id) ?? []) : [],
       state: w.status === "deleted" ? "deleted" : w.status === "archived" ? "archived" : isChanged(w, r) ? "changed" : "ok",
     })),
@@ -192,27 +168,17 @@ shareRoutes.get("/share/:token", async (c) => {
   return c.json(body);
 });
 
-/** Gast meldet sich mit seinem Namen; Antwort enthält den geheimen Schlüssel (nur dieses eine Mal) */
-shareRoutes.post("/share/:token/guest", async (c) => {
-  const { link } = await loadShare(c);
-  const { name } = await parseJson(c, guestInputSchema);
-  const secret = randomBytes(24).toString("base64url");
-  await db.insert(shareGuest).values({ shareLinkId: link.id, name, secretHash: hash(secret) });
-  return c.json({ guestToken: secret, name }, 201);
-});
-
 shareRoutes.post("/share/:token/wishes/:wishId/reserve", async (c) => {
   const { link, profile: p } = await loadShare(c);
-  const guest = await requireGuest(c, link.id);
   const [w] = await db
     .select()
     .from(wish)
     .where(and(eq(wish.id, c.req.param("wishId")), guestVisible(p.id)));
   if (!w) throw notFound("Wunsch nicht gefunden");
-  const inserted = await db.insert(reservation).values({ wishId: w.id, reservedByGuestId: guest.id }).onConflictDoNothing().returning();
+  const inserted = await db.insert(reservation).values({ wishId: w.id, reservedByShareLinkId: link.id }).onConflictDoNothing().returning();
   if (inserted.length === 0) {
     const [existing] = await db.select().from(reservation).where(eq(reservation.wishId, w.id));
-    if (existing?.reservedByGuestId === guest.id) return c.json({ ok: true });
+    if (existing?.reservedByShareLinkId === link.id) return c.json({ ok: true });
     throw new HTTPException(409, { message: "Dieser Wunsch wurde gerade von jemand anderem reserviert" });
   }
   return c.json({ ok: true }, 201);
@@ -220,11 +186,10 @@ shareRoutes.post("/share/:token/wishes/:wishId/reserve", async (c) => {
 
 shareRoutes.delete("/share/:token/wishes/:wishId/reserve", async (c) => {
   const { link } = await loadShare(c);
-  const guest = await requireGuest(c, link.id);
   const wishId = c.req.param("wishId");
   const deleted = await db
     .delete(reservation)
-    .where(and(eq(reservation.wishId, wishId), eq(reservation.reservedByGuestId, guest.id)))
+    .where(and(eq(reservation.wishId, wishId), eq(reservation.reservedByShareLinkId, link.id)))
     .returning();
   if (deleted.length === 0) throw notFound("Reservierung nicht gefunden");
   const gone = await db
@@ -237,17 +202,16 @@ shareRoutes.delete("/share/:token/wishes/:wishId/reserve", async (c) => {
 
 shareRoutes.post("/share/:token/reservations/:wishId/acknowledge", async (c) => {
   const { link } = await loadShare(c);
-  const guest = await requireGuest(c, link.id);
   const updated = await db
     .update(reservation)
     .set({ acknowledgedAt: new Date() })
-    .where(and(eq(reservation.wishId, c.req.param("wishId")), eq(reservation.reservedByGuestId, guest.id)))
+    .where(and(eq(reservation.wishId, c.req.param("wishId")), eq(reservation.reservedByShareLinkId, link.id)))
     .returning();
   if (updated.length === 0) throw notFound("Reservierung nicht gefunden");
   return c.json({ ok: true });
 });
 
-/** Bilder für Gäste: nur von sichtbaren Wünschen oder von Wünschen, die der Gast reserviert hat */
+/** Bilder für Gäste: nur von sichtbaren Wünschen oder von Wünschen, die über diesen Link reserviert sind */
 async function serveGuestImage(c: Context<AppEnv>, size: "full" | "thumb") {
   const { link, profile: p } = await loadShare(c);
   const [row] = await db
@@ -256,16 +220,14 @@ async function serveGuestImage(c: Context<AppEnv>, size: "full" | "thumb") {
     .innerJoin(wish, eq(wish.id, wishImage.wishId))
     .where(and(eq(wishImage.id, c.req.param("imageId")!), eq(wish.profileId, p.id)));
   if (!row) throw notFound("Bild nicht gefunden");
-  let allowed = row.w.status === "active" && row.w.visibleInAllGroups;
-  if (!allowed) {
-    const guest = await loadGuest(c, link.id);
-    allowed =
-      !!guest &&
-      (await db
+  const allowed =
+    (row.w.status === "active" && row.w.visibleInAllGroups) ||
+    (
+      await db
         .select({ id: reservation.wishId })
         .from(reservation)
-        .where(and(eq(reservation.wishId, row.w.id), eq(reservation.reservedByGuestId, guest.id)))).length > 0;
-  }
+        .where(and(eq(reservation.wishId, row.w.id), eq(reservation.reservedByShareLinkId, link.id)))
+    ).length > 0;
   if (!allowed) throw notFound("Bild nicht gefunden");
   const data = await readFile(resolveUpload(size === "thumb" ? row.img.thumbPath : row.img.filePath)).catch(() => null);
   if (!data) throw notFound("Bild nicht gefunden");
@@ -278,4 +240,3 @@ async function serveGuestImage(c: Context<AppEnv>, size: "full" | "thumb") {
 
 shareRoutes.get("/share/:token/images/:imageId", (c) => serveGuestImage(c, "full"));
 shareRoutes.get("/share/:token/images/:imageId/thumb", (c) => serveGuestImage(c, "thumb"));
-

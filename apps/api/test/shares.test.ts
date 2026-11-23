@@ -6,11 +6,11 @@ import { call, createUser, fetchRaw, resetDb, upload, type TestUser } from "./he
 let anna: TestUser, ben: TestUser, fremd: TestUser;
 let annaP: string, familie: string;
 
-/** Anfrage als Gast (ohne Konto), optional mit Gast-Schlüssel */
-async function guest(method: string, path: string, guestToken?: string, body?: unknown) {
+/** Anfrage als Gast (ohne Konto) */
+async function guest(method: string, path: string, body?: unknown) {
   const res = await app.request(`/api${path}`, {
     method,
-    headers: { "Content-Type": "application/json", Origin: "http://localhost:5173", ...(guestToken ? { "x-guest-token": guestToken } : {}) },
+    headers: { "Content-Type": "application/json", Origin: "http://localhost:5173" },
     body: body === undefined ? undefined : JSON.stringify(body),
   });
   return { status: res.status, body: (await res.json().catch(() => null)) as any };
@@ -21,7 +21,6 @@ async function newShare(label = "Patenonkel Peter", by: TestUser = anna, profile
   return { ...res.body, token: (res.body.url as string).split("/").pop()! };
 }
 const addWish = async (body: object) => (await call(anna, "POST", `/profiles/${annaP}/wishes`, body)).body as { id: string };
-const joinAs = async (token: string, name = "Peter") => (await guest("POST", `/share/${token}/guest`, undefined, { name })).body.guestToken as string;
 
 beforeEach(async () => {
   await resetDb();
@@ -60,81 +59,83 @@ describe("Teilen-Links verwalten", () => {
   });
 });
 
-describe("Gäste ohne Konto", () => {
+describe("Gäste ohne Konto (Identität = Link)", () => {
   it("sehen nur Wünsche, die für alle Gruppen sichtbar sind", async () => {
     await addWish({ title: "Für alle" });
     await addWish({ title: "Nur Familie", visibleInAllGroups: false, groupIds: [familie] });
     const archiviert = await addWish({ title: "Archiviert" });
     await call(anna, "POST", `/wishes/${archiviert.id}/archive`);
     const s = await newShare();
-    const view = (await guest("GET", `/share/${s.token}`)).body;
-    expect(view.wishes.map((w: any) => w.title)).toEqual(["Für alle"]);
-    expect(view.guest).toBeNull();
+    expect((await guest("GET", `/share/${s.token}`)).body.wishes.map((w: any) => w.title)).toEqual(["Für alle"]);
   });
 
-  it("reservieren nur nach Namensangabe; Familie und Gast sehen gegenseitig nur 'reserviert'", async () => {
+  it("Reservierung gilt für den Link: in jedem Browser 'von dir reserviert'", async () => {
+    const w = await addWish({ title: "Uhr" });
+    const s = await newShare();
+    // "Browser 1" reserviert, ohne Namen oder Anmeldung
+    expect((await guest("POST", `/share/${s.token}/wishes/${w.id}/reserve`)).status).toBe(201);
+    // "Browser 2" (privates Fenster, anderes Gerät …) sieht es ebenfalls als eigene Reservierung
+    expect((await guest("GET", `/share/${s.token}`)).body.wishes[0].reservation).toBe("reserved_by_me");
+    // und kann sie auch aufheben
+    expect((await guest("DELETE", `/share/${s.token}/wishes/${w.id}/reserve`)).status).toBe(200);
+    expect((await guest("GET", `/share/${s.token}`)).body.wishes[0].reservation).toBe("available");
+  });
+
+  it("verschiedene Links sind verschiedene Personen; Familie und Gäste sehen gegenseitig nur 'reserviert'", async () => {
     const w1 = await addWish({ title: "Uhr" });
     const w2 = await addWish({ title: "Buch" });
-    const s = await newShare();
-    expect((await guest("POST", `/share/${s.token}/wishes/${w1.id}/reserve`)).status).toBe(401);
+    const w3 = await addWish({ title: "Schal" });
+    const peter = await newShare("Peter");
+    const paula = await newShare("Paula");
+    await guest("POST", `/share/${peter.token}/wishes/${w1.id}/reserve`);
+    await guest("POST", `/share/${paula.token}/wishes/${w2.id}/reserve`);
+    await call(ben, "POST", `/wishes/${w3.id}/reserve`);
 
-    const peter = await joinAs(s.token);
-    expect((await guest("POST", `/share/${s.token}/wishes/${w1.id}/reserve`, peter)).status).toBe(201);
-    await call(ben, "POST", `/wishes/${w2.id}/reserve`);
-
-    const g = (await guest("GET", `/share/${s.token}`, peter)).body;
-    expect(g.guest).toEqual({ name: "Peter" });
-    expect(Object.fromEntries(g.wishes.map((w: any) => [w.title, w.reservation]))).toEqual({ Uhr: "reserved_by_me", Buch: "reserved" });
-    expect(JSON.stringify(g)).not.toContain("Ben");
-
+    const status = (view: any) => Object.fromEntries(view.wishes.map((w: any) => [w.title, w.reservation]));
+    expect(status((await guest("GET", `/share/${peter.token}`)).body)).toEqual({ Uhr: "reserved_by_me", Buch: "reserved", Schal: "reserved" });
+    expect(status((await guest("GET", `/share/${paula.token}`)).body)).toEqual({ Uhr: "reserved", Buch: "reserved_by_me", Schal: "reserved" });
     const benView = (await call(ben, "GET", `/profiles/${annaP}/list`)).body;
-    expect(Object.fromEntries(benView.wishes.map((w: any) => [w.title, w.reservation]))).toEqual({ Uhr: "reserved", Buch: "reserved_by_me" });
-    expect(JSON.stringify(benView)).not.toContain("Peter");
+    expect(status(benView)).toEqual({ Uhr: "reserved", Buch: "reserved", Schal: "reserved_by_me" });
+    expect(JSON.stringify(benView)).not.toMatch(/Peter|Paula/);
 
-    // Familie kann den vom Gast reservierten Wunsch nicht reservieren und umgekehrt
+    // Fremde Reservierungen kann man weder übernehmen noch aufheben
+    expect((await guest("POST", `/share/${paula.token}/wishes/${w1.id}/reserve`)).status).toBe(409);
+    expect((await guest("DELETE", `/share/${paula.token}/wishes/${w1.id}/reserve`)).status).toBe(404);
     expect((await call(ben, "POST", `/wishes/${w1.id}/reserve`)).status).toBe(409);
-    expect((await guest("POST", `/share/${s.token}/wishes/${w2.id}/reserve`, peter)).status).toBe(409);
   });
 
   it("die Wünschende sieht weiterhin nichts und kann den eigenen Link angemeldet nicht öffnen", async () => {
     const w = await addWish({ title: "Uhr" });
     const s = await newShare();
-    const peter = await joinAs(s.token);
-    await guest("POST", `/share/${s.token}/wishes/${w.id}/reserve`, peter);
+    await guest("POST", `/share/${s.token}/wishes/${w.id}/reserve`);
     expect(JSON.stringify((await call(anna, "GET", `/profiles/${annaP}/wishes`)).body).toLowerCase()).not.toContain("reserv");
     expect((await call(anna, "GET", `/share/${s.token}`)).status).toBe(403);
-    // Ein anderes angemeldetes Familienmitglied darf den Link öffnen
     expect((await call(ben, "GET", `/share/${s.token}`)).status).toBe(200);
   });
 
-  it("nur der reservierende Gast kann freigeben; ein Schlüssel gilt nur für seinen Link", async () => {
+  it("Reservierungen bleiben bestehen, wenn der Link zurückgezogen wird", async () => {
     const w = await addWish({ title: "Uhr" });
-    const s1 = await newShare("Peter");
-    const s2 = await newShare("Paula");
-    const peter = await joinAs(s1.token, "Peter");
-    const paula = await joinAs(s2.token, "Paula");
-    await guest("POST", `/share/${s1.token}/wishes/${w.id}/reserve`, peter);
-    expect((await guest("DELETE", `/share/${s2.token}/wishes/${w.id}/reserve`, paula)).status).toBe(404);
-    expect((await guest("GET", `/share/${s1.token}`, paula)).body.guest).toBeNull();
-    expect((await guest("DELETE", `/share/${s1.token}/wishes/${w.id}/reserve`, peter)).status).toBe(200);
-    expect((await call(ben, "GET", `/profiles/${annaP}/list`)).body.wishes[0].reservation).toBe("available");
+    const s = await newShare();
+    await guest("POST", `/share/${s.token}/wishes/${w.id}/reserve`);
+    await call(anna, "DELETE", `/shares/${s.id}`);
+    expect((await guest("GET", `/share/${s.token}`)).status).toBe(404);
+    expect((await call(ben, "GET", `/profiles/${annaP}/list`)).body.wishes[0].reservation).toBe("reserved");
   });
 
-  it("Gäste bekommen Hinweise bei Änderung und Löschung", async () => {
+  it("Hinweise bei Änderung und Löschung", async () => {
     const a = await addWish({ title: "Geändert" });
     const d = await addWish({ title: "Gelöscht" });
     const s = await newShare();
-    const peter = await joinAs(s.token);
-    await guest("POST", `/share/${s.token}/wishes/${a.id}/reserve`, peter);
-    await guest("POST", `/share/${s.token}/wishes/${d.id}/reserve`, peter);
+    await guest("POST", `/share/${s.token}/wishes/${a.id}/reserve`);
+    await guest("POST", `/share/${s.token}/wishes/${d.id}/reserve`);
     await new Promise((r) => setTimeout(r, 20));
     await call(anna, "PATCH", `/wishes/${a.id}`, { title: "Geändert (blau)" });
     await call(anna, "DELETE", `/wishes/${d.id}`);
-    const mine = (await guest("GET", `/share/${s.token}`, peter)).body.myReservations;
+    const mine = (await guest("GET", `/share/${s.token}`)).body.myReservations;
     expect(Object.fromEntries(mine.map((r: any) => [r.title, r.state]))).toEqual({ "Geändert (blau)": "changed", Gelöscht: "deleted" });
-    await guest("POST", `/share/${s.token}/reservations/${a.id}/acknowledge`, peter);
-    await guest("DELETE", `/share/${s.token}/wishes/${d.id}/reserve`, peter);
-    expect((await guest("GET", `/share/${s.token}`, peter)).body.myReservations).toEqual([expect.objectContaining({ state: "ok" })]);
+    await guest("POST", `/share/${s.token}/reservations/${a.id}/acknowledge`);
+    await guest("DELETE", `/share/${s.token}/wishes/${d.id}/reserve`);
+    expect((await guest("GET", `/share/${s.token}`)).body.myReservations).toEqual([expect.objectContaining({ state: "ok" })]);
   });
 
   it("Bilder sind über den Link abrufbar, aber nur für sichtbare Wünsche", async () => {
@@ -146,7 +147,6 @@ describe("Gäste ohne Konto", () => {
     const s = await newShare();
     expect((await fetchRaw(null, `/share/${s.token}/images/${img1.id}/thumb`)).status).toBe(200);
     expect((await fetchRaw(null, `/share/${s.token}/images/${img2.id}/thumb`)).status).toBe(404);
-    // Bild eines fremden Profils über diesen Link: nicht abrufbar
     const fremdP = (await call(fremd, "GET", "/me")).body.profile.id;
     const fw = (await call(fremd, "POST", `/profiles/${fremdP}/wishes`, { title: "X" })).body;
     const fimg = (await upload(fremd, `/wishes/${fw.id}/images`, png, "a.png", "image/png")).body;

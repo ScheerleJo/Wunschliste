@@ -43,11 +43,11 @@ Stand: erster lauffähiger Prototyp, auf Proxmox unter `wunschbaum.basislager.cl
   Er ist optional befristet und lässt sich zurückziehen. Zurückgezogene oder abgelaufene Links liefern 404.
   Gast-Reservierungen bleiben dabei bestehen.
 - Gäste sehen nur **aktive Wünsche, die für alle Gruppen sichtbar sind**. Bilder laufen über eigene Link-URLs.
-- **Gast-Identität:** Name eingeben, der Server erzeugt einen geheimen Schlüssel. Nur dessen SHA-256-Hash wird
-  gespeichert. Der Browser schickt den Schlüssel im Header `x-guest-token`, und er gilt nur für diesen einen Link.
-  Ein persönlicher Link (`#gast=…`) überträgt ihn auf andere Geräte.
-- **Reservierungen** hängen entweder an einem Konto oder an einem Gast (Check-Constraint). Gast und Familie sehen
-  gegenseitig nur „reserviert“. Der Name des Gastes wird niemandem angezeigt.
+- **Der Link ist die Identität:** Reservierungen von Gästen hängen direkt am Link (`reservation.reserved_by_share_link_id`).
+  Wer den Link öffnet, sieht sie in jedem Browser und auf jedem Gerät als „von dir reserviert“ und kann sie aufheben.
+  Es gibt keine Namensabfrage und nichts, was im Browser gespeichert wird. Deshalb gilt: **ein Link pro Person bzw. Haushalt**.
+- **Reservierungen** hängen entweder an einem Konto oder an einem Link (Check-Constraint). Gäste und Familie sehen
+  gegenseitig nur „reserviert“. Die Bezeichnung des Links sieht nur der Besitzer.
 - **Der Besitzer erfährt nichts:** Die Link-Verwaltung zeigt weder Gäste noch Reservierungen, und angemeldet
   kann der Besitzer seinen eigenen Link nicht öffnen (403). In einem privaten Fenster ließe es sich nicht verhindern,
   deshalb weist die Oberfläche darauf hin.

@@ -286,16 +286,16 @@ export const reservation = pgTable(
       .references(() => wish.id, { onDelete: "cascade" }),
     /** Reserviert von einem Konto … */
     reservedByUserId: text("reserved_by_user_id").references(() => user.id, { onDelete: "cascade" }),
-    /** … oder von einem Gast über einen geteilten Link (genau eins von beiden) */
-    reservedByGuestId: text("reserved_by_guest_id").references(() => shareGuest.id, { onDelete: "cascade" }),
+    /** … oder über einen geteilten Link (genau eins von beiden). Der Link selbst ist die Identität des Gastes. */
+    reservedByShareLinkId: text("reserved_by_share_link_id").references(() => shareLink.id, { onDelete: "cascade" }),
     createdAt: createdAt(),
     /** Reservierender hat den Hinweis "Wunsch wurde geändert" bis zu diesem Zeitpunkt gesehen */
     acknowledgedAt: timestamp("acknowledged_at", { withTimezone: true }),
   },
   (t) => [
-    check("reservation_one_owner", sql`(${t.reservedByUserId} IS NULL) <> (${t.reservedByGuestId} IS NULL)`),
+    check("reservation_one_owner", sql`(${t.reservedByUserId} IS NULL) <> (${t.reservedByShareLinkId} IS NULL)`),
     index("reservation_user_idx").on(t.reservedByUserId),
-    index("reservation_guest_idx").on(t.reservedByGuestId),
+    index("reservation_share_link_idx").on(t.reservedByShareLinkId),
   ],
 );
 
@@ -321,18 +321,6 @@ export const shareLink = pgTable(
   },
   (t) => [index("share_link_profile_idx").on(t.profileId)],
 );
-
-/** Gast, der sich über einen geteilten Link mit seinem Namen gemeldet hat */
-export const shareGuest = pgTable("share_guest", {
-  id: id(),
-  shareLinkId: text("share_link_id")
-    .notNull()
-    .references(() => shareLink.id, { onDelete: "cascade" }),
-  name: text("name").notNull(),
-  /** SHA-256 des geheimen Gast-Schlüssels (der Schlüssel selbst liegt nur im Browser des Gastes) */
-  secretHash: text("secret_hash").notNull().unique(),
-  createdAt: createdAt(),
-});
 
 // ---------------------------------------------------------------------------
 // Benachrichtigungen (in der App, zusätzlich per Mail)

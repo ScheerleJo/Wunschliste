@@ -388,10 +388,6 @@ export const shareLinkInputSchema = z.object({
 });
 export type ShareLinkInput = z.input<typeof shareLinkInputSchema>;
 
-export const guestInputSchema = z.object({
-  name: z.string().trim().min(1, "Bitte gib deinen Namen an").max(60, "Maximal 60 Zeichen"),
-});
-
 /** Für den Besitzer: bewusst ohne Angaben zu Gästen oder Reservierungen */
 export interface ShareLinkDto {
   id: string;
@@ -401,7 +397,7 @@ export interface ShareLinkDto {
   expiresAt: string | null;
 }
 
-/** Eigene Reservierung eines Gastes (auch für entfernte/archivierte Wünsche) */
+/** Reservierung, die über diesen Link gemacht wurde (auch für entfernte/archivierte Wünsche) */
 export interface GuestReservationDto {
   wishId: string;
   title: string;
@@ -413,14 +409,10 @@ export interface GuestReservationDto {
 
 export interface ShareViewDto {
   profile: { displayName: string };
+  /** reservation "reserved_by_me" = über diesen Link reserviert (egal in welchem Browser) */
   wishes: ViewWishDto[];
-  /** null, solange sich der Gast noch nicht mit Namen gemeldet hat */
-  guest: { name: string } | null;
   myReservations: GuestReservationDto[];
 }
-
-/** Header, mit dem der Browser des Gastes seinen geheimen Schlüssel mitschickt */
-export const GUEST_HEADER = "x-guest-token";
 
 export const shareImageUrl = (shareToken: string, id: string, size: "full" | "thumb" = "full") =>
   `/api/share/${shareToken}/images/${id}${size === "thumb" ? "/thumb" : ""}`;

@@ -1,4 +1,3 @@
-import { GUEST_HEADER } from "@wunschliste/shared";
 import type {
   CreateInviteInput,
   NotificationListDto,
@@ -161,41 +160,12 @@ export const sharesApi = {
   revoke: (id: string) => api(`/shares/${id}`, json("DELETE")),
 };
 
-// ---- Gast-Zugriff über einen geteilten Link -----------------------------------
-const guestKey = (shareToken: string) => `wunschbaum.gast.${shareToken}`;
-
-/** Geheimer Gast-Schlüssel für diesen Link (liegt nur im Browser des Gastes) */
-export const guestToken = {
-  get: (shareToken: string): string | null => {
-    try {
-      return localStorage.getItem(guestKey(shareToken));
-    } catch {
-      return null;
-    }
-  },
-  set: (shareToken: string, secret: string) => {
-    try {
-      localStorage.setItem(guestKey(shareToken), secret);
-    } catch {
-      /* z. B. privater Modus: dann gilt der Schlüssel nur für diese Sitzung */
-    }
-    memoryTokens.set(shareToken, secret);
-  },
-};
-const memoryTokens = new Map<string, string>();
-
-function guestHeaders(shareToken: string): Record<string, string> {
-  const t = guestToken.get(shareToken) ?? memoryTokens.get(shareToken);
-  return t ? { [GUEST_HEADER]: t } : {};
-}
-
+// ---- Gast-Zugriff über einen geteilten Link (der Link ist die Identität) ---------
 export const guestApi = {
-  view: (t: string) => api<ShareViewDto>(`/share/${t}`, { headers: guestHeaders(t) }),
-  join: (t: string, name: string) => api<{ guestToken: string; name: string }>(`/share/${t}/guest`, json("POST", { name })),
-  reserve: (t: string, wishId: string) => api(`/share/${t}/wishes/${wishId}/reserve`, { ...json("POST"), headers: guestHeaders(t) }),
-  release: (t: string, wishId: string) => api(`/share/${t}/wishes/${wishId}/reserve`, { ...json("DELETE"), headers: guestHeaders(t) }),
-  acknowledge: (t: string, wishId: string) =>
-    api(`/share/${t}/reservations/${wishId}/acknowledge`, { ...json("POST"), headers: guestHeaders(t) }),
+  view: (t: string) => api<ShareViewDto>(`/share/${t}`),
+  reserve: (t: string, wishId: string) => api(`/share/${t}/wishes/${wishId}/reserve`, json("POST")),
+  release: (t: string, wishId: string) => api(`/share/${t}/wishes/${wishId}/reserve`, json("DELETE")),
+  acknowledge: (t: string, wishId: string) => api(`/share/${t}/reservations/${wishId}/acknowledge`, json("POST")),
 };
 
 // ---- Benachrichtigungen ----------------------------------------------------------

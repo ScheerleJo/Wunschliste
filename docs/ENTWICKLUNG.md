@@ -96,7 +96,7 @@ Alle Endpunkte liegen unter `/api` und brauchen (außer Auth, Health und Vorscha
 | Kinder | `POST /children`, `GET/PATCH/DELETE /children/:id`, `…/guardians`, `…/guardian-candidates`, `…/groups`, `…/handover`, `GET /handover/:token`, `POST /handover/:token/accept` |
 | Haushalte | `GET/POST /groups/:id/households`, `PUT/DELETE /households/:id` |
 | Teilen (Besitzer) | `GET/POST /profiles/:id/shares`, `DELETE /shares/:id` |
-| Teilen (Gäste, ohne Login) | `GET /share/:token`, `POST /share/:token/guest`, `POST/DELETE /share/:token/wishes/:wishId/reserve`, `POST /share/:token/reservations/:wishId/acknowledge`, `GET /share/:token/images/:id[/thumb]` (Header `x-guest-token`) |
+| Teilen (Gäste, ohne Login) | `GET /share/:token`, `POST/DELETE /share/:token/wishes/:wishId/reserve`, `POST /share/:token/reservations/:wishId/acknowledge`, `GET /share/:token/images/:id[/thumb]` (Identität = Link-Token) |
 | Benachrichtigungen | `GET /notifications`, `POST /notifications/:id/read`, `POST /notifications/read-all` |
 | Events | `GET /events`, `POST /groups/:id/events`, `GET/PATCH/DELETE /events/:id`, `PUT /events/:id/type`, `PUT /events/:id/participants`, `PUT /events/:id/exclusions`, `POST /events/:id/draw`, `POST /events/:id/reset`, `POST /events/:id/reveal` |
 
@@ -125,7 +125,7 @@ pnpm test        # legt die Datenbank "wunschliste_test" neu an (PostgreSQL muss
 pnpm typecheck
 ```
 
-- 95 Integrationstests decken vor allem die Sicherheitsregeln ab: Wer sieht was, wer darf was,
+- 96 Integrationstests decken vor allem die Sicherheitsregeln ab: Wer sieht was, wer darf was,
   Geheimhaltung von Reservierungen und Wichtel-Zuordnungen.
 - `test/helpers.ts` bietet `createUser`, `call(user, method, path, body)`, `upload` und `fetchRaw`.
 - Die Tests laufen nacheinander und leeren die Datenbank vor jedem Test (`resetDb`).

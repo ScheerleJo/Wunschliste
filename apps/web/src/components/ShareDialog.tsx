@@ -41,6 +41,10 @@ export function ShareDialog({ profileId, ownerName, open, onClose }: { profileId
           Mit einem Link kann jemand ohne Konto {whose} ansehen und Wünsche reservieren, z. B. Patenonkel oder Freunde.
           Gäste sehen nur Wünsche, die für <b>alle Gruppen</b> sichtbar sind.
         </p>
+        <p className="text-sm text-stone-600">
+          <b>Ein Link pro Person bzw. Haushalt:</b> Alles, was über einen Link reserviert wird, gehört zu diesem Link. Wer ihn
+          öffnet, sieht diese Reservierungen als eigene und kann sie aufheben.
+        </p>
         <div className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900">
           🤫 Über den Link sieht man, was schon reserviert ist.{" "}
           {ownerName ? "Gib ihn also nicht an das Kind weiter." : "Öffne ihn also besser nicht selbst, wenn du dich überraschen lassen willst."}

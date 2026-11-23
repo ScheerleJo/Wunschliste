@@ -22,6 +22,13 @@
       "when": 1795462221131,
       "tag": "0002_share_links_and_notifications",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1795463168609,
+      "tag": "0003_share_link_identity",
+      "breakpoints": true
     }
   ]
 }

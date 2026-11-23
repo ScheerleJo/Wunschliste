@@ -40,14 +40,14 @@ Passwort vergessen? Auf der Anmeldeseite „Passwort vergessen?“ antippen.
 ### 🔗 Liste mit Gästen teilen (z. B. Patenonkel)
 
 Mit **„🔗 Teilen“** erstellst du einen Link für Menschen ohne Konto. Das geht auch für die Liste deines Kindes.
-- Gäste sehen deine Wünsche und können sie reservieren. Dafür geben sie nur ihren Namen ein.
+- Gäste sehen deine Wünsche und können sie reservieren, ganz ohne Anmeldung.
+- **Ein Link pro Person bzw. Haushalt:** Reservierungen gehören zum Link. Wer ihn öffnet, sieht sie als eigene.
 - Sie sehen nur Wünsche, die für **alle Gruppen** sichtbar sind.
 - Ein Link lässt sich jederzeit **zurückziehen**. Bereits gemachte Reservierungen bleiben bestehen.
 - 🤫 Über den Link sieht man, was reserviert ist. Öffne ihn also besser nicht selbst.
 
-**Als Gast:** Du brauchst kein Konto. Beim ersten Reservieren gibst du deinen Namen an, dein Browser merkt sich dich.
-Über „📌 Auf einem anderen Gerät weitermachen?“ bekommst du einen persönlichen Link, mit dem du deine
-Reservierungen auch am Handy oder PC wiederfindest.
+**Als Gast:** Du brauchst kein Konto. Deine Reservierungen gehören zu deinem Link. Du siehst sie also auf jedem Gerät,
+auf dem du ihn öffnest (Handy, PC, privates Fenster). Gib den Link deshalb nicht weiter.
 
 ---
 
