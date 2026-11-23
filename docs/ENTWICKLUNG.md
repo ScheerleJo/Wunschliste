@@ -98,6 +98,7 @@ Alle Endpunkte liegen unter `/api` und brauchen (außer Auth, Health und Vorscha
 | Teilen (Besitzer) | `GET/POST /profiles/:id/shares`, `DELETE /shares/:id` |
 | Teilen (Gäste, ohne Login) | `GET /share/:token`, `POST/DELETE /share/:token/wishes/:wishId/reserve`, `POST /share/:token/reservations/:wishId/acknowledge`, `GET /share/:token/images/:id[/thumb]` (Identität = Link-Token) |
 | Benachrichtigungen | `GET /notifications`, `POST /notifications/:id/read`, `POST /notifications/read-all` |
+| Admin | `POST /admin/login`, `POST /admin/logout`, `GET /admin/me`, `GET /admin/stats`, `/admin/users[/:id[/password\|/logout]]`, `/admin/groups[/:id[/members/:profileId]]`, `/admin/children[/:id[/guardians[/:userId]]]`, `/admin/events/:id`, `/admin/invites/:id`, `/admin/shares/:id`. Eigene Sitzung (`services/admin-auth.ts`), Konten per `pnpm admin` (`src/admin-cli.ts`) |
 | Events | `GET /events`, `POST /groups/:id/events`, `GET/PATCH/DELETE /events/:id`, `PUT /events/:id/type`, `PUT /events/:id/participants`, `PUT /events/:id/exclusions`, `POST /events/:id/draw`, `POST /events/:id/reset`, `POST /events/:id/reveal` |
 
 Request- und Response-Typen stehen in `packages/shared/src/index.ts`, der passende Client in `apps/web/src/lib/api.ts`.
@@ -125,7 +126,7 @@ pnpm test        # legt die Datenbank "wunschliste_test" neu an (PostgreSQL muss
 pnpm typecheck
 ```
 
-- 96 Integrationstests decken vor allem die Sicherheitsregeln ab: Wer sieht was, wer darf was,
+- 107 Integrationstests decken vor allem die Sicherheitsregeln ab: Wer sieht was, wer darf was,
   Geheimhaltung von Reservierungen und Wichtel-Zuordnungen.
 - `test/helpers.ts` bietet `createUser`, `call(user, method, path, body)`, `upload` und `fetchRaw`.
 - Die Tests laufen nacheinander und leeren die Datenbank vor jedem Test (`resetDb`).

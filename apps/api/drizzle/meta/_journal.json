@@ -29,6 +29,13 @@
       "when": 1795463168609,
       "tag": "0003_share_link_identity",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1795464117352,
+      "tag": "0004_admin_accounts",
+      "breakpoints": true
     }
   ]
 }

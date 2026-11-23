@@ -13,6 +13,7 @@ import { EventsPage } from "./pages/EventsPage.tsx";
 import { EventDetailPage } from "./pages/EventDetailPage.tsx";
 import { SharePage } from "./pages/SharePage.tsx";
 import { NotificationsPage } from "./pages/NotificationsPage.tsx";
+import { AdminPage } from "./pages/AdminPage.tsx";
 import { ReservationsPage } from "./pages/ReservationsPage.tsx";
 import { WishlistViewPage } from "./pages/WishlistViewPage.tsx";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage.tsx";
@@ -52,6 +53,8 @@ const router = createBrowserRouter([
   { path: "/einladung/:token", element: <InvitePage /> },
   { path: "/uebergabe/:token", element: <HandoverPage /> },
   { path: "/teilen/:token", element: <SharePage /> },
+  // System-Administration: bewusst nirgends verlinkt, eigene Anmeldung
+  { path: "/admin", element: <AdminPage /> },
   { path: "/passwort-vergessen", element: <ForgotPasswordPage /> },
   { path: "/passwort-zuruecksetzen", element: <ResetPasswordPage /> },
   {

@@ -439,3 +439,27 @@ export const eventRevealLog = pgTable("event_reveal_log", {
   reason: text("reason"),
   createdAt: createdAt(),
 });
+
+// ---------------------------------------------------------------------------
+// System-Administration (getrennt von normalen Konten; Anlage nur per Kommandozeile)
+// ---------------------------------------------------------------------------
+
+export const adminAccount = pgTable("admin_account", {
+  id: id(),
+  email: text("email").notNull().unique(),
+  /** scrypt-Hash im Format scrypt$<salt>$<hash> */
+  passwordHash: text("password_hash").notNull(),
+  lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
+  createdAt: createdAt(),
+});
+
+export const adminSession = pgTable("admin_session", {
+  id: id(),
+  adminId: text("admin_id")
+    .notNull()
+    .references(() => adminAccount.id, { onDelete: "cascade" }),
+  /** SHA-256 des Sitzungs-Tokens (das Token selbst liegt nur im Cookie) */
+  tokenHash: text("token_hash").notNull().unique(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  createdAt: createdAt(),
+});

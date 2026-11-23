@@ -435,3 +435,85 @@ export interface NotificationListDto {
   unread: number;
   items: NotificationDto[];
 }
+
+// ---------------------------------------------------------------------------
+// System-Admin (bewusst ohne Reservierungen und Wichtel-Zuordnungen)
+// ---------------------------------------------------------------------------
+
+export interface AdminStatsDto {
+  users: number;
+  unverifiedUsers: number;
+  childProfiles: number;
+  groups: number;
+  activeWishes: number;
+  upcomingEvents: number;
+  activeShareLinks: number;
+  activeInvites: number;
+  mail: { configured: boolean; host: string | null; from: string };
+}
+
+export interface AdminUserDto {
+  id: string;
+  name: string;
+  email: string;
+  emailVerified: boolean;
+  createdAt: string;
+  lastActiveAt: string | null;
+  profileId: string | null;
+  wishCount: number;
+  groups: { id: string; name: string; role: GroupRole }[];
+  children: { id: string; displayName: string }[];
+}
+
+export interface AdminGroupDto {
+  id: string;
+  name: string;
+  description: string | null;
+  createdAt: string;
+  members: { profileId: string; displayName: string; role: GroupRole; managed: boolean }[];
+  eventCount: number;
+}
+
+export interface AdminChildDto {
+  id: string;
+  displayName: string;
+  wishCount: number;
+  guardians: { userId: string; name: string }[];
+  groups: { id: string; name: string }[];
+  pendingHandoverEmail: string | null;
+}
+
+export interface AdminEventDto {
+  id: string;
+  name: string;
+  type: EventType;
+  status: EventStatus;
+  date: string | null;
+  groupName: string;
+  participantCount: number;
+  createdByName: string | null;
+}
+
+export interface AdminInviteDto {
+  id: string;
+  groupName: string;
+  email: string | null;
+  expiresAt: string;
+  useCount: number;
+  maxUses: number | null;
+  createdByName: string;
+}
+
+export interface AdminShareDto {
+  id: string;
+  label: string;
+  profileName: string;
+  createdAt: string;
+  expiresAt: string | null;
+}
+
+export const adminUserUpdateSchema = z.object({
+  name: z.string().trim().min(1, "Bitte gib einen Namen an").max(80).optional(),
+  email: z.email("Bitte gib eine gültige E-Mail-Adresse an").optional(),
+  emailVerified: z.boolean().optional(),
+});

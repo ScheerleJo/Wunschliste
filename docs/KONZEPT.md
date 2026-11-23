@@ -61,6 +61,24 @@ aufgenommen):
   (🔔) und per Mail, mit Button „Zum Event“. Ist schon ausgelost, erklärt die Nachricht, dass man zurücksetzen und
   neu auslosen muss. Wer die Änderung selbst ausgelöst hat, wird nicht benachrichtigt.
 
+## Administration
+
+- Unter `/admin` gibt es eine eigene Anmeldung mit **separaten Admin-Konten** (Tabelle `admin_account`), unabhängig von
+  den normalen Konten. Admin-Konten entstehen nur per Kommandozeile (`pnpm admin create …`), nie über die Webseite.
+- **Sicherheit:**
+  - Passwörter als scrypt-Hash, mindestens 12 Zeichen.
+  - Sitzungs-Token nur gehasht gespeichert, Cookie `wb_admin` (HttpOnly, SameSite=Strict, Secure, nur für `/api/admin`),
+    gültig 12 Stunden.
+  - Sperre nach 5 Fehlversuchen (15 Minuten, pro IP und Adresse).
+  - Origin-Prüfung bei ändernden Anfragen.
+- **Funktionen:** Übersicht mit Mailstatus; Benutzer (bearbeiten, bestätigen, Passwort setzen, abmelden, löschen);
+  Gruppen (umbenennen, Mitglieder und Rollen, löschen); Kinderprofile (Verwalter, löschen); Events löschen;
+  Einladungen und Teilen-Links zurückziehen.
+- **Bewusst ohne Reservierungen und Wichtel-Zuordnungen**, damit die Überraschung auch für den Admin selbst erhalten
+  bleibt. Für Notfälle gibt es die protokollierte Notfall-Einsicht beim Event.
+- **Benutzer löschen** entfernt das eigene Profil samt Wünschen, Bildern, Gruppenmitgliedschaften und eigenen
+  Reservierungen. Kinderprofile, die nur diese Person verwaltet hat, bleiben ohne Verwalter bestehen und werden markiert.
+
 ## Bilder
 
 - Bis zu 8 Bilder pro Wunsch: Dateiauswahl (am Handy auch Kamera), Einfügen mit Strg+V, Drag & Drop.
