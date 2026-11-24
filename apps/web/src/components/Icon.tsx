@@ -12,7 +12,6 @@ import {
   faArrowRight,
   faArrowsLeftRight,
   faBan,
-  faBell,
   faBookmark,
   faBoxArchive,
   faCamera,
@@ -44,7 +43,7 @@ import {
   faUserSecret,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
-import { faFaceSmile as farFaceSmile } from "@fortawesome/free-regular-svg-icons";
+import { faBell as farBell, faFaceSmile as farFaceSmile } from "@fortawesome/free-regular-svg-icons";
 
 const icons = {
   /** Wunschliste, Geschenk, freies Schenken */
@@ -84,7 +83,7 @@ const icons = {
   /** Events (gewünscht: faTreeChristmas, nur in Pro) */
   events: faTree,
   /** Benachrichtigungen */
-  bell: faBell,
+  bell: farBell,
   /** Budget */
   budget: faEuroSign,
   /** leere Wunschliste (bei anderen) */
