@@ -6,6 +6,7 @@ import { Dialog } from "../components/Dialog.tsx";
 import { EventForm } from "../components/EventForm.tsx";
 import { Alert, Badge, Button, Card, Spinner } from "../components/ui.tsx";
 import { eventsApi, groupsApi } from "../lib/api.ts";
+import { Icon } from "../components/Icon.tsx";
 
 export const formatDate = (d: string) =>
   new Date(`${d}T12:00:00`).toLocaleDateString("de-DE", { weekday: "short", day: "numeric", month: "long", year: "numeric" });
@@ -41,7 +42,7 @@ export function EventsPage() {
 
       {events.data?.length === 0 ? (
         <Card className="text-center">
-          <p className="text-4xl">🎄</p>
+          <p className="text-4xl text-brand-700"><Icon name="events" /></p>
           <h2 className="mt-2 font-semibold">Noch keine Events</h2>
           <p className="mt-1 text-sm text-stone-600">
             {groups.data?.length
@@ -85,7 +86,7 @@ function EventList({ events, muted }: { events: EventSummaryDto[]; muted?: boole
           >
             <div className="flex items-start justify-between gap-2">
               <h3 className="font-semibold">
-                {e.type === "secret_santa" ? "🎅" : "🎁"} {e.name}
+                <Icon name={e.type === "secret_santa" ? "secretSanta" : "gift"} className="mr-1.5 text-brand-700" />{e.name}
               </h3>
               {e.type === "secret_santa" &&
                 (e.status === "draft" ? <Badge tone="amber">Noch nicht ausgelost</Badge> : <Badge tone="green">Ausgelost</Badge>)}
@@ -95,8 +96,8 @@ function EventList({ events, muted }: { events: EventSummaryDto[]; muted?: boole
               {e.date && ` · ${formatDate(e.date)}`}
             </p>
             <p className="mt-2 flex flex-wrap gap-2 text-xs text-stone-500">
-              {formatBudget(e.budgetMinCents, e.budgetMaxCents) && <Badge>💶 {formatBudget(e.budgetMinCents, e.budgetMaxCents)}</Badge>}
-              <Badge>👥 {e.participantCount}</Badge>
+              {formatBudget(e.budgetMinCents, e.budgetMaxCents) && <Badge><Icon name="budget" className="mr-1" />{formatBudget(e.budgetMinCents, e.budgetMaxCents)}</Badge>}
+              <Badge><Icon name="participants" className="mr-1" />{e.participantCount}</Badge>
               {e.participating && <Badge tone="brand">Du nimmst teil</Badge>}
             </p>
           </Link>

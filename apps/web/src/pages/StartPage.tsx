@@ -5,6 +5,7 @@ import type { GroupMemberDto, GroupSummaryDto } from "@wunschliste/shared";
 import { Badge, Card, Spinner } from "../components/ui.tsx";
 import { groupsApi, wishesApi } from "../lib/api.ts";
 import { useMe } from "../lib/use-me.ts";
+import { Icon } from "../components/Icon.tsx";
 
 const OPEN_KEY = "wunschbaum.start.offen";
 
@@ -56,7 +57,7 @@ export function StartPage() {
         className="group block rounded-2xl bg-gradient-to-br from-brand-700 to-brand-800 p-5 text-white shadow-sm transition hover:shadow-md sm:p-6"
       >
         <div className="flex items-center gap-4">
-          <span className="text-4xl">🎁</span>
+          <Icon name="gift" className="text-4xl" />
           <div className="min-w-0 flex-1">
             <p className="text-lg font-semibold">Meine Wunschliste</p>
             <p className="text-sm text-white/80">
@@ -64,7 +65,7 @@ export function StartPage() {
             </p>
           </div>
           <span className="text-2xl transition group-hover:translate-x-1" aria-hidden>
-            →
+            <Icon name="forward" />
           </span>
         </div>
       </Link>
@@ -78,13 +79,13 @@ export function StartPage() {
               to={`/liste?profil=${p.id}`}
               className="flex items-center gap-3 rounded-2xl border border-stone-200 bg-white p-4 shadow-sm transition hover:border-brand-500/40 hover:shadow"
             >
-              <span className="text-2xl">👶</span>
+              <Icon name="child" className="text-2xl text-brand-700" />
               <span className="min-w-0 flex-1">
                 <span className="block font-semibold">Wunschliste von {p.displayName}</span>
                 <span className="text-sm text-stone-500">von dir verwaltet</span>
               </span>
               <span className="text-stone-400" aria-hidden>
-                →
+                <Icon name="forward" />
               </span>
             </Link>
           ))}
@@ -96,7 +97,7 @@ export function StartPage() {
         <h2 className="text-lg font-semibold">Deine Gruppen</h2>
         {groups.data?.length === 0 ? (
           <Card className="text-center">
-            <p className="text-3xl">👪</p>
+            <p className="text-3xl text-brand-700"><Icon name="groups" /></p>
             <p className="mt-2 text-sm text-stone-600">
               Du bist noch in keiner Gruppe.{" "}
               <Link to="/gruppen" className="font-medium text-brand-700 hover:underline">
@@ -125,7 +126,7 @@ function GroupAccordion({ group, open, onToggle }: { group: GroupSummaryDto; ope
         aria-controls={panelId}
         className="flex w-full items-center gap-3 px-5 py-4 text-left hover:bg-stone-50"
       >
-        <span className="text-xl">👪</span>
+        <Icon name="groups" className="text-xl text-brand-700" />
         <span className="min-w-0 flex-1">
           <span className="block font-semibold">{group.name}</span>
           <span className="text-sm text-stone-500">
@@ -157,7 +158,7 @@ function GroupAccordion({ group, open, onToggle }: { group: GroupSummaryDto; ope
           )}
           <div className="border-t border-stone-100 px-5 py-2.5 text-right">
             <Link to={`/gruppen/${group.id}`} className="text-sm text-stone-500 hover:text-brand-700 hover:underline">
-              Zur Gruppe (Einladen, Haushalte …) →
+              Zur Gruppe (Einladen, Haushalte …) <Icon name="forward" className="ml-1" />
             </Link>
           </div>
         </div>
@@ -178,7 +179,7 @@ function MemberRow({ m }: { m: GroupMemberDto }) {
           {m.isMe && <Badge>Du</Badge>}
           {m.managed && <Badge tone="amber">Kind</Badge>}
         </span>
-        <span className="shrink-0 text-sm font-medium text-brand-700">{m.isMe ? "Meine Liste" : "Wunschliste"} →</span>
+        <span className="shrink-0 text-sm font-medium text-brand-700">{m.isMe ? "Meine Liste" : "Wunschliste"} <Icon name="forward" className="ml-1" /></span>
       </Link>
     </li>
   );

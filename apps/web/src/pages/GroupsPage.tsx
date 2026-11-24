@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { groupInputSchema } from "@wunschliste/shared";
 import { Alert, Badge, Button, Card, Field, Spinner, TextArea } from "../components/ui.tsx";
 import { groupsApi } from "../lib/api.ts";
+import { Icon } from "../components/Icon.tsx";
 
 export function GroupsPage() {
   const groups = useQuery({ queryKey: ["groups"], queryFn: groupsApi.list });
@@ -22,7 +23,7 @@ export function GroupsPage() {
         <Spinner />
       ) : groups.data?.length === 0 && !creating ? (
         <Card className="text-center">
-          <p className="text-4xl">👪</p>
+          <p className="text-4xl text-brand-700"><Icon name="groups" /></p>
           <h2 className="mt-2 font-semibold">Noch keine Gruppe</h2>
           <p className="mt-1 text-sm text-stone-600">
             Lege eine Gruppe an, z. B. „Familie Scheerle“, und lade deine Familie ein. Oder lass dir einen Einladungslink schicken.

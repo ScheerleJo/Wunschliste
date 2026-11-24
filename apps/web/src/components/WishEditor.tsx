@@ -4,6 +4,7 @@ import { formatPrice, imageUrl, MAX_IMAGES_PER_WISH, parsePriceToCents, wishInpu
 import { imageFilesFrom } from "../lib/images.ts";
 import { wishesApi } from "../lib/api.ts";
 import { Alert, Button, Field, TextArea } from "./ui.tsx";
+import { Icon } from "./Icon.tsx";
 
 interface Props {
   profileId: string;
@@ -132,7 +133,7 @@ export function WishEditor({ profileId, initial, busy, busyText, onSubmit, onCan
               onClick={() => fileInput.current?.click()}
               className="flex h-20 w-20 flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-stone-300 text-xs text-stone-500 hover:border-brand-500 hover:text-brand-700"
             >
-              <span className="text-xl">📷</span>
+              <Icon name="camera" className="text-xl" />
               Hinzufügen
             </button>
           )}
@@ -170,7 +171,7 @@ export function WishEditor({ profileId, initial, busy, busyText, onSubmit, onCan
                 onClick={() => setLinks((ls) => (ls.length > 1 ? ls.filter((x) => x.key !== l.key) : [{ key: nextKey++, url: "", label: "" }]))}
                 className="rounded-lg px-3 text-stone-400 hover:bg-stone-100 hover:text-stone-700"
               >
-                ✕
+                <Icon name="close" />
               </button>
             </div>
           ))}
@@ -242,7 +243,7 @@ function ImageTile({ src, onRemove }: { src: string; onRemove: () => void }) {
         aria-label="Bild entfernen"
         className="absolute top-1 right-1 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-xs text-white hover:bg-black/80"
       >
-        ✕
+        <Icon name="close" />
       </button>
     </div>
   );

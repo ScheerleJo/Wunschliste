@@ -119,6 +119,10 @@ Request- und Response-Typen stehen in `packages/shared/src/index.ts`, der passen
 
 **App umbenennen:** `APP_NAME` in `packages/shared/src/index.ts`.
 
+**Icon ändern:** Alle Icons kommen über `<Icon name="…" />` aus `apps/web/src/components/Icon.tsx`
+(Font Awesome Free, selbst gehostet). Dort steht jede Bedeutung, z. B. `edit` oder `reserve`, genau einmal.
+Ein anderes Icon = eine Zeile ändern. Übersicht der Bedeutungen: `docs/ICONS.md`.
+
 ## Tests
 
 ```bash

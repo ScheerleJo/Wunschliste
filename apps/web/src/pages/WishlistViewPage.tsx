@@ -7,6 +7,7 @@ import { WishThumb } from "../components/WishThumb.tsx";
 import { Alert, Badge, Button, Card, Spinner } from "../components/ui.tsx";
 import { eventsApi, reservationsApi } from "../lib/api.ts";
 import { useMe } from "../lib/use-me.ts";
+import { Icon } from "../components/Icon.tsx";
 
 /** Wunschliste einer anderen Person aus Sicht der Schenkenden */
 export function WishlistViewPage() {
@@ -33,7 +34,7 @@ export function WishlistViewPage() {
       <Card>
         <p>Diese Wunschliste gibt es nicht oder ihr seid in keiner gemeinsamen Gruppe.</p>
         <Link to="/gruppen" className="mt-2 inline-block text-sm text-brand-700 hover:underline">
-          ← Zu den Gruppen
+          <Icon name="back" className="mr-1" />Zu den Gruppen
         </Link>
       </Card>
     );
@@ -56,7 +57,7 @@ export function WishlistViewPage() {
       {event.data && formatBudget(event.data.budgetMinCents, event.data.budgetMaxCents) && (
         <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-brand-50 px-4 py-3 text-sm text-brand-800">
           <span>
-            {event.data.type === "secret_santa" ? "🎅" : "🎁"} {event.data.name}: Budget{" "}
+            <Icon name={event.data.type === "secret_santa" ? "secretSanta" : "gift"} className="mr-1.5" />{event.data.name}: Budget{" "}
             <b>{formatBudget(event.data.budgetMinCents, event.data.budgetMaxCents)}</b>
           </span>
           <Link to={`/events/${event.data.id}`} className="font-medium underline">
@@ -80,7 +81,7 @@ export function WishlistViewPage() {
 
       {wishes.length === 0 ? (
         <Card className="text-center">
-          <p className="text-4xl">🎈</p>
+          <p className="text-4xl text-brand-700"><Icon name="empty" /></p>
           <p className="mt-2 text-sm text-stone-600">{profile.displayName} hat noch keine Wünsche eingetragen.</p>
         </Card>
       ) : (
@@ -99,7 +100,7 @@ export function WishlistViewPage() {
 const statusBadge = {
   available: <Badge tone="green">Verfügbar</Badge>,
   reserved: <Badge>Reserviert</Badge>,
-  reserved_by_me: <Badge tone="brand">✓ Von dir reserviert</Badge>,
+  reserved_by_me: <Badge tone="brand"><Icon name="check" className="mr-1" />Von dir reserviert</Badge>,
 };
 
 function ViewWishCard({ wish, profileId, overBudget }: { wish: ViewWishDto; profileId: string; overBudget?: boolean }) {
@@ -140,7 +141,7 @@ function ViewWishCard({ wish, profileId, overBudget }: { wish: ViewWishDto; prof
 
       {wish.changedSinceReservation && (
         <div className="mt-3 flex flex-wrap items-center gap-2 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800">
-          <span className="flex-1">✏️ Dieser Wunsch wurde seit deiner Reservierung geändert.</span>
+          <span className="flex-1"><Icon name="edit" className="mr-1.5" />Dieser Wunsch wurde seit deiner Reservierung geändert.</span>
           <button onClick={() => ack.mutate()} className="font-medium underline">
             Gesehen
           </button>
@@ -156,7 +157,7 @@ function ViewWishCard({ wish, profileId, overBudget }: { wish: ViewWishDto; prof
         <div key={wish.reservation} className="mt-3 flex justify-end border-t border-stone-100 pt-3">
           {wish.reservation === "available" ? (
             <Button onClick={() => reserve.mutate()} disabled={busy} className="py-2!">
-              🔖 Reservieren
+              <Icon name="reserve" /> Reservieren
             </Button>
           ) : (
             <Button
