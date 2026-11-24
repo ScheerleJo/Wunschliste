@@ -32,42 +32,42 @@ Icons suchen: <https://fontawesome.com/search?ic=free> (Filter „Free“). Name
 Spalte **Vorschlag** = mein Vorschlag aus den Free-Icons (Stil *solid*, wenn nicht anders angegeben).
 Trag in **Deine Wahl** ein, was du lieber möchtest. Leer lassen heißt: Vorschlag übernehmen.
 
-| Icon | Bedeutung | Wo (Auswahl) | Vorschlag | Deine Wahl |
-|---|---|---|---|---|
-| 🎁 | Wunschliste, Geschenk, „freies Schenken“ | Menü „Meine Liste“, Startseite, Gruppen, Events | `faGift` | |
-| → | weiter / öffnen | Startseite, Gruppen, Reservierungen, Benachrichtigungen | `faArrowRight` | |
-| ← | zurück | Kopf von Gruppen-, Event-, Listen- und Kinderseiten | `faArrowLeft` | |
-| 🔗 | Link (Shop-Link, Einladungslink, Teilen-Link) | Wunschkarten, Einladungen, Teilen-Dialog | `faLink` | |
-| 🔗 Teilen | Button „Teilen“ | Meine Liste | `faShareNodes` | |
-| 🎅 | Wichteln | Events, Event-Formular, Gruppenseite | `faSleigh` oder `faShuffle` | |
-| ✏️ | bearbeiten / „wurde geändert“ | Wunschkarten, Hinweise bei Reservierungen | `faPenToSquare` | |
-| ✕ | schließen / entfernen | Dialoge, Bildergalerie, Bilder im Editor, Admin | `faXmark` | |
-| 🔖 | reservieren / Reservierungen | Menü „Reserviert“, Reservieren-Button | `faBookmark` | |
-| ✉️ | E-Mail / Mail-Einladung | Einladungen, Übergabe, Admin | `faEnvelope` | |
-| 🤫 | „geheim, nicht verraten“ | Teilen-Dialog, Gastseite, Wichtel-Zuordnung, Admin-Hinweis | `faUserSecret` | |
-| ✓ | erledigt / von dir reserviert / kopiert | Status-Badge, Kopieren-Button | `faCheck` | |
-| 👪 | Gruppe(n) | Menü „Gruppen“, Startseite, Gruppenliste | `faUsers` | |
-| 👶 | Kinderprofil | Startseite, Umschalter, Gruppen, Events | `faChild` | |
-| 📦 | archivieren / Archiv | Wunschkarten, Hinweise | `faBoxArchive` | |
-| 🗑 | löschen / gelöscht | Wunschkarten, Hinweise | `faTrashCan` | |
+| Icon | Bedeutung | Wo (Auswahl) | Deine Wahl | style |
+| --- | --- | --- | --- | --- |
+| 🎁 | Wunschliste, Geschenk, „freies Schenken“ | Menü „Meine Liste“, Startseite, Gruppen, Events | `faGift` | duotone |
+| → | weiter / öffnen | Startseite, Gruppen, Reservierungen, Benachrichtigungen | `faArrowRight` | classic |
+| ← | zurück | Kopf von Gruppen-, Event-, Listen- und Kinderseiten | `faArrowLeft` | classic |
+| 🔗 | Link (Shop-Link, Einladungslink, Teilen-Link) | Wunschkarten, Einladungen, Teilen-Dialog | `faLink` | classic |
+| 🔗 Teilen | Button „Teilen“ | Meine Liste | `faShareNodes` | classic |
+| 🎅 | Wichteln | Events, Event-Formular, Gruppenseite | `faSleigh` | duotone |
+| ✏️ | bearbeiten / „wurde geändert“ | Wunschkarten, Hinweise bei Reservierungen | `faPenToSquare` | duotone |
+| ✕ | schließen / entfernen | Dialoge, Bildergalerie, Bilder im Editor, Admin | `faXmark` | classic |
+| 🔖 | reservieren / Reservierungen | Menü „Reserviert“, Reservieren-Button | `faBookmark` | duotone |
+| ✉️ | E-Mail / Mail-Einladung | Einladungen, Übergabe, Admin | `faEnvelope` | classic |
+| 🤫 | „geheim, nicht verraten“ | Teilen-Dialog, Gastseite, Wichtel-Zuordnung, Admin-Hinweis | `faUserSecret` | classic |
+| ✓ | erledigt / von dir reserviert / kopiert | Status-Badge, Kopieren-Button | `faCheck` | classic |
+| 👪 | Gruppe(n) | Menü „Gruppen“, Startseite, Gruppenliste | `faUsers` | duotone |
+| 👶 | Kinderprofil | Startseite, Umschalter, Gruppen, Events | `faChild` | duotone |
+| 📦 | archivieren / Archiv | Wunschkarten, Hinweise | `faBoxArchive` | classic |
+| 🗑 | löschen / gelöscht | Wunschkarten, Hinweise | `faTrashCan` | classic |
 | 🔒 | nur für dich sichtbar / kein Zugriff | Wunschkarten, Reservierungen | `faLock` | |
-| 🎄 | Events | Menü „Events“, leere Event-Seite | `faCalendarDays` (passt auch zu Geburtstagen) oder `faTree` | |
-| 🔔 | Benachrichtigungen | Kopfzeile, Benachrichtigungsseite | `faBell` (regular) | |
-| 💶 | Budget | Event-Karten, Event-Seite | `faEuroSign` | |
-| 🎈 | leere Wunschliste (bei anderen) | Wunschliste ansehen, Gastseite | `faFaceSmile` (regular) | |
-| 👀 | Notfall-Einsicht | Event-Seite (Organisation) | `faEye` | |
+| 🎄 | Events | Menü „Events“, leere Event-Seite | `faTreeChristmas` | duotone |
+| 🔔 | Benachrichtigungen | Kopfzeile, Benachrichtigungsseite | `faBell` | classic |
+| 💶 | Budget | Event-Karten, Event-Seite | `faEuroSign` | classic |
+| 🎈 | leere Wunschliste (bei anderen) | Wunschliste ansehen, Gastseite | `faFaceSmile` (regular) | classic |
+| 👀 | Notfall-Einsicht | Event-Seite (Organisation) | `faEye` | classic |
 | 👁 | „Nur: Gruppe X“ sichtbar | Wunschkarten | `faEye` | |
-| ⚙️ | Einstellungen / Organisation | Kinderliste, Event-Seite | `faGear` | |
-| 🏠 | Haushalt | Gruppenseite, Event-Organisation | `faHouse` | |
-| ↔ | Paar, das sich nicht zieht | Event-Organisation | `faArrowsLeftRight` | |
-| 🚫 | Ausschluss | Event-Organisation | `faBan` | |
-| 🎲 | auslosen / neu auslosen | Event-Organisation | `faDice` | |
-| ⚠️ | Warnung | Event-Formular | `faTriangleExclamation` | |
-| ↑ ↓ | Wunsch nach oben/unten schieben | Meine Liste | `faChevronUp` / `faChevronDown` | |
-| ↩️ | wiederherstellen | Archiv | `faRotateLeft` | |
-| 📷 | Bild hinzufügen | Wunsch-Editor | `faCamera` | |
-| 👥 | Anzahl Teilnehmende | Event-Karten | `faUserGroup` | |
-| ‹ › | vorheriges / nächstes Bild | Bildergalerie | `faChevronLeft` / `faChevronRight` | |
-| ⏱ | Abmelde-Timer | Admin-Kopfzeile | `faStopwatch` | |
-| ▾ (SVG) | Gruppe auf-/zuklappen | Startseite | `faChevronDown` | |
-| 👋 | Begrüßung „Hallo …“ | Startseite | bleibt Emoji (Vorschlag) | |
+| ⚙️ | Einstellungen / Organisation | Kinderliste, Event-Seite | `faGear` | classic |
+| 🏠 | Haushalt | Gruppenseite, Event-Organisation | `faHouse` | duotone |
+| ↔ | Paar, das sich nicht zieht | Event-Organisation | `faArrowsLeftRight` | classic |
+| 🚫 | Ausschluss | Event-Organisation | `faBan` | classic |
+| 🎲 | auslosen / neu auslosen | Event-Organisation | `faDice` | duotone |
+| ⚠️ | Warnung | Event-Formular | `faTriangleExclamation` | duotone |
+| ↑ ↓ | Wunsch nach oben/unten schieben | Meine Liste | `faChevronUp` / `faChevronDown` | classc |
+| ↩️ | wiederherstellen | Archiv | `faRotateLeft` | classic |
+| 📷 | Bild hinzufügen | Wunsch-Editor | `faCamera` | duotone |
+| 👥 | Anzahl Teilnehmende | Event-Karten | `faUserGroup` | duotone |
+| ‹ › | vorheriges / nächstes Bild | Bildergalerie | `faChevronLeft` / `faChevronRight` | classic |
+| ⏱ | Abmelde-Timer | Admin-Kopfzeile | `faStopwatch` | duotone |
+| ▾ (SVG) | Gruppe auf-/zuklappen | Startseite | `faChevronDown` | clasic |
+| 👋 | Begrüßung „Hallo …“ | Startseite | `faHandWave` | duotone |
