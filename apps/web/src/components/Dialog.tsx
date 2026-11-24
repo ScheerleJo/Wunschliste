@@ -1,4 +1,5 @@
 import { useEffect, type ReactNode } from "react";
+import { Icon } from "./Icon.tsx";
 
 /** Modal-Dialog; auf dem Handy als Bottom-Sheet. */
 export function Dialog({ open, onClose, title, children }: { open: boolean; onClose: () => void; title: string; children: ReactNode }) {
@@ -27,7 +28,7 @@ export function Dialog({ open, onClose, title, children }: { open: boolean; onCl
         <div className="flex items-center justify-between border-b border-stone-100 px-5 py-4">
           <h2 className="text-lg font-semibold">{title}</h2>
           <button onClick={onClose} className="rounded-lg p-1.5 text-stone-500 hover:bg-stone-100" aria-label="Schließen">
-            ✕
+            <Icon name="close" />
           </button>
         </div>
         <div className="overflow-y-auto px-5 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">{children}</div>

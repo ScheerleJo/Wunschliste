@@ -1,7 +1,7 @@
 /**
  * Was passiert mit laufenden Events, wenn jemand neu in eine Gruppe kommt?
  *
- *  - "Alle beschenken alle", bei dem bisher die ganze Gruppe mitmacht → automatisch hinzufügen
+ *  - Freies Schenken (ohne Wichteln), bei dem bisher die ganze Gruppe mitmacht → automatisch hinzufügen
  *  - Wichteln oder Event mit Auswahl → Organisatoren (Ersteller + Gruppen-Admins) benachrichtigen,
  *    mit Button direkt zur Event-Ansicht
  *

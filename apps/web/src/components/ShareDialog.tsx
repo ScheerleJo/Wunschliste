@@ -4,6 +4,7 @@ import type { ShareLinkDto } from "@wunschliste/shared";
 import { sharesApi } from "../lib/api.ts";
 import { Dialog } from "./Dialog.tsx";
 import { Alert, Button, Field } from "./ui.tsx";
+import { Icon } from "./Icon.tsx";
 
 /** Wunschliste per Link mit Gästen ohne Konto teilen (z. B. Patenonkel) */
 export function ShareDialog({ profileId, ownerName, open, onClose }: { profileId: string; ownerName?: string; open: boolean; onClose: () => void }) {
@@ -46,7 +47,7 @@ export function ShareDialog({ profileId, ownerName, open, onClose }: { profileId
           öffnet, sieht diese Reservierungen als eigene und kann sie aufheben.
         </p>
         <div className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900">
-          🤫 Über den Link sieht man, was schon reserviert ist.{" "}
+          <Icon name="secret" className="mr-1" />Über den Link sieht man, was schon reserviert ist.{" "}
           {ownerName ? "Gib ihn also nicht an das Kind weiter." : "Öffne ihn also besser nicht selbst, wenn du dich überraschen lassen willst."}
         </div>
 
@@ -68,7 +69,7 @@ export function ShareDialog({ profileId, ownerName, open, onClose }: { profileId
               </select>
             </label>
             <Button type="submit" disabled={create.isPending}>
-              🔗 Link erstellen
+              <Icon name="link" /> Link erstellen
             </Button>
           </div>
         </form>
@@ -99,9 +100,9 @@ function ShareRow({ link, highlight, onRevoke }: { link: ShareLinkDto; highlight
   return (
     <li className={`rounded-lg border p-3 text-sm ${highlight ? "border-emerald-300 bg-emerald-50" : "border-stone-200"}`}>
       <div className="flex flex-wrap items-center gap-2">
-        <span className="min-w-0 flex-1 truncate font-medium">🔗 {link.label}</span>
+        <span className="min-w-0 flex-1 truncate font-medium"><Icon name="link" className="mr-1.5" />{link.label}</span>
         <Button variant="secondary" className="px-2.5! py-1.5! text-xs" onClick={copy}>
-          {copied ? "Kopiert ✓" : "Kopieren"}
+          {copied ? <><Icon name="check" /> Kopiert</> : "Kopieren"}
         </Button>
         {canShare && (
           <Button

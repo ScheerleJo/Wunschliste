@@ -11,6 +11,11 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^7.3.1",
+    "@fortawesome/pro-duotone-svg-icons": "^7.3.1",
+    "@fortawesome/pro-regular-svg-icons": "^7.3.1",
+    "@fortawesome/pro-solid-svg-icons": "^7.3.1",
+    "@fortawesome/react-fontawesome": "^3.5.0",
     "@tanstack/react-query": "^5.108.0",
     "@wunschliste/shared": "workspace:*",
     "better-auth": "~1.7.26",

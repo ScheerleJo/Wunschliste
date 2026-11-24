@@ -56,7 +56,7 @@ Stand: erster lauffähiger Prototyp, auf Proxmox unter `wunschbaum.basislager.cl
 
 „Laufend“ heißt: ohne Datum oder Datum heute bzw. später. Kommt jemand in die Gruppe (Einladung angenommen oder Kind
 aufgenommen):
-- **Alle beschenken alle und bisher die ganze Gruppe dabei:** Die Person wird automatisch hinzugefügt.
+- **Freies Schenken und bisher die ganze Gruppe dabei:** Die Person wird automatisch hinzugefügt.
 - **Wichteln oder nur ausgewählte Teilnehmende:** Ersteller und Gruppen-Admins bekommen eine Benachrichtigung in der App
   (🔔) und per Mail, mit Button „Zum Event“. Ist schon ausgelost, erklärt die Nachricht, dass man zurücksetzen und
   neu auslosen muss. Wer die Änderung selbst ausgelöst hat, wird nicht benachrichtigt.
@@ -74,6 +74,9 @@ aufgenommen):
 - **Funktionen:** Übersicht mit Mailstatus; Benutzer (bearbeiten, bestätigen, Passwort setzen, abmelden, löschen);
   Gruppen (umbenennen, Mitglieder und Rollen, löschen); Kinderprofile (Verwalter, löschen); Events löschen;
   Einladungen und Teilen-Links zurückziehen.
+- **Abmeldung nach Inaktivität:** Ein Countdown von 10 Minuten neben „Abmelden“ wird durch jeden Klick und jede
+  Tastatureingabe zurückgesetzt und meldet sich bei 0:00 ab. Auch der Server beendet die Sitzung 11 Minuten nach der
+  letzten Anfrage (gleitend, höchstens 12 Stunden). Die Oberfläche meldet Aktivität höchstens alle 30 Sekunden.
 - **Bewusst ohne Reservierungen und Wichtel-Zuordnungen**, damit die Überraschung auch für den Admin selbst erhalten
   bleibt. Für Notfälle gibt es die protokollierte Notfall-Einsicht beim Event.
 - **Benutzer löschen** entfernt das eigene Profil samt Wünschen, Bildern, Gruppenmitgliedschaften und eigenen
@@ -111,7 +114,7 @@ Umsortieren und Archivieren zählen nicht als „geändert“.
 
 ## Events
 
-- **Typen:** *Wichteln* (Auslosung) oder *Standard* (alle beschenken alle). Beide haben Datum und Budget.
+- **Typen:** *Wichteln* (Auslosung) oder *Freies Schenken* (intern `standard`, ohne Auslosung: Jede(r) schenkt, wem er oder sie möchte, z. B. Geburtstag). Beide haben Datum und Budget.
   Beim Anlegen kommt die Frage „Wird gewichtelt?“ nach den Grunddaten (Vorauswahl: nein). Organisatoren können
   sie jederzeit ändern. Wird ein ausgelostes Wichteln ausgeschaltet, wird die Auslosung verworfen. Es zählt dann
   auch nicht als „Vorjahr“.

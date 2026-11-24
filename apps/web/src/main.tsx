@@ -2,7 +2,12 @@ import { StrictMode, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, Navigate, RouterProvider, useLocation, useSearchParams } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import "@fortawesome/fontawesome-svg-core/styles.css";
+import { config as faConfig } from "@fortawesome/fontawesome-svg-core";
 import "./index.css";
+
+// Font-Awesome-CSS kommt oben aus dem Paket (mitgebaut), nicht zur Laufzeit eingefügt
+faConfig.autoAddCss = false;
 import { AppLayout } from "./components/AppLayout.tsx";
 import { GroupDetailPage } from "./pages/GroupDetailPage.tsx";
 import { GroupsPage } from "./pages/GroupsPage.tsx";
@@ -18,6 +23,7 @@ import { ReservationsPage } from "./pages/ReservationsPage.tsx";
 import { WishlistViewPage } from "./pages/WishlistViewPage.tsx";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage.tsx";
 import { HomePage } from "./pages/HomePage.tsx";
+import { StartPage } from "./pages/StartPage.tsx";
 import { LoginPage } from "./pages/LoginPage.tsx";
 import { RegisterPage } from "./pages/RegisterPage.tsx";
 import { ResetPasswordPage } from "./pages/ResetPasswordPage.tsx";
@@ -64,7 +70,8 @@ const router = createBrowserRouter([
       </RequireAuth>
     ),
     children: [
-      { path: "/", element: <HomePage /> },
+      { path: "/", element: <StartPage /> },
+      { path: "/liste", element: <HomePage /> },
       { path: "/gruppen", element: <GroupsPage /> },
       { path: "/gruppen/:groupId", element: <GroupDetailPage /> },
       { path: "/reservierungen", element: <ReservationsPage /> },

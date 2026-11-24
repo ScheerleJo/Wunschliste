@@ -34,7 +34,7 @@ export function HandoverPage() {
     try {
       await childrenApi.acceptHandover(token);
       await queryClient.invalidateQueries();
-      navigate("/", { replace: true });
+      navigate("/liste", { replace: true });
     } catch (e) {
       setError(e instanceof ApiError ? e.message : "Übernahme fehlgeschlagen");
       setBusy(false);

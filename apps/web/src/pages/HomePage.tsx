@@ -6,6 +6,7 @@ import { Alert, Button, Field, Spinner } from "../components/ui.tsx";
 import { WishlistManager } from "../components/WishlistManager.tsx";
 import { childrenApi } from "../lib/api.ts";
 import { useMe } from "../lib/use-me.ts";
+import { Icon } from "../components/Icon.tsx";
 
 /** Eigene Wunschliste und die der Kinder, die ich verwalte (Umschalter oben) */
 export function HomePage() {
@@ -28,7 +29,7 @@ export function HomePage() {
               onClick={() => setParams(t.id ? { profil: t.id } : {})}
               className={`shrink-0 rounded-full px-3.5 py-1.5 text-sm font-medium ${active ? "bg-brand-700 text-white" : "border border-stone-300 bg-white text-stone-700 hover:bg-stone-100"}`}
             >
-              {t.id ? `👶 ${t.label}` : t.label}
+              {t.id ? <><Icon name="child" className="mr-1" />{t.label}</> : t.label}
             </button>
           );
         })}
@@ -46,10 +47,10 @@ export function HomePage() {
             <span className="flex-1">Du verwaltest diese Liste für {selected.displayName}.</span>
             <span className="flex gap-3">
               <Link to={`/liste/${selected.id}`} className="font-medium underline">
-                🔖 Was ist reserviert?
+                <Icon name="reserve" className="mr-1" />Was ist reserviert?
               </Link>
               <Link to={`/kinder/${selected.id}`} className="font-medium underline">
-                ⚙️ Einstellungen
+                <Icon name="settings" className="mr-1" />Einstellungen
               </Link>
             </span>
           </div>

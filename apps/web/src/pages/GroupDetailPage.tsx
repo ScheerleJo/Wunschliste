@@ -5,6 +5,7 @@ import { APP_NAME, groupInputSchema, type GroupDetailDto, type GroupMemberDto, t
 import { Alert, Badge, Button, Card, Field, Spinner, TextArea } from "../components/ui.tsx";
 import { ApiError, childrenApi, groupsApi, householdsApi } from "../lib/api.ts";
 import { useMe } from "../lib/use-me.ts";
+import { Icon } from "../components/Icon.tsx";
 
 export function GroupDetailPage() {
   const { groupId = "" } = useParams();
@@ -16,7 +17,7 @@ export function GroupDetailPage() {
       <Card>
         <p>Diese Gruppe gibt es nicht oder du bist kein Mitglied.</p>
         <Link to="/gruppen" className="mt-2 inline-block text-sm text-brand-700 hover:underline">
-          ← Zu meinen Gruppen
+          <Icon name="back" className="mr-1" />Zu meinen Gruppen
         </Link>
       </Card>
     );
@@ -28,7 +29,7 @@ export function GroupDetailPage() {
   return (
     <div className="space-y-4">
       <Link to="/gruppen" className="text-sm text-stone-500 hover:underline">
-        ← Gruppen
+        <Icon name="back" className="mr-1" />Gruppen
       </Link>
       <GroupHeader group={g} />
       <MembersCard group={g} />
@@ -36,7 +37,7 @@ export function GroupDetailPage() {
       <HouseholdsCard group={g} />
       <Link to={`/events?neu&gruppe=${g.id}`} className="block">
         <div className="rounded-xl border border-dashed border-stone-300 px-4 py-3 text-sm text-stone-600 hover:border-brand-500 hover:text-brand-700">
-          🎅 Wichteln oder Fest für diese Gruppe planen →
+          <Icon name="events" className="mr-1.5" />Wichteln oder Fest für diese Gruppe planen <Icon name="forward" className="ml-1" />
         </div>
       </Link>
       {isAdmin && <InvitesCard groupId={g.id} />}
@@ -152,7 +153,7 @@ function MemberRow({ groupId, member, canManage }: { groupId: string; member: Gr
           {member.displayName.charAt(0).toUpperCase()}
         </div>
         <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-          <Link to={member.isMe ? "/" : `/liste/${member.profileId}`} className="font-medium hover:text-brand-700 hover:underline">
+          <Link to={member.isMe ? "/liste" : `/liste/${member.profileId}`} className="font-medium hover:text-brand-700 hover:underline">
             {member.displayName}
           </Link>
           {member.isMe && <Badge>Du</Badge>}
@@ -160,15 +161,15 @@ function MemberRow({ groupId, member, canManage }: { groupId: string; member: Gr
           {member.managed && <Badge tone="amber">Kind</Badge>}
         </div>
         {member.managedByMe && (
-          <Link to={`/?profil=${member.profileId}`} className="rounded-lg px-2 py-1.5 text-xs font-medium text-stone-600 hover:bg-stone-100">
-            ✏️ Verwalten
+          <Link to={`/liste?profil=${member.profileId}`} className="rounded-lg px-2 py-1.5 text-xs font-medium text-stone-600 hover:bg-stone-100">
+            <Icon name="edit" className="mr-1" />Verwalten
           </Link>
         )}
         <Link
-          to={member.isMe ? "/" : `/liste/${member.profileId}`}
+          to={member.isMe ? "/liste" : `/liste/${member.profileId}`}
           className="rounded-lg px-2 py-1.5 text-xs font-medium text-brand-700 hover:bg-brand-50"
         >
-          🎁 {member.isMe ? "Meine Liste" : "Wunschliste"}
+          <Icon name="gift" className="mr-1" />{member.isMe ? "Meine Liste" : "Wunschliste"}
         </Link>
         {canManage && (
           <div className="flex gap-1">
@@ -259,7 +260,7 @@ function InvitesCard({ groupId }: { groupId: string }) {
             </select>
           </label>
           <Button onClick={() => create.mutate(false)} disabled={create.isPending}>
-            🔗 Einladungslink erstellen
+            <Icon name="link" /> Einladungslink erstellen
           </Button>
         </div>
 
@@ -275,7 +276,7 @@ function InvitesCard({ groupId }: { groupId: string }) {
             <Field label="Oder per Mail einladen" type="email" placeholder="oma@example.com" value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
           <Button type="submit" variant="secondary" disabled={!email.trim() || create.isPending}>
-            ✉️ Einladen
+            <Icon name="mail" /> Einladen
           </Button>
         </form>
         {mailSent && <Alert kind="success">Einladung an {mailSent} verschickt.</Alert>}
@@ -308,11 +309,11 @@ function InviteRow({ invite, highlight, onRevoke }: { invite: InviteDto; highlig
   return (
     <li className={`rounded-lg border p-3 text-sm ${highlight ? "border-emerald-300 bg-emerald-50" : "border-stone-200"}`}>
       <div className="flex flex-wrap items-center gap-2">
-        <span className="min-w-0 flex-1 truncate font-medium">{invite.email ? `✉️ ${invite.email}` : "🔗 Einladungslink"}</span>
+        <span className="min-w-0 flex-1 truncate font-medium">{invite.email ? <><Icon name="mail" className="mr-1.5" />{invite.email}</> : <><Icon name="link" className="mr-1.5" />Einladungslink</>}</span>
         {!invite.email && (
           <>
             <Button variant="secondary" className="px-2.5! py-1.5! text-xs" onClick={copy}>
-              {copied ? "Kopiert ✓" : "Kopieren"}
+              {copied ? <><Icon name="check" /> Kopiert</> : "Kopieren"}
             </Button>
             {canShare && (
               <Button
@@ -398,7 +399,7 @@ function AddChildCard({ group }: { group: GroupDetailDto }) {
       <span className="text-stone-600">Deine Kinder aufnehmen:</span>
       {missing.map((p) => (
         <Button key={p.id} variant="secondary" className="px-3! py-1.5! text-xs" disabled={add.isPending} onClick={() => add.mutate(p.id)}>
-          + 👶 {p.displayName}
+          + <Icon name="child" /> {p.displayName}
         </Button>
       ))}
     </div>
@@ -433,7 +434,7 @@ function HouseholdsCard({ group }: { group: GroupDetailDto }) {
   return (
     <Card>
       <div className="flex items-center justify-between gap-2">
-        <h2 className="font-semibold">🏠 Haushalte</h2>
+        <h2 className="font-semibold"><Icon name="household" className="mr-1.5" />Haushalte</h2>
         {isAdmin && !editing && (
           <Button variant="secondary" className="px-3! py-1.5! text-xs" onClick={() => setEditing({ name: "", ids: [] })}>
             + Haushalt

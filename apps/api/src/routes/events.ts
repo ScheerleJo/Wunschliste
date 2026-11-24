@@ -384,7 +384,7 @@ eventRoutes.patch("/events/:eventId", async (c) => {
   return c.json({ ok: true });
 });
 
-/** Nur die Art umschalten: wird gewichtelt oder beschenken sich alle? */
+/** Nur die Art umschalten: wird gewichtelt oder frei geschenkt? */
 eventRoutes.put("/events/:eventId/type", async (c) => {
   const u = requireUser(c);
   const ev = await requireManage(u, c.req.param("eventId"));

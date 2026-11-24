@@ -141,7 +141,7 @@ describe("Wichteln", () => {
     expect(frauSieht).toEqual(["Emil", "Frau"]);
   });
 
-  it("Standard-Event (alle beschenken alle) wird nicht ausgelost", async () => {
+  it("Standard-Event (freies Schenken) wird nicht ausgelost", async () => {
     const id = await newEvent({ type: "standard", name: "Weihnachten" });
     expect((await call(josia, "POST", `/events/${id}/draw`)).status).toBe(400);
     expect((await detail(oma, id)).body).toMatchObject({ type: "standard", budgetMaxCents: 3000, myAssignments: [] });

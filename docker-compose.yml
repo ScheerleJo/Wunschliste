@@ -6,7 +6,11 @@
 #   docker compose --profile mailpit up -d   zusätzlich Mailpit starten (fängt Mails ab, nur zum Testen)
 services:
   app:
-    build: .
+    build:
+      context: .
+      # Font Awesome Pro Package Token aus FONTAWESOME_PACKAGE_TOKEN in der .env (nur beim Bauen)
+      secrets:
+        - fontawesome_token
     restart: unless-stopped
     env_file: .env
     environment:
@@ -46,3 +50,7 @@ services:
 volumes:
   db:
   uploads:
+
+secrets:
+  fontawesome_token:
+    environment: FONTAWESOME_PACKAGE_TOKEN

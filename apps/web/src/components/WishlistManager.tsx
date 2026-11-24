@@ -10,6 +10,7 @@ import { WishEditor, type ImageChanges } from "./WishEditor.tsx";
 import { WishThumb } from "./WishThumb.tsx";
 import { ShareDialog } from "./ShareDialog.tsx";
 import { prepareImage } from "../lib/images.ts";
+import { Icon } from "./Icon.tsx";
 
 /**
  * Verwaltung einer Wunschliste (eigene oder später die eines Kindes).
@@ -89,7 +90,7 @@ export function WishlistManager({ profileId, ownerName }: { profileId: string; o
         <h1 className="text-2xl font-semibold">{ownerName ? `Wunschliste von ${ownerName}` : "Meine Wunschliste"}</h1>
         <div className="flex gap-2">
           <Button variant="secondary" onClick={() => setSharing(true)}>
-            🔗 Teilen
+            <Icon name="share" /> Teilen
           </Button>
           <Button onClick={() => setEditing("new")}>+ Wunsch hinzufügen</Button>
         </div>
@@ -120,7 +121,7 @@ export function WishlistManager({ profileId, ownerName }: { profileId: string; o
         <Card className="text-center">
           {tab === "active" ? (
             <>
-              <p className="text-4xl">🎁</p>
+              <p className="text-4xl text-brand-700"><Icon name="gift" /></p>
               <h2 className="mt-2 font-semibold">Noch keine Wünsche</h2>
               <p className="mt-1 text-sm text-stone-600">Füge deinen ersten Wunsch hinzu, gerne mit Link zum Artikel.</p>
             </>
@@ -147,7 +148,7 @@ export function WishlistManager({ profileId, ownerName }: { profileId: string; o
                     {!w.visibleInAllGroups && (
                       <div className="mt-2">
                         <Badge tone="amber">
-                          {w.groupIds.length === 0 ? "🔒 Nur für dich sichtbar" : `👁 Nur: ${w.groupIds.map(groupName).join(", ")}`}
+                          {w.groupIds.length === 0 ? <><Icon name="private" className="mr-1" />Nur für dich sichtbar</> : <><Icon name="visibility" className="mr-1" />Nur: {w.groupIds.map(groupName).join(", ")}</>}
                         </Badge>
                       </div>
                     )}
@@ -156,10 +157,10 @@ export function WishlistManager({ profileId, ownerName }: { profileId: string; o
                   {tab === "active" && (
                     <div className="flex shrink-0 flex-col gap-1">
                       <IconButton label="Nach oben" disabled={i === 0} onClick={() => move(i, -1)}>
-                        ↑
+                        <Icon name="up" />
                       </IconButton>
                       <IconButton label="Nach unten" disabled={i === wishes.data!.length - 1} onClick={() => move(i, 1)}>
-                        ↓
+                        <Icon name="down" />
                       </IconButton>
                     </div>
                   )}
@@ -168,14 +169,14 @@ export function WishlistManager({ profileId, ownerName }: { profileId: string; o
                 <div className="mt-3 flex flex-wrap gap-1 border-t border-stone-100 pt-3">
                   {tab === "active" ? (
                     <>
-                      <SmallButton onClick={() => setEditing(w)}>✏️ Bearbeiten</SmallButton>
-                      <SmallButton onClick={() => archive.mutate(w.id)}>📦 Archivieren</SmallButton>
+                      <SmallButton onClick={() => setEditing(w)}><Icon name="edit" className="mr-1" />Bearbeiten</SmallButton>
+                      <SmallButton onClick={() => archive.mutate(w.id)}><Icon name="archive" className="mr-1" />Archivieren</SmallButton>
                     </>
                   ) : (
-                    <SmallButton onClick={() => restore.mutate(w.id)}>↩️ Wiederherstellen</SmallButton>
+                    <SmallButton onClick={() => restore.mutate(w.id)}><Icon name="restore" className="mr-1" />Wiederherstellen</SmallButton>
                   )}
                   <SmallButton danger onClick={() => confirm(`„${w.title}“ endgültig löschen?`) && remove.mutate(w.id)}>
-                    🗑 Löschen
+                    <Icon name="delete" className="mr-1" />Löschen
                   </SmallButton>
                 </div>
               </Card>

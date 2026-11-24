@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { eq } from "drizzle-orm";
+import { eq, gt } from "drizzle-orm";
 import { app } from "../src/app.ts";
 import { db } from "../src/db/index.ts";
 import { adminAccount, wish } from "../src/db/schema.ts";
@@ -73,6 +73,37 @@ describe("Admin-Anmeldung", () => {
     expect((await raw("DELETE", `/admin/users/${ben.id}`, { cookie, origin: "https://boese.example" })).status).toBe(403);
     await raw("POST", "/admin/logout", { cookie });
     expect((await raw("GET", "/admin/me", { cookie })).status).toBe(401);
+  });
+});
+
+describe("Abmeldung nach Inaktivität", () => {
+  it("Sitzung läuft ohne Anfragen ab, jede Anfrage verlängert sie", async () => {
+    const { adminSession } = await import("../src/db/schema.ts");
+    const cookie = await adminCookie();
+    const [s1] = await db.select().from(adminSession);
+    const minutes = (d: Date) => (d.getTime() - Date.now()) / 60_000;
+    expect(minutes(s1!.expiresAt)).toBeGreaterThan(10.5);
+    expect(minutes(s1!.expiresAt)).toBeLessThanOrEqual(11);
+
+    // 11 Minuten ohne Aktivität simulieren → abgelaufen
+    await db.update(adminSession).set({ expiresAt: new Date(Date.now() - 1000) });
+    expect((await raw("GET", "/admin/me", { cookie })).status).toBe(401);
+
+    // neue Sitzung: kurz vor Ablauf eine Anfrage → wieder ~11 Minuten
+    const cookie2 = await adminCookie();
+    await db.update(adminSession).set({ expiresAt: new Date(Date.now() + 30_000) });
+    expect((await raw("GET", "/admin/me", { cookie: cookie2 })).status).toBe(200);
+    const [s2] = await db.select().from(adminSession).where(gt(adminSession.expiresAt, new Date()));
+    expect(minutes(s2!.expiresAt)).toBeGreaterThan(10.5);
+  });
+
+  it("höchstens 12 Stunden nach der Anmeldung, auch bei Aktivität", async () => {
+    const { adminSession } = await import("../src/db/schema.ts");
+    const cookie = await adminCookie();
+    await db.update(adminSession).set({ createdAt: new Date(Date.now() - 12 * 3600_000 + 60_000) });
+    await raw("GET", "/admin/me", { cookie });
+    const [s] = await db.select().from(adminSession);
+    expect((s!.expiresAt.getTime() - Date.now()) / 60_000).toBeLessThanOrEqual(1);
   });
 });
 

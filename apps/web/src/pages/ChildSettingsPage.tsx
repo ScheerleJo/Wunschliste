@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams, useSearchParams } from "react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Alert, Badge, Button, Card, Field, Spinner } from "../components/ui.tsx";
 import { childrenApi, groupsApi } from "../lib/api.ts";
+import { Icon } from "../components/Icon.tsx";
 
 export function ChildSettingsPage() {
   const { profileId = "" } = useParams();
@@ -24,7 +25,7 @@ export function ChildSettingsPage() {
     mutationFn: () => childrenApi.remove(profileId),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["me"] });
-      navigate("/", { replace: true });
+      navigate("/liste", { replace: true });
     },
     onError,
   });
@@ -34,8 +35,8 @@ export function ChildSettingsPage() {
     return (
       <Card>
         <p>Dieses Kinderprofil gibt es nicht (mehr) oder du verwaltest es nicht.</p>
-        <Link to="/" className="mt-2 inline-block text-sm text-brand-700 hover:underline">
-          ← Zur Wunschliste
+        <Link to="/liste" className="mt-2 inline-block text-sm text-brand-700 hover:underline">
+          <Icon name="back" className="mr-1" />Zur Wunschliste
         </Link>
       </Card>
     );
@@ -44,8 +45,8 @@ export function ChildSettingsPage() {
 
   return (
     <div className="space-y-4">
-      <Link to={`/?profil=${c.id}`} className="text-sm text-stone-500 hover:underline">
-        ← Wunschliste von {c.displayName}
+      <Link to={`/liste?profil=${c.id}`} className="text-sm text-stone-500 hover:underline">
+        <Icon name="back" className="mr-1" />Wunschliste von {c.displayName}
       </Link>
       <h1 className="text-2xl font-semibold">Kinderprofil: {c.displayName}</h1>
       {params.get("neu") && c.groups.length === 0 && (
@@ -170,7 +171,7 @@ function GuardiansCard({
     onSuccess: async (_, userId) => {
       if (guardians.find((g) => g.userId === userId)?.isMe) {
         await onChange();
-        navigate("/", { replace: true });
+        navigate("/liste", { replace: true });
       } else await after();
     },
     onError,
@@ -248,7 +249,7 @@ function HandoverCard({
       {pending ? (
         <div className="mt-3 flex flex-wrap items-center gap-2 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900">
           <span className="flex-1">
-            ✉️ Übergabelink an <b>{pending.email}</b> verschickt, gültig bis {new Date(pending.expiresAt).toLocaleDateString("de-DE")}.
+            <Icon name="mail" className="mr-1" />Übergabelink an <b>{pending.email}</b> verschickt, gültig bis {new Date(pending.expiresAt).toLocaleDateString("de-DE")}.
           </span>
           <button className="font-medium underline" onClick={() => cancel.mutate()}>
             Zurückziehen

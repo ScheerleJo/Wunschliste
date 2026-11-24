@@ -345,7 +345,7 @@ export const notification = pgTable(
 );
 
 // ---------------------------------------------------------------------------
-// Events (Wichteln oder "alle beschenken alle")
+// Events (Wichteln oder freies Schenken)
 // ---------------------------------------------------------------------------
 
 export const eventType = pgEnum("event_type", ["secret_santa", "standard"]);

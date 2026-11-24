@@ -12,3 +12,24 @@
 body {
   @apply bg-stone-50 text-stone-900 antialiased;
 }
+
+/*
+ * Safari auf iPhone/iPad: Datums- und Zeitfelder haben eine eigene Mindestbreite und ignorieren width: 100%,
+ * dadurch ragen sie über den Rand. Ohne natives Aussehen verhalten sie sich wie normale Eingabefelder.
+ * min-height verhindert, dass ein leeres Feld zusammenfällt; der Text steht links wie bei den anderen Feldern.
+ */
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"] {
+  -webkit-appearance: none;
+  appearance: none;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 2.875rem;
+}
+input[type="date"]::-webkit-date-and-time-value,
+input[type="time"]::-webkit-date-and-time-value,
+input[type="datetime-local"]::-webkit-date-and-time-value {
+  text-align: left;
+  margin: 0;
+}

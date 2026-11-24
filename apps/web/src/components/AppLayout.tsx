@@ -4,12 +4,13 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { notificationsApi, reservationsApi } from "../lib/api.ts";
 import { authClient } from "../lib/auth-client.ts";
 import { useMe } from "../lib/use-me.ts";
+import { Icon, type IconName } from "./Icon.tsx";
 
 const navItems = [
-  { to: "/", label: "Meine Liste", icon: "🎁" },
-  { to: "/gruppen", label: "Gruppen", icon: "👪" },
-  { to: "/reservierungen", label: "Reserviert", icon: "🔖" },
-  { to: "/events", label: "Events", icon: "🎄" },
+  { to: "/liste", label: "Meine Liste", icon: "gift" as IconName },
+  { to: "/gruppen", label: "Gruppen", icon: "groups" as IconName },
+  { to: "/reservierungen", label: "Reserviert", icon: "reserve" as IconName },
+  { to: "/events", label: "Events", icon: "events" as IconName },
 ];
 
 export function AppLayout() {
@@ -41,13 +42,13 @@ export function AppLayout() {
     <div className="min-h-dvh pb-20 sm:pb-0">
       <header className="sticky top-0 z-10 border-b border-stone-200 bg-white/90 backdrop-blur">
         <div className="mx-auto flex max-w-4xl items-center gap-4 px-4 py-3">
-          <NavLink to="/" className="flex items-center gap-2 font-semibold">
+          <NavLink to="/" aria-label="Startseite" className="flex items-center gap-2 font-semibold">
             <img src="/favicon.svg" alt="" className="h-7 w-7" />
             {APP_NAME}
           </NavLink>
           <nav className="hidden flex-1 gap-1 sm:flex">
             {navItems.map((item) => (
-              <NavLink key={item.to} to={item.to} end={item.to === "/"} className={linkClass}>
+              <NavLink key={item.to} to={item.to} end={item.to === "/liste"} className={linkClass}>
                 {item.label}
                 {badge(item.to)}
               </NavLink>
@@ -57,9 +58,9 @@ export function AppLayout() {
             <NavLink
               to="/benachrichtigungen"
               aria-label={unread ? `Benachrichtigungen (${unread} ungelesen)` : "Benachrichtigungen"}
-              className="relative rounded-lg px-2.5 py-2 text-lg leading-none hover:bg-stone-100"
+              className="relative rounded-lg px-2.5 py-2 text-lg leading-none text-stone-600 hover:bg-stone-100"
             >
-              🔔
+              <Icon name="bell" />
               {unread > 0 && (
                 <span className="absolute top-0.5 right-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-brand-600 px-1 text-[10px] font-bold text-white">
                   {unread}
@@ -84,13 +85,13 @@ export function AppLayout() {
           <NavLink
             key={item.to}
             to={item.to}
-            end={item.to === "/"}
+            end={item.to === "/liste"}
             className={({ isActive }) =>
               `flex flex-col items-center gap-0.5 py-2 text-xs ${isActive ? "text-brand-700" : "text-stone-500"}`
             }
           >
             <span className="relative text-lg leading-none">
-              {item.icon}
+              <Icon name={item.icon} />
               <span className="absolute -top-1 -right-3">{badge(item.to)}</span>
             </span>
             {item.label}
