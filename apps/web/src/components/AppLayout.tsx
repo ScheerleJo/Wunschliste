@@ -58,7 +58,7 @@ export function AppLayout() {
             <NavLink
               to="/benachrichtigungen"
               aria-label={unread ? `Benachrichtigungen (${unread} ungelesen)` : "Benachrichtigungen"}
-              className="relative rounded-lg px-2.5 py-2 text-lg leading-none hover:bg-stone-100"
+              className="relative rounded-lg px-2.5 py-2 text-lg leading-none text-stone-600 hover:bg-stone-100"
             >
               <Icon name="bell" />
               {unread > 0 && (

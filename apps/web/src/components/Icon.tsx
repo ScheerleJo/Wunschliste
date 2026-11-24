@@ -3,6 +3,7 @@
  *
  * Jede Bedeutung steht genau einmal hier. Ein anderes Icon für z. B. "Bearbeiten" = eine Zeile ändern.
  * Stil: solid (Standard) bzw. regular, wo als `far…` importiert. Auswahl siehe docs/ICONS.md.
+ * "duotone" sowie faTreeChristmas/faHandWave gibt es nur in Font Awesome Pro; hier stehen die Free-Varianten.
  */
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
@@ -11,9 +12,9 @@ import {
   faArrowRight,
   faArrowsLeftRight,
   faBan,
+  faBell,
   faBookmark,
   faBoxArchive,
-  faCalendarDays,
   faCamera,
   faCheck,
   faChevronDown,
@@ -36,13 +37,14 @@ import {
   faSleigh,
   faStopwatch,
   faTrashCan,
+  faTree,
   faTriangleExclamation,
   faUserGroup,
   faUsers,
   faUserSecret,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
-import { faBell as farBell, faFaceSmile as farFaceSmile } from "@fortawesome/free-regular-svg-icons";
+import { faFaceSmile as farFaceSmile } from "@fortawesome/free-regular-svg-icons";
 
 const icons = {
   /** Wunschliste, Geschenk, freies Schenken */
@@ -79,10 +81,10 @@ const icons = {
   delete: faTrashCan,
   /** nur für dich sichtbar, kein Zugriff */
   private: faLock,
-  /** Events */
-  events: faCalendarDays,
+  /** Events (gewünscht: faTreeChristmas, nur in Pro) */
+  events: faTree,
   /** Benachrichtigungen */
-  bell: farBell,
+  bell: faBell,
   /** Budget */
   budget: faEuroSign,
   /** leere Wunschliste (bei anderen) */

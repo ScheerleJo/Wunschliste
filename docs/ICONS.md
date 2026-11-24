@@ -71,3 +71,12 @@ Trag in **Deine Wahl** ein, was du lieber möchtest. Leer lassen heißt: Vorschl
 | ⏱ | Abmelde-Timer | Admin-Kopfzeile | `faStopwatch` | duotone |
 | ▾ (SVG) | Gruppe auf-/zuklappen | Startseite | `faChevronDown` | clasic |
 | 👋 | Begrüßung „Hallo …“ | Startseite | `faHandWave` | duotone |
+
+### Umgesetzt (Font Awesome Free)
+
+- **Stil:** überall *solid*, nur `faFaceSmile` *regular*. „duotone“ gibt es nur in Font Awesome Pro (Abo).
+- **Pro-Icons:** `faTreeChristmas` (Events) wird vorerst durch `faTree` ersetzt. Für `faHandWave` (Begrüßung) gibt es kein
+  passendes Free-Icon, die Begrüßung bleibt deshalb vorerst das Emoji 👋.
+- **Später einfach tauschbar:** Mit einem Pro-Abo lassen sich alle Wünsche in `apps/web/src/components/Icon.tsx`
+  umsetzen (Pakete `@fortawesome/pro-duotone-svg-icons` usw. mit privatem npm-Token).
+
