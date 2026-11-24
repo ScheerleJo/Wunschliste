@@ -2,7 +2,12 @@ import { StrictMode, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, Navigate, RouterProvider, useLocation, useSearchParams } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import "@fortawesome/fontawesome-svg-core/styles.css";
+import { config as faConfig } from "@fortawesome/fontawesome-svg-core";
 import "./index.css";
+
+// Font-Awesome-CSS kommt oben aus dem Paket (mitgebaut), nicht zur Laufzeit eingefügt
+faConfig.autoAddCss = false;
 import { AppLayout } from "./components/AppLayout.tsx";
 import { GroupDetailPage } from "./pages/GroupDetailPage.tsx";
 import { GroupsPage } from "./pages/GroupsPage.tsx";

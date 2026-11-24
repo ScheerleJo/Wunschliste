@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { eventInputSchema, formatPrice, parsePriceToCents, type EventDetailDto, type EventInput } from "@wunschliste/shared";
 import { groupsApi } from "../lib/api.ts";
 import { Alert, Button, Field, TextArea } from "./ui.tsx";
+import { Icon } from "./Icon.tsx";
 
 const toInput = (cents: number | null | undefined) => (cents == null ? "" : formatPrice(cents).replace(/\s?€/, ""));
 
@@ -78,7 +79,7 @@ export function EventForm({
             ? "Jede Person beschenkt eine ausgeloste andere. Die Auslosung startest du danach auf der Event-Seite."
             : "Ohne Auslosung: Jede(r) schenkt, wem er oder sie möchte, z. B. an Weihnachten, zum Geburtstag oder zur Hochzeit. Das kannst du später noch ändern."}
         </p>
-        {discardsDraw && <p className="mt-1.5 text-sm text-amber-700">⚠️ Die bisherige Auslosung wird dabei verworfen.</p>}
+        {discardsDraw && <p className="mt-1.5 text-sm text-amber-700"><Icon name="warning" className="mr-1" />Die bisherige Auslosung wird dabei verworfen.</p>}
       </fieldset>
       <div className="flex justify-end gap-2">
         <Button type="button" variant="ghost" onClick={onCancel}>
@@ -103,12 +104,12 @@ export function WichtelChoice({
   disabled?: boolean;
 }) {
   const options = [
-    ["standard", "🎁 Nein, frei schenken"],
-    ["secret_santa", "🎅 Ja, wir wichteln"],
+    ["standard", "gift", "Nein, frei schenken"],
+    ["secret_santa", "secretSanta", "Ja, wir wichteln"],
   ] as const;
   return (
     <div className="grid grid-cols-2 gap-1 rounded-lg bg-stone-100 p-1 text-sm">
-      {options.map(([v, label]) => (
+      {options.map(([v, icon, label]) => (
         <button
           key={v}
           type="button"
@@ -117,6 +118,7 @@ export function WichtelChoice({
           onClick={() => onChange(v)}
           className={`rounded-md px-2 py-2 font-medium transition ${value === v ? "bg-white text-brand-700 shadow-sm" : "text-stone-600 hover:text-stone-900"}`}
         >
+          <Icon name={icon} className="mr-1.5" />
           {label}
         </button>
       ))}

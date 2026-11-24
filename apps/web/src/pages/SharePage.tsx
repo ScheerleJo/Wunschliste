@@ -6,6 +6,7 @@ import { LinkChips } from "../components/LinkChips.tsx";
 import { Alert, Badge, Button, Card, Spinner } from "../components/ui.tsx";
 import { WishThumb } from "../components/WishThumb.tsx";
 import { ApiError, guestApi } from "../lib/api.ts";
+import { Icon, type IconName } from "../components/Icon.tsx";
 
 /** Öffentliche Ansicht einer geteilten Wunschliste für Gäste ohne Konto */
 export function SharePage() {
@@ -36,7 +37,7 @@ export function SharePage() {
         <div>
           <h1 className="text-2xl font-semibold">Wunschliste von {profile.displayName}</h1>
           <p className="mt-1 text-sm text-stone-600">
-            Reserviere, was du schenken möchtest, damit nichts doppelt gekauft wird. {profile.displayName} sieht davon nichts. 🤫
+            Reserviere, was du schenken möchtest, damit nichts doppelt gekauft wird. {profile.displayName} sieht davon nichts. <Icon name="secret" className="ml-1" />
           </p>
           <p className="mt-1 text-xs text-stone-500">
             Deine Reservierungen gehören zu diesem Link. Du siehst sie also auf jedem Gerät, auf dem du ihn öffnest. Gib den Link
@@ -62,7 +63,7 @@ export function SharePage() {
 
         {wishes.length === 0 ? (
           <Card className="text-center">
-            <p className="text-4xl">🎈</p>
+            <p className="text-4xl text-brand-700"><Icon name="empty" /></p>
             <p className="mt-2 text-sm text-stone-600">Hier stehen gerade keine Wünsche.</p>
           </Card>
         ) : (
@@ -96,7 +97,7 @@ function Shell({ children }: { children: ReactNode }) {
 const statusBadge = {
   available: <Badge tone="green">Verfügbar</Badge>,
   reserved: <Badge>Reserviert</Badge>,
-  reserved_by_me: <Badge tone="brand">✓ Von dir reserviert</Badge>,
+  reserved_by_me: <Badge tone="brand"><Icon name="check" className="mr-1" />Von dir reserviert</Badge>,
 };
 
 function GuestWishCard({ wish, token }: { wish: ViewWishDto; token: string }) {
@@ -130,7 +131,7 @@ function GuestWishCard({ wish, token }: { wish: ViewWishDto; token: string }) {
       </div>
       {wish.changedSinceReservation && (
         <div className="mt-3 flex flex-wrap items-center gap-2 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800">
-          <span className="flex-1">✏️ Dieser Wunsch wurde seit deiner Reservierung geändert.</span>
+          <span className="flex-1"><Icon name="edit" className="mr-1.5" />Dieser Wunsch wurde seit deiner Reservierung geändert.</span>
           <button onClick={() => ack.mutate()} className="font-medium underline">
             Gesehen
           </button>
@@ -145,7 +146,7 @@ function GuestWishCard({ wish, token }: { wish: ViewWishDto; token: string }) {
         <div key={wish.reservation} className="mt-3 flex justify-end border-t border-stone-100 pt-3">
           {wish.reservation === "available" ? (
             <Button className="py-2!" disabled={reserve.isPending} onClick={() => reserve.mutate()}>
-              🔖 Reservieren
+              <Icon name="reserve" /> Reservieren
             </Button>
           ) : (
             <Button
@@ -163,10 +164,12 @@ function GuestWishCard({ wish, token }: { wish: ViewWishDto; token: string }) {
   );
 }
 
+const noticeIcon: Record<Exclude<GuestReservationDto["state"], "ok">, IconName> = { changed: "edit", archived: "archive", deleted: "delete" };
+
 const noticeText: Record<Exclude<GuestReservationDto["state"], "ok">, string> = {
-  changed: "✏️ wurde seit deiner Reservierung geändert.",
-  archived: "📦 wurde archiviert, ist vielleicht schon erfüllt.",
-  deleted: "🗑 wurde von der Liste entfernt.",
+  changed: "wurde seit deiner Reservierung geändert.",
+  archived: "wurde archiviert, ist vielleicht schon erfüllt.",
+  deleted: "wurde von der Liste entfernt.",
 };
 
 function NoticeCard({ r, token }: { r: GuestReservationDto; token: string }) {
@@ -178,6 +181,7 @@ function NoticeCard({ r, token }: { r: GuestReservationDto; token: string }) {
   return (
     <div className="flex flex-wrap items-center gap-2 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-900">
       <span className="flex-1">
+        <Icon name={noticeIcon[r.state]} className="mr-1.5" />
         <b>{r.title}</b> {noticeText[r.state]}
       </span>
       {r.state === "changed" ? (

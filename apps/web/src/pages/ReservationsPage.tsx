@@ -5,12 +5,13 @@ import { LinkChips } from "../components/LinkChips.tsx";
 import { WishThumb } from "../components/WishThumb.tsx";
 import { Card, Spinner } from "../components/ui.tsx";
 import { reservationsApi } from "../lib/api.ts";
+import { Icon, type IconName } from "../components/Icon.tsx";
 
-const notices: Record<Exclude<MyReservationDto["state"], "ok">, { text: string; tone: string }> = {
-  changed: { text: "✏️ Wurde seit deiner Reservierung geändert.", tone: "bg-amber-50 text-amber-800" },
-  archived: { text: "📦 Hat der Wünschende archiviert, wahrscheinlich schon erfüllt.", tone: "bg-stone-100 text-stone-700" },
-  deleted: { text: "🗑 Hat der Wünschende von der Liste gelöscht.", tone: "bg-brand-50 text-brand-800" },
-  no_access: { text: "🔒 Du siehst diese Liste nicht mehr (keine gemeinsame Gruppe).", tone: "bg-stone-100 text-stone-700" },
+const notices: Record<Exclude<MyReservationDto["state"], "ok">, { icon: IconName; text: string; tone: string }> = {
+  changed: { icon: "edit", text: "Wurde seit deiner Reservierung geändert.", tone: "bg-amber-50 text-amber-800" },
+  archived: { icon: "archive", text: "Hat der Wünschende archiviert, wahrscheinlich schon erfüllt.", tone: "bg-stone-100 text-stone-700" },
+  deleted: { icon: "delete", text: "Hat der Wünschende von der Liste gelöscht.", tone: "bg-brand-50 text-brand-800" },
+  no_access: { icon: "private", text: "Du siehst diese Liste nicht mehr (keine gemeinsame Gruppe).", tone: "bg-stone-100 text-stone-700" },
 };
 
 /** "Was muss ich noch besorgen?" – alle eigenen Reservierungen, nach Person gruppiert */
@@ -40,7 +41,7 @@ export function ReservationsPage() {
 
       {list.data?.length === 0 ? (
         <Card className="text-center">
-          <p className="text-4xl">🔖</p>
+          <p className="text-4xl text-brand-700"><Icon name="reserve" /></p>
           <h2 className="mt-2 font-semibold">Noch nichts reserviert</h2>
           <p className="mt-1 text-sm text-stone-600">
             Schau dir in deinen <Link to="/gruppen" className="text-brand-700 hover:underline">Gruppen</Link> die Wunschlisten der
@@ -53,7 +54,7 @@ export function ReservationsPage() {
             <h2 className="flex items-baseline justify-between font-semibold">
               <span>Für {name}</span>
               <Link to={`/liste/${profileId}`} className="text-sm font-normal text-brand-700 hover:underline">
-                Liste ansehen →
+                Liste ansehen <Icon name="forward" className="ml-1" />
               </Link>
             </h2>
             <ul className="space-y-2">
@@ -91,7 +92,7 @@ function ReservationCard({ r }: { r: MyReservationDto }) {
       </div>
       {notice && (
         <div className={`mt-3 flex flex-wrap items-center gap-2 rounded-lg px-3 py-2 text-sm ${notice.tone}`}>
-          <span className="flex-1">{notice.text}</span>
+          <span className="flex-1"><Icon name={notice.icon} className="mr-1.5" />{notice.text}</span>
           {r.state === "changed" && (
             <button onClick={() => ack.mutate()} className="font-medium underline">
               Gesehen

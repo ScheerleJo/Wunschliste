@@ -2,6 +2,7 @@ import { Link } from "react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button, Card, Spinner } from "../components/ui.tsx";
 import { notificationsApi } from "../lib/api.ts";
+import { Icon } from "../components/Icon.tsx";
 
 export function NotificationsPage() {
   const queryClient = useQueryClient();
@@ -25,7 +26,7 @@ export function NotificationsPage() {
       </div>
       {items.length === 0 ? (
         <Card className="text-center">
-          <p className="text-4xl">🔔</p>
+          <p className="text-4xl text-brand-700"><Icon name="bell" /></p>
           <p className="mt-2 text-sm text-stone-600">Keine Benachrichtigungen.</p>
         </Card>
       ) : (
@@ -51,7 +52,7 @@ export function NotificationsPage() {
                   )}
                   {n.linkPath && (
                     <Link to={n.linkPath} onClick={() => !n.read && read.mutate(n.id)}>
-                      <Button className="py-1.5! text-xs">{n.linkLabel ?? "Öffnen"} →</Button>
+                      <Button className="py-1.5! text-xs">{n.linkLabel ?? "Öffnen"} <Icon name="forward" /></Button>
                     </Link>
                   )}
                 </div>

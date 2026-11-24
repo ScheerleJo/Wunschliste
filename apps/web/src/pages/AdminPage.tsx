@@ -8,6 +8,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { APP_NAME, type AdminGroupDto, type AdminUserDto } from "@wunschliste/shared";
 import { Alert, Badge, Button, Card, Field, Spinner } from "../components/ui.tsx";
 import { adminApi, ApiError } from "../lib/api.ts";
+import { Icon } from "../components/Icon.tsx";
 
 const tabs = [
   ["uebersicht", "Übersicht"],
@@ -136,7 +137,7 @@ function AdminShell({ email }: { email: string }) {
       </header>
       <main className="mx-auto max-w-5xl px-4 py-6">
         <p className="mb-4 rounded-lg bg-stone-100 px-3 py-2 text-xs text-stone-600">
-          🤫 Reservierungen und Wichtel-Zuordnungen werden hier bewusst nicht angezeigt, damit die Überraschung auch für dich bleibt.
+          <Icon name="secret" className="mr-1" />Reservierungen und Wichtel-Zuordnungen werden hier bewusst nicht angezeigt, damit die Überraschung auch für dich bleibt.
         </p>
         {tab === "uebersicht" && <Overview />}
         {tab === "benutzer" && <Users />}
@@ -207,7 +208,7 @@ function Overview() {
         ))}
       </div>
       <Card className="p-4! text-sm">
-        <p className="font-medium">✉️ Mailversand</p>
+        <p className="font-medium"><Icon name="mail" className="mr-1.5" />Mailversand</p>
         <p className="mt-1 text-stone-600">
           {s.mail.configured ? (
             <>
@@ -468,7 +469,7 @@ function Children() {
                 <span key={g.userId} className="inline-flex items-center gap-1 rounded-full bg-stone-100 px-2 py-0.5">
                   {g.name}
                   <button aria-label={`${g.name} entfernen`} className="text-stone-400 hover:text-brand-700" onClick={() => run(() => adminApi.removeGuardian(k.id, g.userId))}>
-                    ✕
+                    <Icon name="close" />
                   </button>
                 </span>
               ))}
@@ -511,7 +512,7 @@ function Events() {
           <Card key={e.id} className="flex flex-wrap items-center gap-2 p-4!">
             <div className="min-w-0 flex-1">
               <p className="font-semibold">
-                {e.type === "secret_santa" ? "🎅" : "🎁"} {e.name}{" "}
+                <Icon name={e.type === "secret_santa" ? "secretSanta" : "gift"} className="mr-1.5 text-brand-700" />{e.name}{" "}
                 {e.type === "secret_santa" && <Badge tone={e.status === "draft" ? "amber" : "green"}>{e.status === "draft" ? "nicht ausgelost" : "ausgelost"}</Badge>}
               </p>
               <p className="text-xs text-stone-500">
@@ -542,7 +543,7 @@ function Links() {
             <Card key={i.id} className="flex flex-wrap items-center gap-2 p-3!">
               <div className="min-w-0 flex-1 text-sm">
                 <p className="font-medium">
-                  {i.groupName}: {i.email ? `✉️ ${i.email}` : "🔗 Link"}
+                  {i.groupName}: {i.email ? <><Icon name="mail" className="mr-1" />{i.email}</> : <><Icon name="link" className="mr-1" />Link</>}
                 </p>
                 <p className="text-xs text-stone-500">
                   von {i.createdByName} · gültig bis {fmt(i.expiresAt)} · {i.useCount}× verwendet{i.maxUses !== null && ` von ${i.maxUses}`}
@@ -628,7 +629,7 @@ function IdleTimer({ onTimeout }: { onTimeout: () => void }) {
       aria-label={`Automatische Abmeldung in ${label} Minuten`}
       className={`rounded-lg px-2 py-1 text-sm tabular-nums ${warn ? "bg-brand-700 font-semibold text-white" : "text-stone-300"}`}
     >
-      ⏱ {label}
+      <Icon name="timer" className="mr-1" />{label}
     </span>
   );
 }

@@ -7,6 +7,7 @@ import { EventForm, WichtelChoice } from "../components/EventForm.tsx";
 import { Alert, Badge, Button, Card, Spinner } from "../components/ui.tsx";
 import { eventsApi, groupsApi, householdsApi } from "../lib/api.ts";
 import { formatDate } from "./EventsPage.tsx";
+import { Icon } from "../components/Icon.tsx";
 
 export function EventDetailPage() {
   const { eventId = "" } = useParams();
@@ -20,7 +21,7 @@ export function EventDetailPage() {
       <Card>
         <p>Dieses Event gibt es nicht oder du bist nicht in der Gruppe.</p>
         <Link to="/events" className="mt-2 inline-block text-sm text-brand-700 hover:underline">
-          ← Zu den Events
+          <Icon name="back" className="mr-1" />Zu den Events
         </Link>
       </Card>
     );
@@ -32,12 +33,12 @@ export function EventDetailPage() {
   return (
     <div className="space-y-4">
       <Link to="/events" className="text-sm text-stone-500 hover:underline">
-        ← Events
+        <Icon name="back" className="mr-1" />Events
       </Link>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold">
-            {isSanta ? "🎅" : "🎁"} {e.name}
+            <Icon name={isSanta ? "secretSanta" : "gift"} className="mr-2 text-brand-700" />{e.name}
           </h1>
           <p className="mt-1 text-stone-600">
             <Link to={`/gruppen/${e.groupId}`} className="hover:underline">
@@ -48,7 +49,7 @@ export function EventDetailPage() {
           </p>
           <div className="mt-2 flex flex-wrap gap-2">
             <Badge tone="brand">{isSanta ? "Wichteln" : "Freies Schenken"}</Badge>
-            {budget && <Badge>💶 Budget {budget}</Badge>}
+            {budget && <Badge><Icon name="budget" className="mr-1" />Budget {budget}</Badge>}
           </div>
         </div>
         {e.canManage && (
@@ -61,7 +62,7 @@ export function EventDetailPage() {
 
       {e.reveals.length > 0 && (
         <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-          <p className="font-medium">👀 Die Auslosung wurde von einem Organisator eingesehen:</p>
+          <p className="font-medium"><Icon name="reveal" className="mr-1.5" />Die Auslosung wurde von einem Organisator eingesehen:</p>
           <ul className="mt-1 list-disc pl-5">
             {e.reveals.map((r, i) => (
               <li key={i}>
@@ -106,7 +107,7 @@ function MyAssignments({ event }: { event: EventDetailDto }) {
   if (event.status === "draft") {
     return (
       <Card className="text-center">
-        <p className="text-4xl">🎁</p>
+        <p className="text-4xl text-brand-700"><Icon name="gift" /></p>
         <p className="mt-2 font-medium">Noch nicht ausgelost</p>
         <p className="mt-1 text-sm text-stone-600">
           {event.participating
@@ -141,13 +142,13 @@ function AssignmentCard({ a, eventId, self }: { a: EventAssignmentDto; eventId: 
         <>
           <p className="mt-1 text-3xl font-semibold text-brand-800">{a.receiver.displayName}</p>
           <Link to={`/liste/${a.receiver.profileId}?event=${eventId}`} className="mt-4 inline-block">
-            <Button>🎁 Wunschliste von {a.receiver.displayName}</Button>
+            <Button><Icon name="gift" /> Wunschliste von {a.receiver.displayName}</Button>
           </Link>
-          <p className="mt-3 text-xs text-stone-500">Psst, nicht verraten! 🤫</p>
+          <p className="mt-3 text-xs text-stone-500">Psst, nicht verraten! <Icon name="secret" className="ml-1" /></p>
         </>
       ) : (
         <Button variant="secondary" className="mt-3" onClick={() => setShown(true)}>
-          🎁 Aufdecken
+          <Icon name="gift" /> Aufdecken
         </Button>
       )}
     </Card>
@@ -166,7 +167,7 @@ function EveryoneList({ event }: { event: EventDetailDto }) {
               <span className="font-medium">
                 {p.displayName} {p.managed && <Badge tone="amber">Kind</Badge>}
               </span>
-              <span className="text-sm text-brand-700">Wunschliste →</span>
+              <span className="text-sm text-brand-700">Wunschliste <Icon name="forward" className="ml-1" /></span>
             </Link>
           </li>
         ))}
@@ -182,7 +183,7 @@ function Participants({ event }: { event: EventDetailDto }) {
       <div className="mt-2 flex flex-wrap gap-2">
         {event.participants.map((p) => (
           <Badge key={p.profileId}>
-            {p.managed ? "👶 " : ""}
+            {p.managed && <Icon name="child" className="mr-1" />}
             {p.displayName}
           </Badge>
         ))}
@@ -254,7 +255,7 @@ function Organizer({ event }: { event: EventDetailDto }) {
 
   return (
     <Card className="border-dashed!">
-      <h2 className="font-semibold">⚙️ Organisation</h2>
+      <h2 className="font-semibold"><Icon name="settings" className="mr-1.5" />Organisation</h2>
       <p className="mt-1 text-sm text-stone-600">Nur für Organisator und Gruppen-Admins sichtbar.</p>
       <div className="mt-3 space-y-2">
         {error && <Alert>{error}</Alert>}
@@ -312,13 +313,13 @@ function Organizer({ event }: { event: EventDetailDto }) {
           <ul className="mt-2 space-y-1 text-sm">
             {households.data?.map((h) => (
               <li key={h.id} className="rounded-lg bg-stone-50 px-3 py-1.5">
-                🏠 {h.name}: {h.members.map((m) => m.displayName).join(", ")}
+                <Icon name="household" className="mr-1.5 text-stone-500" />{h.name}: {h.members.map((m) => m.displayName).join(", ")}
               </li>
             ))}
             {event.manualExclusions.map((x, i) => (
               <li key={i} className="flex items-center justify-between rounded-lg bg-stone-50 px-3 py-1.5">
                 <span>
-                  🚫 {nameOf(x.a)} ↔ {nameOf(x.b)}
+                  <Icon name="exclude" className="mr-1.5 text-stone-500" />{nameOf(x.a)} <Icon name="pair" className="mx-1 text-stone-400" /> {nameOf(x.b)}
                 </span>
                 {draft && (
                   <button
@@ -339,7 +340,7 @@ function Organizer({ event }: { event: EventDetailDto }) {
       <section className="mt-5 flex flex-wrap gap-2 border-t border-stone-100 pt-4">
         {isSanta && draft && (
           <Button onClick={() => drawIt.mutate()} disabled={drawIt.isPending}>
-            🎲 Jetzt auslosen
+            <Icon name="draw" /> Jetzt auslosen
           </Button>
         )}
         {isSanta && !draft && (
@@ -349,7 +350,7 @@ function Organizer({ event }: { event: EventDetailDto }) {
               onClick={() => confirm("Neu auslosen? Alle bekommen eine neue Zuordnung. Bitte allen Bescheid sagen!") && drawIt.mutate()}
               disabled={drawIt.isPending}
             >
-              🎲 Neu auslosen
+              <Icon name="draw" /> Neu auslosen
             </Button>
             <Button variant="secondary" onClick={() => confirm("Auslosung verwerfen, um Teilnehmende oder Ausschlüsse zu ändern?") && reset.mutate()}>
               Zurücksetzen
@@ -363,7 +364,7 @@ function Organizer({ event }: { event: EventDetailDto }) {
                 if (reason) reveal.mutate(reason);
               }}
             >
-              👀 Notfall-Einsicht
+              <Icon name="reveal" /> Notfall-Einsicht
             </Button>
           </>
         )}
@@ -382,7 +383,7 @@ function Organizer({ event }: { event: EventDetailDto }) {
           <ul className="space-y-0.5">
             {revealed.map((a) => (
               <li key={a.giver.profileId}>
-                {a.giver.displayName} → <b>{a.receiver.displayName}</b>
+                {a.giver.displayName} <Icon name="forward" className="mx-1 text-stone-400" /> <b>{a.receiver.displayName}</b>
               </li>
             ))}
           </ul>
@@ -399,7 +400,7 @@ function AddExclusion({ event, onAdd }: { event: EventDetailDto; onAdd: (a: stri
   const [a, setA] = useState("");
   const [b, setB] = useState("");
   const select = (value: string, set: (v: string) => void) => (
-    <select value={value} onChange={(e) => set(e.target.value)} className="min-w-0 flex-1 rounded-lg border border-stone-300 bg-white px-2 py-2 text-sm">
+    <select value={value} onChange={(e) => set(e.target.value)} className="w-full min-w-0 rounded-lg border border-stone-300 bg-white px-2 py-2 text-sm">
       <option value="">Person …</option>
       {event.participants.map((p) => (
         <option key={p.profileId} value={p.profileId}>
@@ -409,9 +410,9 @@ function AddExclusion({ event, onAdd }: { event: EventDetailDto; onAdd: (a: stri
     </select>
   );
   return (
-    <div className="mt-2 flex flex-wrap items-center gap-2">
+    <div className="mt-2 grid items-center gap-2 sm:grid-cols-[1fr_auto_1fr_auto]">
       {select(a, setA)}
-      <span className="text-stone-400">↔</span>
+      <Icon name="pair" className="justify-self-center text-stone-400" />
       {select(b, setB)}
       <Button
         variant="secondary"
