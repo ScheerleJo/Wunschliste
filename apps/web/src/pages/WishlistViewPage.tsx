@@ -26,7 +26,7 @@ export function WishlistViewPage() {
   });
 
   // Die eigene Liste gibt es nur in der Besitzer-Sicht (ohne Reservierungen)
-  if (me && me.profile.id === profileId) return <Navigate to="/" replace />;
+  if (me && me.profile.id === profileId) return <Navigate to="/liste" replace />;
   if (list.isPending) return <Spinner />;
   if (list.isError || !list.data) {
     return (

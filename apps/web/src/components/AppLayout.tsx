@@ -6,7 +6,7 @@ import { authClient } from "../lib/auth-client.ts";
 import { useMe } from "../lib/use-me.ts";
 
 const navItems = [
-  { to: "/", label: "Meine Liste", icon: "🎁" },
+  { to: "/liste", label: "Meine Liste", icon: "🎁" },
   { to: "/gruppen", label: "Gruppen", icon: "👪" },
   { to: "/reservierungen", label: "Reserviert", icon: "🔖" },
   { to: "/events", label: "Events", icon: "🎄" },
@@ -41,13 +41,13 @@ export function AppLayout() {
     <div className="min-h-dvh pb-20 sm:pb-0">
       <header className="sticky top-0 z-10 border-b border-stone-200 bg-white/90 backdrop-blur">
         <div className="mx-auto flex max-w-4xl items-center gap-4 px-4 py-3">
-          <NavLink to="/" className="flex items-center gap-2 font-semibold">
+          <NavLink to="/" aria-label="Startseite" className="flex items-center gap-2 font-semibold">
             <img src="/favicon.svg" alt="" className="h-7 w-7" />
             {APP_NAME}
           </NavLink>
           <nav className="hidden flex-1 gap-1 sm:flex">
             {navItems.map((item) => (
-              <NavLink key={item.to} to={item.to} end={item.to === "/"} className={linkClass}>
+              <NavLink key={item.to} to={item.to} end={item.to === "/liste"} className={linkClass}>
                 {item.label}
                 {badge(item.to)}
               </NavLink>
@@ -84,7 +84,7 @@ export function AppLayout() {
           <NavLink
             key={item.to}
             to={item.to}
-            end={item.to === "/"}
+            end={item.to === "/liste"}
             className={({ isActive }) =>
               `flex flex-col items-center gap-0.5 py-2 text-xs ${isActive ? "text-brand-700" : "text-stone-500"}`
             }

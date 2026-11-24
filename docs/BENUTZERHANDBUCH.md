@@ -23,6 +23,16 @@ Passwort vergessen? Auf der Anmeldeseite „Passwort vergessen?“ antippen.
 
 ---
 
+## 🏠 Startseite
+
+Nach dem Anmelden, und immer wenn du oben links auf **Wunschbaum** tippst, landest du auf der Startseite:
+- **Meine Wunschliste:** große Fläche oben, führt zu deiner eigenen Liste.
+- **Kinderlisten:** Verwaltest du Kinder, erscheinen ihre Listen darunter.
+- **Deine Gruppen:** Jede Gruppe lässt sich aufklappen und zeigt alle Mitglieder. Ein Tipp auf eine Person öffnet ihre
+  Wunschliste. Welche Gruppen offen sind, merkt sich dein Browser.
+
+---
+
 ## 🎁 Meine Liste
 
 - **Wunsch hinzufügen:** Titel, optional Beschreibung (Größe, Farbe …), ungefährer Preis, Links zum Shop und Bilder.

@@ -152,7 +152,7 @@ function MemberRow({ groupId, member, canManage }: { groupId: string; member: Gr
           {member.displayName.charAt(0).toUpperCase()}
         </div>
         <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-          <Link to={member.isMe ? "/" : `/liste/${member.profileId}`} className="font-medium hover:text-brand-700 hover:underline">
+          <Link to={member.isMe ? "/liste" : `/liste/${member.profileId}`} className="font-medium hover:text-brand-700 hover:underline">
             {member.displayName}
           </Link>
           {member.isMe && <Badge>Du</Badge>}
@@ -160,12 +160,12 @@ function MemberRow({ groupId, member, canManage }: { groupId: string; member: Gr
           {member.managed && <Badge tone="amber">Kind</Badge>}
         </div>
         {member.managedByMe && (
-          <Link to={`/?profil=${member.profileId}`} className="rounded-lg px-2 py-1.5 text-xs font-medium text-stone-600 hover:bg-stone-100">
+          <Link to={`/liste?profil=${member.profileId}`} className="rounded-lg px-2 py-1.5 text-xs font-medium text-stone-600 hover:bg-stone-100">
             ✏️ Verwalten
           </Link>
         )}
         <Link
-          to={member.isMe ? "/" : `/liste/${member.profileId}`}
+          to={member.isMe ? "/liste" : `/liste/${member.profileId}`}
           className="rounded-lg px-2 py-1.5 text-xs font-medium text-brand-700 hover:bg-brand-50"
         >
           🎁 {member.isMe ? "Meine Liste" : "Wunschliste"}
