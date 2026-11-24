@@ -74,6 +74,9 @@ aufgenommen):
 - **Funktionen:** Übersicht mit Mailstatus; Benutzer (bearbeiten, bestätigen, Passwort setzen, abmelden, löschen);
   Gruppen (umbenennen, Mitglieder und Rollen, löschen); Kinderprofile (Verwalter, löschen); Events löschen;
   Einladungen und Teilen-Links zurückziehen.
+- **Abmeldung nach Inaktivität:** Ein Countdown von 10 Minuten neben „Abmelden“ wird durch jeden Klick und jede
+  Tastatureingabe zurückgesetzt und meldet sich bei 0:00 ab. Auch der Server beendet die Sitzung 11 Minuten nach der
+  letzten Anfrage (gleitend, höchstens 12 Stunden). Die Oberfläche meldet Aktivität höchstens alle 30 Sekunden.
 - **Bewusst ohne Reservierungen und Wichtel-Zuordnungen**, damit die Überraschung auch für den Admin selbst erhalten
   bleibt. Für Notfälle gibt es die protokollierte Notfall-Einsicht beim Event.
 - **Benutzer löschen** entfernt das eigene Profil samt Wünschen, Bildern, Gruppenmitgliedschaften und eigenen

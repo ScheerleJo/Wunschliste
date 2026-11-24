@@ -3,6 +3,8 @@
  *  - Admin-Konten entstehen nur per Kommandozeile (pnpm admin create …), nie über die Webseite
  *  - Passwörter als scrypt-Hash, Sitzungs-Token nur als SHA-256-Hash in der Datenbank
  *  - Cookie nur für /api/admin, HttpOnly, SameSite=Strict, Secure (bei https)
+ *  - Abmeldung nach Inaktivität: Jede Anfrage verlängert die Sitzung auf IDLE_MINUTES, höchstens bis SESSION_HOURS
+ *    nach der Anmeldung. Die Oberfläche zeigt einen 10-Minuten-Countdown; der Server gibt 1 Minute Puffer dazu.
  *  - Sperre nach zu vielen Fehlversuchen, Herkunftsprüfung (Origin) für ändernde Anfragen
  */
 import { createHash, randomBytes, scrypt as scryptCb, timingSafeEqual } from "node:crypto";
@@ -19,6 +21,10 @@ import { env } from "../env.ts";
 const scrypt = promisify(scryptCb) as (pw: string, salt: Buffer, len: number) => Promise<Buffer>;
 const COOKIE = "wb_admin";
 const SESSION_HOURS = 12;
+/** Inaktivität bis zur Abmeldung (Anzeige im Browser: 10 Minuten, Server: 1 Minute Puffer) */
+export const ADMIN_IDLE_MINUTES = 11;
+const idleExpiry = (createdAt: Date) =>
+  new Date(Math.min(Date.now() + ADMIN_IDLE_MINUTES * 60_000, createdAt.getTime() + SESSION_HOURS * 3600_000));
 export const MIN_ADMIN_PASSWORD = 12;
 
 // ---- Passwörter ----------------------------------------------------------------
@@ -94,7 +100,7 @@ export async function adminLogin(c: Context, email: string, password: string) {
   await db.insert(adminSession).values({
     adminId: admin.id,
     tokenHash: sha(token),
-    expiresAt: new Date(Date.now() + SESSION_HOURS * 3600_000),
+    expiresAt: idleExpiry(new Date()),
   });
   await db.update(adminAccount).set({ lastLoginAt: new Date() }).where(eq(adminAccount.id, admin.id));
   setCookie(c, COOKIE, token, {
@@ -124,11 +130,13 @@ export const requireAdminSession = createMiddleware<AdminEnv>(async (c, next) =>
   const token = getCookie(c, COOKIE);
   if (!token) throw new HTTPException(401, { message: "Nicht als Admin angemeldet" });
   const [row] = await db
-    .select({ id: adminAccount.id, email: adminAccount.email })
+    .select({ id: adminAccount.id, email: adminAccount.email, sessionId: adminSession.id, createdAt: adminSession.createdAt })
     .from(adminSession)
     .innerJoin(adminAccount, eq(adminAccount.id, adminSession.adminId))
     .where(and(eq(adminSession.tokenHash, sha(token)), gt(adminSession.expiresAt, new Date())));
   if (!row) throw new HTTPException(401, { message: "Admin-Sitzung abgelaufen" });
-  c.set("admin", row);
+  // Aktivität verlängert die Sitzung (gleitendes Ablaufdatum)
+  await db.update(adminSession).set({ expiresAt: idleExpiry(row.createdAt) }).where(eq(adminSession.id, row.sessionId));
+  c.set("admin", { id: row.id, email: row.email });
   await next();
 });

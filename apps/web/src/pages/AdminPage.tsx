@@ -2,7 +2,7 @@
  * System-Administration unter /admin (nirgends verlinkt).
  * Eigene Anmeldung mit separatem Admin-Konto. Zeigt bewusst keine Reservierungen und keine Wichtel-Zuordnungen.
  */
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { useSearchParams } from "react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { APP_NAME, type AdminGroupDto, type AdminUserDto } from "@wunschliste/shared";
@@ -18,6 +18,12 @@ const tabs = [
   ["links", "Einladungen & Links"],
 ] as const;
 type Tab = (typeof tabs)[number][0];
+
+/** Abmeldung nach 10 Minuten ohne Klick oder Tastatureingabe (der Server hat zusätzlich 1 Minute Puffer) */
+const IDLE_MS = 10 * 60_000;
+/** Aktivität höchstens alle 30 Sekunden an den Server melden, damit die Sitzung dort ebenfalls verlängert wird */
+const PING_EVERY_MS = 30_000;
+const TIMEOUT_FLAG = "wunschbaum.admin.timeout";
 
 const fmt = (iso: string | null) => (iso ? new Date(iso).toLocaleDateString("de-DE") : "–");
 
@@ -35,6 +41,15 @@ function AdminLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [timedOut] = useState(() => {
+    try {
+      const flag = sessionStorage.getItem(TIMEOUT_FLAG);
+      sessionStorage.removeItem(TIMEOUT_FLAG);
+      return !!flag;
+    } catch {
+      return false;
+    }
+  });
   const [busy, setBusy] = useState(false);
 
   async function submit(e: FormEvent) {
@@ -60,6 +75,7 @@ function AdminLogin() {
         </div>
         <Card>
           <form onSubmit={submit} className="space-y-4">
+            {timedOut && !error && <Alert kind="success">Du wurdest nach 10 Minuten ohne Aktivität automatisch abgemeldet.</Alert>}
             {error && <Alert>{error}</Alert>}
             <Field label="Admin-E-Mail" type="email" autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} />
             <Field
@@ -92,6 +108,16 @@ function AdminShell({ email }: { email: string }) {
           <img src="/favicon.svg" alt="" className="h-7 w-7" />
           <span className="font-semibold">{APP_NAME} · Administration</span>
           <span className="ml-auto text-sm text-stone-400">{email}</span>
+          <IdleTimer
+            onTimeout={() => {
+              try {
+                sessionStorage.setItem(TIMEOUT_FLAG, "1");
+              } catch {
+                /* egal */
+              }
+              logout.mutate();
+            }}
+          />
           <button onClick={() => logout.mutate()} className="rounded-lg px-3 py-1.5 text-sm hover:bg-white/10">
             Abmelden
           </button>
@@ -549,5 +575,60 @@ function Links() {
         </ul>
       </Section>
     </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+
+/**
+ * Countdown bis zur automatischen Abmeldung. Jeder Klick und jede Tastatureingabe setzt ihn zurück
+ * und meldet die Aktivität (gedrosselt) an den Server, damit auch die Sitzung dort verlängert wird.
+ * Rechnet mit Zeitstempeln statt Intervallen, damit er auch nach Standby oder Hintergrund-Tabs stimmt.
+ */
+function IdleTimer({ onTimeout }: { onTimeout: () => void }) {
+  const [deadline, setDeadline] = useState(() => Date.now() + IDLE_MS);
+  const [now, setNow] = useState(() => Date.now());
+  const lastPing = useRef(Date.now());
+  const fired = useRef(false);
+
+  useEffect(() => {
+    const activity = () => {
+      if (fired.current) return;
+      setDeadline(Date.now() + IDLE_MS);
+      if (Date.now() - lastPing.current >= PING_EVERY_MS) {
+        lastPing.current = Date.now();
+        adminApi.me().catch(() => {});
+      }
+    };
+    window.addEventListener("pointerdown", activity);
+    window.addEventListener("keydown", activity);
+    const tick = setInterval(() => setNow(Date.now()), 1000);
+    return () => {
+      window.removeEventListener("pointerdown", activity);
+      window.removeEventListener("keydown", activity);
+      clearInterval(tick);
+    };
+  }, []);
+
+  const remaining = Math.max(0, deadline - now);
+  useEffect(() => {
+    if (remaining === 0 && !fired.current) {
+      fired.current = true;
+      onTimeout();
+    }
+  }, [remaining, onTimeout]);
+
+  const total = Math.ceil(remaining / 1000);
+  const label = `${Math.floor(total / 60)}:${String(total % 60).padStart(2, "0")}`;
+  const warn = total <= 60;
+  return (
+    <span
+      role="timer"
+      title="Automatische Abmeldung nach 10 Minuten ohne Aktivität. Jeder Klick setzt den Timer zurück."
+      aria-label={`Automatische Abmeldung in ${label} Minuten`}
+      className={`rounded-lg px-2 py-1 text-sm tabular-nums ${warn ? "bg-brand-700 font-semibold text-white" : "text-stone-300"}`}
+    >
+      ⏱ {label}
+    </span>
   );
 }
