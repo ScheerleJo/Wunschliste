@@ -68,6 +68,7 @@ BETTER_AUTH_SECRET=...        # erzeugen mit: openssl rand -base64 32
 POSTGRES_PASSWORD=...         # erzeugen mit: openssl rand -hex 24
 APP_PORT=3000
 IP_HEADERS=cf-connecting-ip   # Cloudflare (orange Wolke) davor; ohne Cloudflare: x-real-ip
+FONTAWESOME_PACKAGE_TOKEN=... # fontawesome.com → Konto → Package Tokens (nur zum Bauen nötig)
 
 SMTP_HOST=smtp.ionos.de
 SMTP_PORT=587
@@ -77,6 +78,11 @@ MAIL_FROM="Wunschbaum <postfach@deine-domain.de>"
 ```
 
 `DATABASE_URL` und `UPLOAD_DIR` setzt die `docker-compose.yml` selbst, die Zeilen aus der Vorlage werden ignoriert.
+
+**Zu `FONTAWESOME_PACKAGE_TOKEN`:** Die Icons kommen aus Font Awesome Pro. Beim `docker compose up -d --build` wird
+der Token als *Build-Secret* an `pnpm install` übergeben. Er landet nicht im fertigen Image, nicht in dessen Verlauf und
+nicht in den Logs. Ohne gültigen Token, z. B. nach Ablauf des Abos, schlägt ein neuer Build fehl. Ein bereits laufender
+Container arbeitet weiter.
 
 **Zu `IP_HEADERS`:** Die App braucht die echte IP der Besucher, um Login-Versuche zu begrenzen.
 Bei *Besucher → Cloudflare → Nginx Proxy Manager → App* steht sie nur in `cf-connecting-ip`.
@@ -248,6 +254,7 @@ Datenbank-Änderungen werden beim Start automatisch eingespielt.
 | Cloudflare-Fehler 525/526 | SSL-Zertifikat im NPM fehlt oder ist ungültig (Schritt 7), oder der SSL-Modus in Cloudflare passt nicht |
 | Fehler 502 vom NPM | Container läuft nicht oder falsche IP/Port im Proxy Host: `docker compose ps`, `curl http://<LXC-IP>:3000/api/health` |
 | Mails kommen nicht an | `docker compose exec app pnpm mail:test …` – die Ausgabe erklärt den Fehler |
+| Build bricht bei `pnpm install` mit 401/403 von `npm.fontawesome.com` ab | `FONTAWESOME_PACKAGE_TOKEN` in der `.env` fehlt oder ist falsch bzw. abgelaufen |
 | Docker startet im LXC nicht | Features **nesting** und **keyctl** in Proxmox aktivieren, Container neu starten |
 
 Logs: `docker compose logs -f app` · Neustart: `docker compose restart app` ·

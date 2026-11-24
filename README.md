@@ -37,7 +37,10 @@ packages/shared Gemeinsame Typen und Zod-Validierung (Web, API, später Mobile-A
 
 ## Lokal entwickeln
 
-Voraussetzungen: Node.js ≥ 22.12, pnpm (`npm install -g pnpm@10`), Docker (unter Windows: Docker Desktop).
+Voraussetzungen: Node.js ≥ 22.12, pnpm (`npm install -g pnpm@10`), Docker (unter Windows: Docker Desktop) und
+der **Font Awesome Package Token** als Umgebungsvariable `FONTAWESOME_PACKAGE_TOKEN`, weil die Icons aus Font Awesome Pro
+kommen. Der Token steht in deinem Konto auf fontawesome.com unter *Package Tokens*. Unter Windows einmalig
+`setx FONTAWESOME_PACKAGE_TOKEN "dein-token"` und danach ein neues Terminal öffnen. Ohne Token schlägt `pnpm install` fehl.
 
 ```bash
 cp .env.example .env                              # Windows: copy .env.example .env

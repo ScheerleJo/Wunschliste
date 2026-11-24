@@ -72,11 +72,11 @@ Trag in **Deine Wahl** ein, was du lieber möchtest. Leer lassen heißt: Vorschl
 | ▾ (SVG) | Gruppe auf-/zuklappen | Startseite | `faChevronDown` | clasic |
 | 👋 | Begrüßung „Hallo …“ | Startseite | `faHandWave` | duotone |
 
-### Umgesetzt (Font Awesome Free)
+### Umgesetzt (Font Awesome Pro)
 
-- **Stil:** überall *solid*, nur `faFaceSmile` und `faBell` *regular*. „duotone“ gibt es nur in Font Awesome Pro (Abo).
-- **Pro-Icons:** `faTreeChristmas` (Events) wird vorerst durch `faTree` ersetzt. Für `faHandWave` (Begrüßung) gibt es kein
-  passendes Free-Icon, die Begrüßung bleibt deshalb vorerst das Emoji 👋.
-- **Später einfach tauschbar:** Mit einem Pro-Abo lassen sich alle Wünsche in `apps/web/src/components/Icon.tsx`
-  umsetzen (Pakete `@fortawesome/pro-duotone-svg-icons` usw. mit privatem npm-Token).
-
+- Alle Icons wie in der Tabelle: *duotone* wo angegeben, sonst *solid* („classic“), `faFaceSmile` und `faBell` *regular*.
+- Auch `faTreeChristmas` (Events) und `faHandWave` (Begrüßung) sind drin.
+- Zuordnung: `apps/web/src/components/Icon.tsx`. Pakete: `@fortawesome/pro-duotone-svg-icons`,
+  `@fortawesome/pro-solid-svg-icons`, `@fortawesome/pro-regular-svg-icons`.
+- Zum Installieren wird der **Package Token** gebraucht (Umgebungsvariable `FONTAWESOME_PACKAGE_TOKEN`,
+  siehe `.npmrc`, README und `docs/DEPLOYMENT.md`). Im Browser gibt es keine Anfragen an fontawesome.com.

@@ -1,131 +1,140 @@
 /**
- * Zentrale Icon-Zuordnung (Font Awesome Free, selbst gehostet, keine Anfragen an fontawesome.com).
+ * Zentrale Icon-Zuordnung (Font Awesome Pro, selbst gehostet, keine Anfragen an fontawesome.com im Browser).
  *
  * Jede Bedeutung steht genau einmal hier. Ein anderes Icon für z. B. "Bearbeiten" = eine Zeile ändern.
- * Stil: solid (Standard) bzw. regular, wo als `far…` importiert. Auswahl siehe docs/ICONS.md.
- * "duotone" sowie faTreeChristmas/faHandWave gibt es nur in Font Awesome Pro; hier stehen die Free-Varianten.
+ * Auswahl und Stil laut docs/ICONS.md:
+ *   fad… = duotone   (@fortawesome/pro-duotone-svg-icons)
+ *   fas… = solid     (@fortawesome/pro-solid-svg-icons, "classic")
+ *   far… = regular   (@fortawesome/pro-regular-svg-icons)
+ *
+ * Die Pro-Pakete brauchen beim Installieren den Font Awesome Package Token (siehe .npmrc und docs/DEPLOYMENT.md).
  */
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import {
-  faArrowLeft,
-  faArrowRight,
-  faArrowsLeftRight,
-  faBan,
-  faBookmark,
-  faBoxArchive,
-  faCamera,
-  faCheck,
-  faChevronDown,
-  faChevronLeft,
-  faChevronRight,
-  faChevronUp,
-  faChild,
-  faDice,
-  faEnvelope,
-  faEuroSign,
-  faEye,
-  faGear,
-  faGift,
-  faHouse,
-  faLink,
-  faLock,
-  faPenToSquare,
-  faRotateLeft,
-  faShareNodes,
-  faSleigh,
-  faStopwatch,
-  faTrashCan,
-  faTree,
-  faTriangleExclamation,
-  faUserGroup,
-  faUsers,
-  faUserSecret,
-  faXmark,
-} from "@fortawesome/free-solid-svg-icons";
-import { faBell as farBell, faFaceSmile as farFaceSmile } from "@fortawesome/free-regular-svg-icons";
+  faBookmark as fadBookmark,
+  faCamera as fadCamera,
+  faChild as fadChild,
+  faDice as fadDice,
+  faGift as fadGift,
+  faHandWave as fadHandWave,
+  faHouse as fadHouse,
+  faPenToSquare as fadPenToSquare,
+  faSleigh as fadSleigh,
+  faStopwatch as fadStopwatch,
+  faTreeChristmas as fadTreeChristmas,
+  faTriangleExclamation as fadTriangleExclamation,
+  faUserGroup as fadUserGroup,
+  faUsers as fadUsers,
+} from "@fortawesome/pro-duotone-svg-icons";
+import {
+  faArrowLeft as fasArrowLeft,
+  faArrowRight as fasArrowRight,
+  faArrowsLeftRight as fasArrowsLeftRight,
+  faBan as fasBan,
+  faBoxArchive as fasBoxArchive,
+  faCheck as fasCheck,
+  faChevronDown as fasChevronDown,
+  faChevronLeft as fasChevronLeft,
+  faChevronRight as fasChevronRight,
+  faChevronUp as fasChevronUp,
+  faEnvelope as fasEnvelope,
+  faEuroSign as fasEuroSign,
+  faEye as fasEye,
+  faGear as fasGear,
+  faLink as fasLink,
+  faLock as fasLock,
+  faRotateLeft as fasRotateLeft,
+  faShareNodes as fasShareNodes,
+  faTrashCan as fasTrashCan,
+  faUserSecret as fasUserSecret,
+  faXmark as fasXmark,
+} from "@fortawesome/pro-solid-svg-icons";
+import { faBell as farBell, faFaceSmile as farFaceSmile } from "@fortawesome/pro-regular-svg-icons";
 
 const icons = {
   /** Wunschliste, Geschenk, freies Schenken */
-  gift: faGift,
+  gift: fadGift,
   /** weiter / öffnen */
-  forward: faArrowRight,
+  forward: fasArrowRight,
   /** zurück */
-  back: faArrowLeft,
+  back: fasArrowLeft,
   /** Shop-, Einladungs- oder Teilen-Link */
-  link: faLink,
+  link: fasLink,
   /** Button "Teilen" */
-  share: faShareNodes,
+  share: fasShareNodes,
   /** Wichteln */
-  secretSanta: faSleigh,
+  secretSanta: fadSleigh,
   /** bearbeiten, "wurde geändert" */
-  edit: faPenToSquare,
+  edit: fadPenToSquare,
   /** schließen, entfernen */
-  close: faXmark,
+  close: fasXmark,
   /** reservieren, Reservierungen */
-  reserve: faBookmark,
+  reserve: fadBookmark,
   /** E-Mail, Mail-Einladung */
-  mail: faEnvelope,
+  mail: fasEnvelope,
   /** geheim, nicht verraten */
-  secret: faUserSecret,
+  secret: fasUserSecret,
   /** erledigt, von dir reserviert, kopiert */
-  check: faCheck,
+  check: fasCheck,
   /** Gruppen */
-  groups: faUsers,
+  groups: fadUsers,
   /** Kinderprofil */
-  child: faChild,
+  child: fadChild,
   /** archivieren, Archiv */
-  archive: faBoxArchive,
+  archive: fasBoxArchive,
   /** löschen, gelöscht */
-  delete: faTrashCan,
+  delete: fasTrashCan,
   /** nur für dich sichtbar, kein Zugriff */
-  private: faLock,
-  /** Events (gewünscht: faTreeChristmas, nur in Pro) */
-  events: faTree,
+  private: fasLock,
+  /** Events */
+  events: fadTreeChristmas,
   /** Benachrichtigungen */
   bell: farBell,
   /** Budget */
-  budget: faEuroSign,
+  budget: fasEuroSign,
   /** leere Wunschliste (bei anderen) */
   empty: farFaceSmile,
   /** Notfall-Einsicht */
-  reveal: faEye,
+  reveal: fasEye,
   /** "Nur: Gruppe X" sichtbar */
-  visibility: faEye,
+  visibility: fasEye,
   /** Einstellungen, Organisation */
-  settings: faGear,
+  settings: fasGear,
   /** Haushalt */
-  household: faHouse,
+  household: fadHouse,
   /** Paar, das sich nicht zieht */
-  pair: faArrowsLeftRight,
+  pair: fasArrowsLeftRight,
   /** Ausschluss */
-  exclude: faBan,
+  exclude: fasBan,
   /** auslosen */
-  draw: faDice,
+  draw: fadDice,
   /** Warnung */
-  warning: faTriangleExclamation,
+  warning: fadTriangleExclamation,
   /** nach oben / unten schieben */
-  up: faChevronUp,
-  down: faChevronDown,
+  up: fasChevronUp,
+  down: fasChevronDown,
   /** wiederherstellen */
-  restore: faRotateLeft,
+  restore: fasRotateLeft,
   /** Bild hinzufügen */
-  camera: faCamera,
+  camera: fadCamera,
   /** Anzahl Teilnehmende */
-  participants: faUserGroup,
+  participants: fadUserGroup,
   /** vorheriges / nächstes Bild */
-  prev: faChevronLeft,
-  next: faChevronRight,
+  prev: fasChevronLeft,
+  next: fasChevronRight,
   /** Abmelde-Timer */
-  timer: faStopwatch,
+  timer: fadStopwatch,
   /** auf-/zuklappen */
-  expand: faChevronDown,
+  expand: fasChevronDown,
+  /** Begrüßung "Hallo …" */
+  wave: fadHandWave,
 } satisfies Record<string, IconDefinition>;
 
 export type IconName = keyof typeof icons;
 
 /**
- * Icon in Schriftgröße und -farbe des umgebenden Textes.
+ * Icon in Schriftgröße und -farbe des umgebenden Textes (Duotone: zweite Ebene halbtransparent).
  * Ohne `label` rein dekorativ (für Screenreader unsichtbar), mit `label` wird es vorgelesen.
  */
 export function Icon({ name, className = "", label }: { name: IconName; className?: string; label?: string }) {

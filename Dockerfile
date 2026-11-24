@@ -1,11 +1,15 @@
+# syntax=docker/dockerfile:1.10
 # Ein Container für API + Web-App (die API liefert die gebaute Web-App aus).
 FROM node:22-alpine AS base
 RUN corepack enable
 WORKDIR /app
+# Leer, damit pnpm die .npmrc ohne Warnung liest; beim Installieren setzt das Build-Secret den echten Token
+ENV FONTAWESOME_PACKAGE_TOKEN=""
 
 FROM base AS build
 COPY . .
-RUN pnpm install --frozen-lockfile
+# Font Awesome Pro: Token nur als Build-Secret, landet weder im Image noch in dessen Verlauf
+RUN --mount=type=secret,id=fontawesome_token,env=FONTAWESOME_PACKAGE_TOKEN pnpm install --frozen-lockfile
 RUN pnpm build
 
 FROM base AS runtime

@@ -49,7 +49,9 @@ export function StartPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Hallo {me.user.name} 👋</h1>
+      <h1 className="text-2xl font-semibold">
+        Hallo {me.user.name} <Icon name="wave" className="ml-1 text-amber-500" />
+      </h1>
 
       {/* Eigene Liste */}
       <Link
